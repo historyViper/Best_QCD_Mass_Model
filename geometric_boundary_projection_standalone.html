@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Geometric Boundary Projection — Standalone</title>
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; margin: 24px; background:#f7f7f9; color:#111; }
+    .card { background:#fff; border:1px solid #ddd; border-radius:12px; padding:16px; margin-bottom:16px; box-shadow:0 2px 8px rgba(0,0,0,.04); }
+    .grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap:12px; }
+    label { display:block; font-weight:700; margin-bottom:4px; }
+    input, button { width:100%; padding:8px 10px; border:1px solid #bbb; border-radius:8px; box-sizing:border-box; }
+    button { cursor:pointer; border:none; background:#111; color:#fff; font-weight:700; }
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    th, td { border-bottom:1px solid #e5e5e5; padding:8px 6px; text-align:right; }
+    th:first-child, td:first-child { text-align:left; }
+    .small { font-size:12px; color:#555; }
+    .good { color:#0a7a2f; font-weight:700; }
+    .warn { color:#9a5b00; font-weight:700; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space:pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Geometric Boundary Projection — Standalone</h1>
+  <p class="small">Self-contained HTML runner with a 24-baryon starter set and the fitted parameters preserved.</p>
+
+  <div class="card">
+    <div class="grid">
+      <div><label>A</label><input id="A" type="number" step="0.1" value="20.0"></div>
+      <div><label>B</label><input id="B" type="number" step="0.1" value="2.0"></div>
+      <div><label>phi_geom (deg)</label><input id="phiGeom" type="number" step="0.1" value="64.5"></div>
+      <div><label>phi_int (deg)</label><input id="phiInt" type="number" step="0.1" value="55.0"></div>
+      <div><label>lambda_univ</label><input id="lambdaUniv" type="number" step="0.000001" value="0.050927"></div>
+    </div>
+    <div style="display:flex; gap:10px; margin-top:12px;">
+      <button id="runBtn">Run</button>
+      <button id="searchBtn">Grid Search (clean set)</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Summary</h2>
+    <div id="summary" class="mono small"></div>
+  </div>
+
+  <div class="card">
+    <h2>24-baryon table</h2>
+    <div style="overflow:auto;">
+      <table>
+        <thead>
+          <tr><th>Baryon</th><th>Obs</th><th>Base</th><th>theta</th><th>tri</th><th>vortex</th><th>Final</th><th>err%</th><th>tag</th></tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+<script>
+const ALPHA_IR = 0.848809;
+const LAMBDA_QCD = 217.0;
+const LANES = {up:19, down:11, strange:7, charm:23, bottom:13, top:17};
+const LANE_SET = [1,7,11,13,17,19,23,29];
+const ANGLES = {};
+LANE_SET.forEach(r => ANGLES[r] = 720 * r / 30);
+const INVERSES = {};
+for (const r of LANE_SET) for (const s of LANE_SET) if ((r*s)%30===1) INVERSES[r]=s;
+const CONSTITUENT = {up:336.0, down:340.0, strange:486.0, charm:1550.0, bottom:4730.0, top:173400.0};
+const ALPHA_BARYON = ALPHA_IR * (2/3);
+const GEO_TWO_7 = Math.sqrt((Math.sin((ANGLES[7]/2)*Math.PI/180)**2) * (Math.sin((ANGLES[INVERSES[7]]/2)*Math.PI/180)**2));
+const C_HYP = ALPHA_BARYON * LAMBDA_QCD * GEO_TWO_7;
+const BARYONS = [
+  ["proton",["up","up","down"],0.5,938.272],["neutron",["up","down","down"],0.5,939.565],["Lambda0",["up","down","strange"],0.5,1115.683],["Sigma+",["up","up","strange"],0.5,1189.370],["Sigma0",["up","down","strange"],0.5,1192.642],["Sigma-",["down","down","strange"],0.5,1197.449],["Xi0",["up","strange","strange"],0.5,1314.860],["Xi-",["down","strange","strange"],0.5,1321.710],["Omega-",["strange","strange","strange"],0.5,1672.450],
+  ["Lambda_c",["up","down","charm"],0.5,2286.460],["Sigma_c++",["up","up","charm"],0.5,2453.970],["Sigma_c+",["up","down","charm"],0.5,2452.900],["Sigma_c0",["down","down","charm"],0.5,2453.750],["Xi_c+",["up","strange","charm"],0.5,2467.930],["Xi_c0",["down","strange","charm"],0.5,2470.850],["Omega_c",["strange","strange","charm"],0.5,2695.200],["Xi_cc++",["up","charm","charm"],0.5,3621.400],["Xi_cc+",["down","charm","charm"],0.5,3619.970],
+  ["Lambda_b",["up","down","bottom"],0.5,5619.600],["Sigma_b+",["up","up","bottom"],0.5,5810.560],["Sigma_b-",["down","down","bottom"],0.5,5815.640],["Xi_b0",["up","strange","bottom"],0.5,5791.900],["Xi_b-",["down","strange","bottom"],0.5,5797.000],["Omega_b",["strange","strange","bottom"],0.5,6046.100]
+];
+function geo(thetaDeg){ return Math.max(Math.sin(thetaDeg*Math.PI/360)**2, 1e-10); }
+function geoTwo(r){ return Math.sqrt(geo(ANGLES[r]) * geo(ANGLES[INVERSES[r]])); }
+function isSelfInverse(r){ return INVERSES[r] === r; }
+function sheet(r){ if(!(r in ANGLES)) return 'boundary'; return ANGLES[r] > 360 ? 'second' : 'first'; }
+function residue(quarks){ let r=1; quarks.forEach(q => r=(r*LANES[q])%30); return r; }
+function skewAngle(quarks){
+  const angles = quarks.map(q => ANGLES[LANES[q]]).sort((a,b)=>a-b);
+  const gaps=[]; for(let i=0;i<angles.length;i++) for(let j=i+1;j<angles.length;j++) gaps.push(Math.abs(angles[j]-angles[i]));
+  gaps.push(720-angles[angles.length-1]+angles[0]);
+  const devs = gaps.map(g => Math.abs(g-240)); return devs.reduce((a,b)=>a+b,0)/devs.length;
+}
+function triWave(theta, phi){ const x=(theta/phi)%2.0; return 1.0-2.0*Math.abs(x-1.0); }
+function predictBase(quarks,J){
+  const r = residue(quarks), sumc = quarks.reduce((a,q)=>a+CONSTITUENT[q],0);
+  let deltaGeo;
+  if(!(r in ANGLES)) deltaGeo = -ALPHA_BARYON * LAMBDA_QCD * geo(24.0);
+  else if(isSelfInverse(r)) deltaGeo = -ALPHA_BARYON * LAMBDA_QCD * geo(ANGLES[r]);
+  else if(sheet(r)==='second') deltaGeo = -ALPHA_BARYON * LAMBDA_QCD * geoTwo(r);
+  else deltaGeo = +ALPHA_BARYON * LAMBDA_QCD * geoTwo(r);
+  const S = J===0.5 ? -1.0 : 3.0, deltaSpin = C_HYP * S;
+  return {base: sumc + deltaGeo + deltaSpin, deltaGeo};
+}
+function tagName(name){
+  if(name==='Omega-') return 'omega';
+  if(name.startsWith('Lambda_c') || name.startsWith('Sigma_c') || name.startsWith('Xi_c') || name.startsWith('Omega_c') || name.startsWith('Xi_cc')) return 'charm';
+  return 'clean';
+}
+function computeRows(A,B,phiGeom,phiInt,lambdaUniv){
+  const scale = 1 + lambdaUniv;
+  return BARYONS.map(([name, quarks, J, obs]) => {
+    const pb = predictBase(quarks,J), theta = skewAngle(quarks);
+    const tri = triWave(theta,phiGeom), vortex = 1 - Math.abs(triWave(theta,phiInt));
+    const deltaGeoNew = pb.deltaGeo + A*tri + B*vortex;
+    const final = (pb.base - pb.deltaGeo + deltaGeoNew) * scale;
+    const errPct = (final - obs)/obs*100;
+    return {name, obs, base: pb.base, final, theta, tri, vortex, errPct, absErr: Math.abs(errPct), tag: tagName(name)};
+  });
+}
+function summarize(rows){
+  const clean = rows.filter(r=>r.tag==='clean');
+  return {allMAPE: rows.reduce((a,r)=>a+r.absErr,0)/rows.length, cleanMAPE: clean.reduce((a,r)=>a+r.absErr,0)/clean.length};
+}
+function render(){
+  const A=parseFloat(document.getElementById('A').value), B=parseFloat(document.getElementById('B').value), pg=parseFloat(document.getElementById('phiGeom').value), pi=parseFloat(document.getElementById('phiInt').value), lu=parseFloat(document.getElementById('lambdaUniv').value);
+  const rows = computeRows(A,B,pg,pi,lu), s = summarize(rows);
+  document.getElementById('summary').textContent = `A = ${A.toFixed(4)}\nB = ${B.toFixed(4)}\nphi_geom = ${pg.toFixed(4)} deg\nphi_int = ${pi.toFixed(4)} deg\nlambda_univ = ${lu.toFixed(6)}\nall-set MAPE = ${s.allMAPE.toFixed(4)}%\nclean-set MAPE = ${s.cleanMAPE.toFixed(4)}%`;
+  const tbody = document.getElementById('tbody'); tbody.innerHTML='';
+  rows.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${r.name}</td><td>${r.obs.toFixed(3)}</td><td>${r.base.toFixed(3)}</td><td>${r.theta.toFixed(1)}</td><td>${r.tri.toFixed(4)}</td><td>${r.vortex.toFixed(4)}</td><td>${r.final.toFixed(3)}</td><td class="${Math.abs(r.errPct)<1?'good':(Math.abs(r.errPct)<3?'warn':'')}">${r.errPct.toFixed(3)}</td><td>${r.tag}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+function gridSearch(){
+  const lu=parseFloat(document.getElementById('lambdaUniv').value); let best=null;
+  for(let A=-30; A<=30; A+=2) for(let B=-10; B<=10; B+=1) for(let pg=45; pg<=75; pg+=1) for(let pi=45; pi<=65; pi+=1){
+    const rows=computeRows(A,B,pg,pi,lu), s=summarize(rows);
+    if(!best || s.cleanMAPE<best.score) best={score:s.cleanMAPE,A,B,pg,pi};
+  }
+  document.getElementById('A').value=best.A.toFixed(2); document.getElementById('B').value=best.B.toFixed(2); document.getElementById('phiGeom').value=best.pg.toFixed(2); document.getElementById('phiInt').value=best.pi.toFixed(2); render();
+}
+document.getElementById('runBtn').addEventListener('click', render);
+document.getElementById('searchBtn').addEventListener('click', gridSearch);
+render();
+</script>
+</body>
+</html>
