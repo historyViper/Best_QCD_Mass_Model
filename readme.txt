@@ -1,7 +1,7 @@
 Geometry based Model
 based partially on Dr. Knuths Claude Cycles
-24 baryons and 6 quarks .66% MAPE 
+24 baryons and 6 quarks about .66% clean MAPE and overall MAPE with uploaded versions are about 2%. will be uploading overall 1.3% MAPE soon. 
 Predictive
 PDG only but you can reverse engineer if known geometry and Known MeV input and output
-Known issues with their fixes: On the new Python and full HTML set known issues and fixes. Due to the triple mobius twisted parallelogram toroid and 55 degree cancelation it increases the spin of all particles by 5 degrees. Triple charm or strange helix in hilbert space projects leaving one big strange giving 2.0 amplitude. Similar for all chiralities that are the same except new inner vortex formed. triple toroid underlne fix is to add 60 degree triangle waves +- 5 degree for the 55 degree.
-RH relationship will be released after this part of the model is accepted and explanation. 
+Known issues with their fixes: On the new Python and full HTML set known issues and fixes. Due to the triple mobius twisted parallelogram toroid and 55 degree cancelation it increases the spin of all particles by 5 degrees. Triple charm or strange helix in hilbert space projects leaving one big strange giving 2.0 amplitude. Similar for all chiralities that are the same except new inner vortex formed. triple toroid underlne fix is to add 60 degree triangle waves +- 5 degree for the 55 degree. Current issues are detecting which charms are topology flips vs helicity. Building a new model using maxwell for the helicity flips. The skewing of Z3 shouldn't be an exact triangle but a morphed one. Going to add skew correction term. 
+RH connection due to phases around a mobius twisted parallelogram toroid happen at square intervals they mimic 2pi prime lanes. the 30 degree single toroid follows a mod 30 prime lane structure. Triple toroid Triangle structure gives a little bit of a different story but aligns with prime angles 50% of the time. Nothing special about RH spacing any system that involves squaring pi will follow prime number structure. The same is for Fibonnaci and magic angle. 
