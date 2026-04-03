@@ -13,7 +13,7 @@ S2[3] = sin²(24°) = 0.165435   gen3: bottom/top
 GEO_B = sin²(12°) = 0.043227   boundary quantum
 ```
 
-MAPE ALL = 0.6365% — identical to v3 empirical baseline.
+MAPE ALL = 0.5% — V5 final
 
 ### Physical mechanism: Malus's Law
 
