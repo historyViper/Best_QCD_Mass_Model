@@ -149,29 +149,21 @@ parameter entirely, leaving only kappa_0.
 ## Broader Framework — Unification Direction
 
 GBP is the baryon mass sector of a larger unified geometric framework
-(TFFT — Temporal Flow Field Theory) in which:
-
-- Particles are vortex structures in 4D spacetime
-- Mass emerges from temporal curvature (chi-field)
-- The phi-harmonic ladder governs **all** particle families
-- Berry-Keating Hamiltonian connects Riemann zeros to the topological mass scale
+(TFFT — Temporal Flow Field Theory) and Tensor Time Theory in which:
+- Particles are vortex or helix like structures in 4D spacetime
 - String theory 2π appears naturally from the TFFT tensor time structure
 - MOND emerges as chi-field saturation at galactic scales
-
 The mod-30 spinor circle (φ(30) = 8 coprime residues × 6 quark flavors = 48
 dimensions) matches the 48-dimensional OAM topology observed in SPDC
 entangled photons (Wits/Huzhou 2025, Nature Communications).
 
-**Active research direction:** Deriving all constituent quark masses and
-lepton masses from a single phi-harmonic ladder, eliminating all input
-masses as free parameters.
 
 ---
 
 ## Repository Structure
 
 ```
-mod30-spinor/
+Best_QCD/
 ├── gbp_complete_v7.py     — current working code (MAPE=0.3029%)
 ├── gbp_complete_v6_final.py
 ├── gbp_complete_v5_final.py
