@@ -166,3 +166,208 @@ The geometric chirality correction:
 This ensures full consistency with established electromagnetic theory while allowing for new, testable deviations under structured geometric conditions.
 
 ---
+using a beam splitter.
+- Beam A travels through a standard optical path (air or uniform medium).
+- Beam B travels through a structured region designed to induce geometric chirality effects, such as:
+  - a chiral metamaterial
+  - a toroidal waveguide
+  - a helical optical fiber segment
+
+The beams are recombined to produce an interference pattern on a detection screen.
+
+---
+
+#### Standard Prediction
+
+Classical optics predicts fringe positions determined by path length difference:
+
+\[
+\Delta \phi = \frac{2\pi}{\lambda} \Delta L
+\]
+
+---
+
+#### Geometric Correction Prediction
+
+With geometric chirality:
+
+\[
+\Delta \phi = \frac{2\pi}{\lambda} \Delta L + \Delta \phi_{\text{geom}}
+\]
+
+where:
+
+\[
+\Delta \phi_{\text{geom}} = \int (\chi_{\text{geom},B} - \chi_{\text{geom},A}) \, ds
+\]
+
+---
+
+#### Expected Observation
+
+- A measurable shift in interference fringes beyond standard path-length predictions
+- Possible asymmetry in fringe spacing
+- Dependence on orientation or geometry of the structured region
+
+---
+
+### 8.2 Polarization-Dependent Refraction
+
+#### Setup
+
+- A monochromatic beam is passed through a prism or metamaterial.
+- The beam is prepared in different polarization states:
+  - linear
+  - circular (left/right-handed)
+
+---
+
+#### Standard Prediction
+
+All polarization states refract identically in isotropic media:
+
+\[
+n = n(\lambda)
+\]
+
+---
+
+#### Geometric Prediction
+
+If \( \chi_{\text{geom}} \) depends on chirality:
+
+\[
+n_{\text{eff}} = n + \frac{\chi_{\text{geom}}}{2n}
+\]
+
+---
+
+#### Expected Observation
+
+- Slight angular deviation between polarization states
+- Enhanced effect in chiral or structured materials
+- No effect in standard isotropic media (control case)
+
+---
+
+### 8.3 Closed-Loop Phase Accumulation
+
+#### Setup
+
+- A beam is guided through a closed-loop optical path:
+  - fiber loop
+  - ring resonator
+- Compare phase after one loop vs multiple loops
+
+---
+
+#### Prediction
+
+\[
+\phi_{\text{geom}} \propto N \cdot \lambda G
+\]
+
+where \(N\) is the number of loops.
+
+---
+
+#### Expected Observation
+
+- Accumulating phase offset beyond standard propagation
+- Possible resonance shifts in ring resonators
+
+---
+
+## 8. Experimental Proposals
+
+To evaluate the presence of a geometric chirality correction term \chi_{\text{geom}}, we propose a set of controlled optical experiments designed to isolate phase deviations beyond standard electromagnetic predictions.
+
+---
+
+### 8.1 Interference Fringe Shift Experiment
+
+#### Setup
+
+- A coherent laser source is split into two beams using a beam splitter.
+- Beam A travels through a standard optical path (air or uniform medium).
+- Beam B travels through a structured region designed to induce geometric chirality effects, such as:
+  - a chiral metamaterial
+  - a toroidal waveguide
+  - a helical optical fiber segment
+
+The beams are recombined to produce an interference pattern on a detection screen.
+
+---
+
+#### Standard Prediction
+
+Classical optics predicts fringe positions determined by path length difference:
+
+\[
+\Delta \phi = \frac{2\pi}{\lambda} \Delta L
+\]
+
+---
+
+#### Geometric Correction Prediction
+
+With geometric chirality:
+
+\[
+\Delta \phi = \frac{2\pi}{\lambda} \Delta L + \Delta \phi_{\text{geom}}
+\]
+
+where:
+
+\[
+\Delta \phi_{\text{geom}} = \int (\chi_{\text{geom},B} - \chi_{\text{geom},A}) \, ds
+\]
+
+---
+
+#### Expected Observation
+
+- A measurable shift in interference fringes beyond standard path-length predictions
+- Possible asymmetry in fringe spacing
+- Dependence on orientation or geometry of the structured region
+
+---
+
+### 8.2 Polarization-Dependent Refraction
+
+#### Setup
+
+- A monochromatic beam is passed through a prism or metamaterial.
+- The beam is prepared in different polarization states:
+  - linear
+  - circular (left/right-handed)
+
+---
+
+#### Standard Prediction
+
+All polarization states refract identically in isotropic media:
+
+\[
+n = n(\lambda)
+\]
+
+---
+
+#### Geometric Prediction
+
+If \chi_{\text{geom}} depends on chirality:
+
+\[
+n_{\text{eff}} = n + \frac{\chi_{\text{geom}}}{2n}
+\]
+
+---
+
+#### Expected Observation
+
+- Slight angular deviation between polarization states
+
+These experiments provide a direct test of whether geometric chirality contributes to wave propagation. Positive results would indicate that phase evolution depends not only on path length and wavelength, but also on underlying geometric constraints.
+
+---
