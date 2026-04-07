@@ -371,3 +371,118 @@ n_{\text{eff}} = n + \frac{\chi_{\text{geom}}}{2n}
 These experiments provide a direct test of whether geometric chirality contributes to wave propagation. Positive results would indicate that phase evolution depends not only on path length and wavelength, but also on underlying geometric constraints.
 
 ---
+
+---
+
+## 9. Related Experimental Hints
+
+While the geometric chirality correction \( \chi_{\text{geom}} \) proposed here is not part of standard electromagnetic theory, several established experimental results in optics and quantum systems indicate that **phase geometry, topology, and polarization structure** can influence wave propagation in ways not captured by simple refractive index models.
+
+These results do not validate the present framework directly, but they provide **supporting context** suggesting that geometric contributions to phase evolution are physically meaningful.
+
+---
+
+### 9.1 Geometric Phase and Berry Phase in Optics
+
+Geometric phase (Berry phase) is a well-established phenomenon in which wavefunctions acquire an additional phase depending on the path taken through parameter space rather than physical distance alone.
+
+Observed effects include:
+
+- polarization-dependent phase accumulation  
+- phase shifts in cyclic optical systems  
+- interference pattern modification due to geometric phase  
+
+These effects demonstrate that:
+
+> Phase evolution can depend on geometry, not just wavelength and path length.
+
+This aligns with the role of \( \chi_{\text{geom}} \) as a geometry-dependent phase correction.
+
+---
+
+### 9.2 Topological Photonics and Structured Light
+
+Recent developments in topological photonics and structured light have shown that optical systems can support:
+
+- high-dimensional mode structures  
+- topologically protected propagation modes  
+- nontrivial phase winding and singularities  
+
+In particular:
+
+- optical vortices and orbital angular momentum (OAM) modes  
+- Möbius-strip and twisted optical cavities  
+- bound states in the continuum (BICs)  
+
+These systems exhibit behavior where:
+
+- propagation depends on **mode topology**, not just material properties  
+- phase structure determines allowed states  
+
+This supports the concept of **mode-based propagation constraints** central to the present model.
+
+---
+
+### 9.3 Spin-Dependent Beam Shifts (Photonic Spin Hall Effect)
+
+The photonic spin Hall effect demonstrates that:
+
+- light with different polarization states can follow slightly different trajectories  
+- transverse shifts occur due to spin–orbit interaction  
+
+Key observations include:
+
+- polarization-dependent beam displacement  
+- splitting of linear polarization into opposite spin components  
+
+This provides direct experimental evidence that:
+
+> Propagation can depend on internal degrees of freedom (chirality/polarization), not just wavelength.
+
+---
+
+### 9.4 Phase-Gradient Metamaterials
+
+Metamaterials and metasurfaces engineered with spatial phase gradients have demonstrated:
+
+- anomalous refraction and reflection  
+- beam steering independent of bulk refractive index  
+- phase-controlled wavefront shaping  
+
+These systems show that:
+
+\[
+\text{wave propagation} \neq \text{purely material-dependent}
+\]
+
+but can instead be governed by **engineered phase structure**.
+
+---
+
+### 9.5 Interference Sensitivity to Phase Structure
+
+High-precision interferometry experiments have demonstrated:
+
+- sensitivity to sub-wavelength phase differences  
+- fringe shifts induced by small perturbations  
+- dependence on polarization and medium structure  
+
+These results confirm that:
+
+> Even small additional phase contributions can produce measurable interference effects.
+
+This supports the experimental feasibility of detecting a term like \( \chi_{\text{geom}} \).
+
+---
+
+### 9.6 Summary
+
+Across multiple domains—geometric phase optics, topological photonics, polarization-dependent propagation, and metamaterials—there is strong evidence that:
+
+- phase evolution can depend on geometry  
+- propagation can depend on internal mode structure  
+- small phase corrections can produce observable effects  
+
+The geometric chirality correction proposed in this work provides a unified framework for interpreting such phenomena as arising from a common underlying geometric contribution to wave propagation.
+
+---
