@@ -1,0 +1,3 @@
+### Toy Model Angle Sweep
+
+A preliminary angle sweep of the T1 optical model shows that the geometric correction grows smoothly with angle and produces measurable effects in phase, refractive index, and angular deviation. The most practically relevant regime appears near 45°–60°, where the correction is small but structured. Chirality-mode splitting between C1 and C2 remains modest but nonzero, reaching order 10–15% relative separation in the geometric correction term under enhanced coupling. This supports the interpretation of ordinary media as weak-T1 systems and engineered materials as the natural test bed for stronger geometric effects.
