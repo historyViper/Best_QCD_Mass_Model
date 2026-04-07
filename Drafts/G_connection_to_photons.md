@@ -13,3 +13,156 @@ where \(M_{\text{core}}\) is the constituent-spin backbone, \(\lambda\) is a top
 \]
 
 In bound states, this quantity modifies the mass eigenvalue. In electromagnetic propagation, it modifies the effective wave operator and therefore the refractive response. Thus the GBP geo-factor is not a separate phenomenological object, but the discrete spectral realization of a more general geometric chirality correction.
+
+---
+
+## 7. Consistency with Standard Electromagnetism
+
+A necessary requirement of any extension to electromagnetic theory is that it must recover standard results in the appropriate limits. We show that the geometric chirality correction introduced here satisfies this condition.
+
+---
+
+### 7.1 Recovery of the Classical Wave Equation
+
+The modified wave equation is:
+
+\[
+\nabla^2 \mathbf{E} + \chi_{\text{geom}} \mathbf{E}
+=
+\mu \epsilon \frac{\partial^2 \mathbf{E}}{\partial t^2}
+\]
+
+In the limit:
+
+\[
+\chi_{\text{geom}} \rightarrow 0
+\]
+
+this reduces to the standard electromagnetic wave equation:
+
+\[
+\nabla^2 \mathbf{E}
+=
+\mu \epsilon \frac{\partial^2 \mathbf{E}}{\partial t^2}
+\]
+
+Thus, classical Maxwellian propagation is recovered in the absence of geometric chirality contributions.
+
+---
+
+### 7.2 Plane Wave Solutions
+
+Assuming a plane wave ansatz:
+
+\[
+\mathbf{E} = \mathbf{E}_0 e^{i(kx - \omega t + \phi_{\text{geom}})}
+\]
+
+the geometric correction appears as an additional phase term:
+
+\[
+\phi_{\text{geom}} = \int \chi_{\text{geom}} \, ds
+\]
+
+When \(\chi_{\text{geom}} = 0\), the standard plane wave solution is recovered:
+
+\[
+\mathbf{E} = \mathbf{E}_0 e^{i(kx - \omega t)}
+\]
+
+Thus, the proposed framework preserves the canonical wave solutions.
+
+---
+
+### 7.3 Interference Behavior
+
+In standard optics, the intensity of two interfering fields is:
+
+\[
+I \propto |\mathbf{E}_1 + \mathbf{E}_2|^2
+\]
+
+With the geometric correction, each field acquires an additional phase:
+
+\[
+\mathbf{E}_i \rightarrow \mathbf{E}_i e^{i\phi_{\text{geom},i}}
+\]
+
+leading to:
+
+\[
+I \propto \left|
+\mathbf{E}_1 e^{i\phi_1}
++
+\mathbf{E}_2 e^{i\phi_2}
+\right|^2
+\]
+
+When:
+
+\[
+\phi_{\text{geom},1} = \phi_{\text{geom},2}
+\]
+
+the standard interference pattern is recovered exactly.
+
+When:
+
+\[
+\phi_{\text{geom},1} \neq \phi_{\text{geom},2}
+\]
+
+a measurable shift in interference fringes is predicted. This represents a deviation from standard theory only when geometric chirality differs between propagation paths.
+
+---
+
+### 7.4 Small-Correction Limit
+
+For weak geometric effects:
+
+\[
+\chi_{\text{geom}} \ll n^2
+\]
+
+the effective refractive index becomes:
+
+\[
+n_{\text{eff}} \approx n + \frac{\chi_{\text{geom}}}{2n}
+\]
+
+This yields a perturbative correction consistent with standard dispersion theory, ensuring that existing experimental results are not violated.
+
+---
+
+### 7.5 Interpretation within Hilbert Space
+
+The electric field can be treated as a complex amplitude in a Hilbert space representation:
+
+\[
+\mathbf{E} \sim \psi
+\]
+
+In this context, the geometric chirality term modifies the phase evolution:
+
+\[
+\psi \rightarrow \psi \, e^{i\phi_{\text{geom}}}
+\]
+
+This is equivalent to introducing a **geometric phase correction**, analogous to known phase phenomena such as Berry phase and topological phase shifts.
+
+Thus, the proposed framework is not a replacement for quantum or electromagnetic theory, but an extension that modifies phase evolution through geometric constraints.
+
+---
+
+### 7.6 Summary
+
+The geometric chirality correction:
+
+- reduces to standard electromagnetism when \(\chi_{\text{geom}} \rightarrow 0\)  
+- preserves plane wave solutions  
+- reproduces classical interference behavior  
+- introduces only small perturbative corrections in weak-field regimes  
+
+This ensures full consistency with established electromagnetic theory while allowing for new, testable deviations under structured geometric conditions.
+
+---
