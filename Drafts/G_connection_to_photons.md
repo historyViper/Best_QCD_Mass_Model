@@ -486,3 +486,152 @@ Across multiple domains—geometric phase optics, topological photonics, polariz
 The geometric chirality correction proposed in this work provides a unified framework for interpreting such phenomena as arising from a common underlying geometric contribution to wave propagation.
 
 ---
+---
+
+## 10. Order-of-Magnitude Estimates
+
+To assess the experimental feasibility of detecting the geometric chirality correction \( \chi_{\text{geom}} \), we estimate its expected magnitude and resulting observable effects.
+
+---
+
+### 10.1 Scaling Assumption
+
+From the proposed framework:
+
+\[
+\chi_{\text{geom}} = \chi_0 \lambda G
+\]
+
+where:
+
+- \(G\) is a dimensionless geometric coherence factor (\(0 \le G \le 1\))  
+- \(\lambda\) is a topology-dependent scaling term  
+- \(\chi_0\) sets the physical scale of the correction  
+
+We assume:
+
+\[
+\lambda G \sim 10^{-6} \text{ to } 10^{-3}
+\]
+
+depending on geometry strength:
+
+| Regime | Description | Estimated \( \lambda G \) |
+|--------|------------|---------------------------|
+| Weak (air, simple optics) | negligible structure | \(10^{-6}\) |
+| Moderate (structured materials) | mild chirality | \(10^{-5} - 10^{-4}\) |
+| Strong (metamaterials, toroidal systems) | engineered geometry | \(10^{-3}\) |
+
+---
+
+### 10.2 Refractive Index Shift
+
+Using:
+
+\[
+n_{\text{eff}} \approx n + \frac{\chi_{\text{geom}}}{2n}
+\]
+
+For \(n \approx 1.5\):
+
+- Weak regime:
+  \[
+  \Delta n \sim 10^{-6}
+  \]
+
+- Strong regime:
+  \[
+  \Delta n \sim 10^{-4}
+  \]
+
+---
+
+### 10.3 Angular Deviation
+
+Using Snell’s law perturbation:
+
+\[
+\Delta \theta \approx \frac{\Delta n}{n} \tan(\theta)
+\]
+
+For \(\theta \sim 45^\circ\):
+
+- Weak regime:
+  \[
+  \Delta \theta \sim 10^{-6} \text{ rad} \ (\approx 0.2 \text{ arcsec})
+  \]
+
+- Strong regime:
+  \[
+  \Delta \theta \sim 10^{-4} \text{ rad} \ (\approx 0.006^\circ)
+  \]
+
+These deviations are within the range of precision optical measurement techniques.
+
+---
+
+### 10.4 Interference Fringe Shift
+
+The geometric phase contribution is:
+
+\[
+\phi_{\text{geom}} \sim \int \chi_{\text{geom}} \, ds
+\]
+
+For path length \(L \sim 1 \, \text{m}\):
+
+- Weak regime:
+  \[
+  \phi_{\text{geom}} \sim 10^{-3} \text{ rad}
+  \]
+
+- Strong regime:
+  \[
+  \phi_{\text{geom}} \sim 0.1 \text{ rad}
+  \]
+
+Fringe shift:
+
+\[
+\Delta x \approx \frac{\lambda}{2\pi} \phi_{\text{geom}}
+\]
+
+For visible light (\(\lambda \sim 500 \, \text{nm}\)):
+
+- Weak regime:
+  \[
+  \Delta x \sim 0.1 \, \text{nm}
+  \]
+
+- Strong regime:
+  \[
+  \Delta x \sim 10 \, \text{nm}
+  \]
+
+---
+
+### 10.5 Detectability
+
+Modern optical systems can detect:
+
+- phase shifts \(< 10^{-4}\) rad  
+- spatial shifts \(< 1 \, \text{nm}\) (interferometry)  
+- angular deviations \(< 10^{-6}\) rad  
+
+Thus:
+
+> The predicted effects are within current experimental capability, particularly in structured or engineered optical systems.
+
+---
+
+### 10.6 Summary
+
+The geometric chirality correction is expected to produce:
+
+- refractive index shifts on the order of \(10^{-6} - 10^{-4}\)  
+- angular deviations up to \(10^{-4}\) rad  
+- interference fringe shifts up to nanometer scale  
+
+These effects are small but measurable with modern interferometric and precision optical techniques, especially in systems designed to enhance geometric phase contributions.
+
+---
