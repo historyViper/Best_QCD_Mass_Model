@@ -1,6 +1,6 @@
 # Tensor Time: A 1D String Theory of Spacetime, Mass, and Entanglement
 
-**Jason Richardson**  
+**Anonymous**  
 *Independent Researcher | github.com/historyViper/mod30-spinor*  
 *April 2026*  
 *AI Collaboration: Claude (Anthropic), ChatGPT/Sage (OpenAI), DeepSeek*
@@ -8,7 +8,7 @@
 ---
 
 ## Preface: On Method
-
+(new v7.7 MAPE is 0.2291% with 0 free parameters)
 There is a recurring pattern in the history of physics that formal training
 tends to obscure:
 
