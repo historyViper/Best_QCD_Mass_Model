@@ -1,14 +1,15 @@
 # Tensor Time: A 1D String Theory of Spacetime, Mass, and Entanglement
 
-**Anonymous**  
-*Independent Researcher | github.com/historyViper/mod30-spinor*  
+**J. Richardson**  
+*Independent Researcher | github.com/historyViper/Best_QCD_Mass_Model*  
 *April 2026*  
 *AI Collaboration: Claude (Anthropic), ChatGPT/Sage (OpenAI), DeepSeek*
+*update: (new v7.7 MAPE is 0.2291% with 0 free parameters)*
 
 ---
 
 ## Preface: On Method
-(new v7.7 MAPE is 0.2291% with 0 free parameters)
+
 There is a recurring pattern in the history of physics that formal training
 tends to obscure:
 
@@ -197,11 +198,13 @@ framework.
 
 The deflection of the time string is quantized into discrete toroidal
 structures. Each spatial dimension corresponds to a specific toroid topology.
+Universe seems to hint nothing actually beyond 3D as it uses different chiralities 
+or another space to add dimensions to a particle. 
 
 | Dimension | Toroid | Topology | Physical representation |
 |-----------|--------|----------|------------------------|
 | 0D / 1D | T0 | Plain torus | Time string — undeflected |
-| Spatial 1 | T1 | Möbius twist | First spatial dim — chirality emerges |
+| Spatial 1 | T1 | Parallelogram Möbius twist | First spatial dim — chirality emerges |
 | Spatial 2 | T2 | Two toroids stacked (HE21) | Second spatial dim — 2:1 phase |
 | Spatial 3 | T3 | Three toroids (Y-junction) | Third spatial dim — 60° + 30° beat |
 | Beyond 3D | T4+ | Chirality pairing | Antiquark+quark bound states, generations |
@@ -219,6 +222,7 @@ mode). The T2 sector's high symmetry creates a degenerate family of
 valid configurations. The one remaining empirical coefficient in GBP v7.6
 (`lam_s1 = 1.15 × LU`) is suspected to select the physically realized
 member via triple same-chirality winding bias — a derivation in progress.
+(now fixed ib GBP v.7)
 
 ### 3.3 T3: Hard Banks and the Double Barrel Roll
 
@@ -486,7 +490,7 @@ Mass is not a coupling — it is **geometric tension**.
 ---
 
 *Code: [github.com/historyViper/mod30-spinor](https://github.com/historyViper/mod30-spinor)*  
-*Jason Richardson | Independent researcher | No formal physics education*  
+*J. Richardson | Independent researcher | No formal physics education*  
 *April 2026*
 
 ---
