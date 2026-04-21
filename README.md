@@ -28,7 +28,7 @@ No string theory. No supersymmetry. No extra dimensions beyond the toroid geomet
 | wide | 0.744% | 30 | Full charm/bottom sector |
 | orbital | **0.068%** | 2 | L=1 excitations — essentially exact |
 | pentaquark | 3.81% | 4 | P_c hidden charm states |
-| **ALL 53** | **0.781%** | **53** | |
+| **ALL 53** | **0.5312%** | **53** | |
 
 **Original 44 baryons: 0.260% MAPE** — competitive with lattice QCD, zero free parameters.
 
