@@ -1,0 +1,118 @@
+=== stdout ===
+
+======================================================================
+GBP v7.7 — ZERO FREE PARAMETERS
+S0 sheet derived from GOE geometry: lam_s0 = LU × 30/26
+======================================================================
+  LAMBDA_UNIV = 0.050927  phi=1.618034
+  ALPHA_IR    = 0.848809  LAMBDA_QCD=217.0 MeV
+  GEO_B       = 0.043227  S2[1]=0.552264  S2[3]=0.165435
+
+  FREE PARAMETER STATUS — ALL DERIVED:
+    kappa_0  = m_u × m_d × ΔM(Σ0-Λ0) = 8736664 MeV³  [DERIVED v7.6]
+    k=2      = LU/phi (charm), LU (bottom)               [DERIVED v7.6]
+    lam_s0   = LU × cos²(24°)/cos²(30°) = 0.056669              [DERIVED v7.7]
+             (GOE plain torus projects as cos²(30°), GUE Möbius as cos²(24°))
+             (ratio = exact GOE/GUE boundary projection correction)
+
+  SHEET HIERARCHY:
+    S0/T0  GOE plain torus    lam=0.056669  J=3/2 light decuplet
+    S1/T1  GUE Möbius para    lam=0.050927  calibration base
+    S2/T2  GUE² double HE21   lam=0.064780  heavy baryons
+    S3/T3  GUE³ Y-junction    lam=0.082402  always GUE
+
+  MAPE clean  = 0.2434%   RMSE=7.63 MeV  (13)
+  MAPE wide   = 0.3326%   RMSE=18.97 MeV  (30)
+  MAPE degen  = 0.1356%   RMSE=4.13 MeV  (4)
+  MAPE orbital = 0.0678%   RMSE=2.81 MeV  (2)
+  MAPE pentaquark = 0.1960%   RMSE=11.11 MeV  (5)
+
+  MAPE J=1/2 = 0.2602%  RMSE=12.48 MeV  (34)
+  MAPE J=3/2 = 0.2978%  RMSE=18.66 MeV  (20)
+  MAPE ALL   = 0.2741%  RMSE=15.07 MeV  (54)
+
+  VERSION HISTORY:
+    v5:   0.6365%  2 free params
+    v6:   0.4078%  2 free params
+    v7:   0.3029%  2 free params
+    v7.5: 0.2362%  2 free params
+    v7.6: 0.2362%  1 free param
+    v8: 0.2741%  RMSE=15.07 MeV  0 free params  (54 baryons+pentaquarks)
+    v8.7: EW sector added — v=246 GeV fully derived
+    v8.8: MAPE=0.2741%  RMSE=15.07 MeV  charm helicity flip + Sigma_b0 Malus-IR
+
+  ── ELECTROWEAK SECTOR (v8.7) ──────────────────────────────────
+  Q₈ = 7/2 (exact Noether charge)           = 3.5000
+  φ³ (T3 cross-pairing, 204°=180°+24°)      = 4.236068
+  C  = −ln(1−GEO_B×α_IR) [Malus-IR]        = 0.037382
+  Λ_MS  (PDG 5-flavor)                      = 217.0 MeV
+  Λ_GBP = Λ_MS × exp(C)                    = 225.27 MeV
+  v = 30×(Q₈/8)×φ³×Λ_GBP/LU                = 245928.5 MeV = 245.928 GeV
+  SM v                                       = 246.000 GeV
+  Error                                      = 0.0291%
+  θ_W = arctan(1/φ) − bias/2                = 28.4714°  (obs 28.19°)
+  mW_obs                                     = 80369.0 MeV
+  mZ = mW_obs/cos(θ_W)                      = 91426.5 MeV  (obs 91188 MeV, err 0.262%)
+
+  J=1/2:
+  Name              S/T           branch      obs     pred     err%        gf
+  ------------------------------------------------------------------------
+  proton          S1/T1            light    938.3    934.4   -0.410%  0.552264
+  neutron         S1/T1            light    939.6    937.1   -0.266%  0.552264
+  Lambda0         S1/T1            light   1115.7   1121.3   +0.504%  0.345492
+  Sigma+          S1/T1            light   1189.4   1182.5   -0.580%  0.165435
+  Sigma0          S1/T1            light   1192.6   1187.2   -0.453%  0.165435
+  Sigma-          S1/T1            light   1197.4   1192.2   -0.440%  0.165435
+  Xi0             S1/T1            light   1314.9   1313.8   -0.083%  0.043227
+  Xi-             S1/T1            light   1321.7   1320.8   -0.066%  0.043227
+  Omega-          S2/T1            omega   1672.5   1669.9   -0.151%  0.043227
+  Lambda_c+       S2/T1         heavy_T1   2286.5   2286.7   +0.011%  0.552264
+  Sigma_c++       S2/T1         heavy_T1   2454.0   2459.1   +0.209%  0.989074
+  Sigma_c+        S1/T2         heavy_T2   2452.9   2455.4   +0.102%  0.165435
+  Sigma_c0        S1/T2         heavy_T2   2453.8   2459.8   +0.245%  0.697867
+  Xi_c+           S2/T1         heavy_T1   2467.9   2460.9   -0.284%  0.447736
+  Xi_c0           S2/T1         heavy_T1   2470.8   2463.6   -0.292%  0.447736
+  Omega_c         S1/T2            omega   2695.2   2715.3   +0.747%  0.447736
+  Xi_cc++         S2/T1         heavy_T1   3621.4   3619.3   -0.058%  0.447736
+  Xi_cc+          S2/T1         heavy_T1   3620.0   3618.9   -0.030%  0.447736
+  Lambda_b        S1/T2         heavy_T2   5619.6   5630.4   +0.192%  0.552264
+  Sigma_b+        S2/T1         heavy_T1   5810.6   5817.5   +0.120%  0.165435
+  Sigma_b-        S1/T2         heavy_T2   5815.6   5819.2   +0.061%  0.834565
+  Xi_b0           S1/T2         heavy_T2   5791.9   5792.7   +0.013%  0.552264
+  Xi_b-           S1/T2         heavy_T2   5797.0   5805.5   +0.147%  0.447736
+  Omega_b         S1/T1            omega   6046.1   6045.5   -0.010%  0.714527
+  Xi_c_prime+     S2/T1         heavy_T1   2578.2   2593.8   +0.607%  0.552264
+  Xi_c_prime0     S2/T1         heavy_T1   2578.7   2596.6   +0.692%  0.552264
+  Sigma_b0        S2/T1         heavy_T1   5813.1   5868.8   +0.958%  0.528391
+  Lambda_c(2595)  S2/T1          orbital   2592.0   2590.0   -0.078%  0.552264
+  Lambda_b(5912)  S1/T2          orbital   5912.2   5915.6   +0.058%  0.552264
+  P_c(4312)       S1/T1       pentaquark   4311.9   4312.4   +0.013%  0.552264
+  P_c(4380)       S1/T1       pentaquark   4380.0   4389.4   +0.214%  0.552264
+  P_c(4440)       S1/T1       pentaquark   4440.3   4458.7   +0.414%  0.552264
+  P_c(4457)       S1/T1       pentaquark   4457.3   4458.7   +0.031%  0.552264
+  P_cs(4459)      S1/T1       pentaquark   4458.8   4472.5   +0.308%  0.447736
+
+  J=3/2:
+  Name              S/T           branch      obs     pred     err%        gf
+  ------------------------------------------------------------------------
+  Delta++         S1/T2       S1_J32L_T2   1232.0   1230.9   -0.086%  0.552264
+  Delta+          S0/T0       S0_J32L_T0   1232.0   1224.2   -0.632%  0.552264
+  Delta0          S0/T0       S0_J32L_T0   1232.0   1226.9   -0.416%  0.552264
+  Delta-          S0/T0       S0_J32L_T0   1232.0   1229.5   -0.201%  0.552264
+  Sigma*+         S0/T0       S0_J32L_T0   1382.8   1380.6   -0.156%  0.165435
+  Sigma*0         S0/T0       S0_J32L_T0   1383.7   1383.3   -0.029%  0.345492
+  Sigma*-         S0/T0       S0_J32L_T0   1387.2   1386.0   -0.090%  0.165435
+  Xi*0            S1/T3       S1_J32L_T3   1531.8   1531.4   -0.029%  0.043227
+  Xi*-            S1/T3       S1_J32L_T3   1535.0   1534.0   -0.065%  0.043227
+  Sigma_c*++      S1/T2       S1_J32H_T2   2517.5   2521.0   +0.138%  0.447736
+  Sigma_c*+       S1/T2       S1_J32H_T2   2517.5   2523.7   +0.245%  0.447736
+  Sigma_c*0       S1/T2       S1_J32H_T2   2518.4   2526.3   +0.315%  0.447736
+  Xi_c*+          S1/T3           photon   2645.9   2653.6   +0.290%  0.447736
+  Xi_c*0          S1/T3           photon   2646.2   2656.2   +0.379%  0.447736
+  Omega_c*        S1/T1       omega32h_c   2765.9   2766.8   +0.032%  0.989074
+  Sigma_b*+       S1/T2       S1_J32H_T2   5832.1   5854.8   +0.389%  0.552264
+  Sigma_b*-       S1/T2       S1_J32H_T2   5835.1   5860.2   +0.429%  0.165435
+  Xi_b*0          S1/T3       S1_J32H_T3   5945.2   5996.3   +0.859%  0.552264
+  Xi_b*-          S1/T3           photon   5953.8   6002.3   +0.815%  0.447736
+  Omega_b*        S1/T1       omega32h_b   6082.3   6104.3   +0.362%  0.447736
+
