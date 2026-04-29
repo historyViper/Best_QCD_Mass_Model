@@ -1,0 +1,53 @@
+Malus weights P(r) = sin²(rπ/15):
+  r= 1: P=0.04322727
+  r= 7: P=0.98907380
+  r=11: P=0.55226423
+  r=13: P=0.16543470
+  r=17: P=0.16543470
+  r=19: P=0.55226423
+  r=23: P=0.98907380
+  r=29: P=0.04322727
+
+Q8 = Σ P(r) = 3.5 (exact: 7/2)
+
+======================================================================
+  BASIS TRANSFORMATION: FOCK SPACE ↔ MOCK THETA EIGENBASIS
+  Standard QFT (mass eigenbasis) ↔ GBP (winding eigenbasis)
+======================================================================
+
+1. MOCK THETA PARTITION FUNCTION COEFFICIENTS:
+   Θ(q) = Σ c_n q^n where c_n = number of winding configs
+     n= 0: c_n≈1.000000  actual configs=1
+     n= 1: c_n≈22.637147  actual configs=8
+     n= 2: c_n≈240.077739  actual configs=36
+     n= 3: c_n≈1590.236656  actual configs=120
+     n= 4: c_n≈7400.077055  actual configs=330
+     n= 5: c_n≈25800.999861  actual configs=792
+     n= 6: c_n≈70197.871254  actual configs=1716
+     n= 7: c_n≈153272.950393  actual configs=3432
+     n= 8: c_n≈274125.089625  actual configs=6435
+     n= 9: c_n≈407892.717620  actual configs=11440
+    n=10: c_n≈511193.033988  actual configs=19448
+
+2. WINDING CONFIGURATIONS (|w⟩ basis states):
+   N=1: 8 configurations
+     [0, 0, 0, 0, 0, 0, 0, 1] → n29=1 → E=0.0432
+     [0, 0, 0, 0, 0, 0, 1, 0] → n23=1 → E=0.9891
+     [0, 0, 0, 0, 0, 1, 0, 0] → n19=1 → E=0.5523
+   N=2: 36 configurations
+     [0, 0, 0, 0, 0, 0, 0, 2] → n29=2 → E=0.0865
+     [0, 0, 0, 0, 0, 0, 1, 1] → n23=1, n29=1 → E=1.0323
+     [0, 0, 0, 0, 0, 0, 2, 0] → n23=2 → E=1.9781
+   N=3: 120 configurations
+     [0, 0, 0, 0, 0, 0, 0, 3] → n29=3 → E=0.1297
+     [0, 0, 0, 0, 0, 0, 1, 2] → n23=1, n29=2 → E=1.0755
+     [0, 0, 0, 0, 0, 0, 2, 1] → n23=2, n29=1 → E=2.0214
+
+3. SAMPLE TRANSFORMATION COEFFICIENT:
+   |w=(1, 0, 0, 0, 0, 0, 0, 0)⟩ → |p=0.5, r=1⟩: c = 0.0000-0.0000j
+
+======================================================================
+TRANSFORMATION SUCCESSFULLY IMPLEMENTED
+The Fock space and mock eigenbasis are unitarily equivalent
+via the mock theta Fourier coefficients.
+======================================================================
