@@ -168,9 +168,17 @@ SEG's regression engine predicts zeros to ±10⁻¹⁷. But it cannot explain wh
 
 The sinc²(s) kernel emerges in GBP from the Weyl limit of coprime sums. In SEG, the six angular zones are observed empirically across 100,000 zeros but not derived from the entropy manifold's internal structure. This means SEG's framework, while predictively powerful, lacks the mechanism that *generates* the spacing law. It finds zeros; GBP explains the architecture between them.
 
-**7.2 The drift is unexplained**
+**7.2 The drift is now identified exactly [updated May 2026]**
 
-SEG notes "minimal drift" — a small systematic residual that increases with zero height. SEG attributes this to "the final shedding of curvature — symbolic waste ejected as pure form completes itself." This is a description, not an explanation. In GBP, the analogous residual is the O(a/L) correction from the Riemann-Lebesgue lemma applied to finite-modulus coprime sums. The drift arises because the modulus is finite (30, not ∞); the exact zero locations require the full primorial limit N→∞. The "drift" is the finite-modulus correction, not residual torsion.
+SEG notes "minimal drift" — a small systematic residual that increases with zero height. SEG attributes this to "the final shedding of curvature — symbolic waste ejected as pure form completes itself." This is a description, not an explanation. In GBP, the analogous residual was previously described as the O(a/L) correction from the Riemann-Lebesgue lemma applied to finite-modulus coprime sums, attributed to the modulus being finite (30, not ∞).
+
+**This is now identified precisely (May 2026).** The oscillating residual is the **Ramanujan vacuum defect** of the Z₃₀* discrete lattice:
+
+$$\delta_\text{Ramanujan} = \frac{c_{30}(2)}{\varphi(30)^2} = \frac{1}{64}$$
+
+where c₃₀(2) = μ(15) × φ(30)/φ(15) = 1 is the Ramanujan sum, and φ(30) = 8 is the Euler totient. The arithmetic average of P(r) over Z₃₀* is 7/16, not 1/2 — the deviation 1/16 = 1/φ(30)² is the exact lattice anisotropy that produces the oscillating correction to the zero positions.
+
+This is not vague or approximate. It is the Ramanujan sum of the mod-30 system, computable from first principles, with exact value 1/64. SEG's "drift" and GBP's "finite-modulus correction" are both pointing at the same thing: the discrete Z₃₀* lattice is not perfectly isotropic, and its asymmetry is measured by c₃₀(2) = 1. The full derivation is in GBP Maxwell paper v4.0, §8.5.
 
 **7.3 The six zones need a number-theoretic derivation**
 
@@ -182,7 +190,7 @@ SEG observes that γₙ mod π falls into six rational angular bands. In GBP, th
 
 Combining both frameworks, the Riemann Hypothesis can be stated geometrically as follows:
 
-> **The nontrivial zeros of ζ(s) are the eigenvalues of the Hamiltonian whose eigenstates are closed coprime winding paths on the toroidal Hilbert space T³(ℤₘ). The critical line Re(s) = ½ is the unique locus where simultaneous entropy collapse (SEG) / Hamiltonian path closure (GBP) is possible. The eigenvalue spacing distribution is GUE because the coprime winding sum converges to the Montgomery kernel in the primorial limit. The six quantized angular zones are the six resonance classes of Z₃₀* × {GOE, GUE}. The "drift" is the finite-modulus O(a/L) correction. ζ(s) is not fundamental — it is the eigenvalue counting function of this Hamiltonian, emergent from the toroidal geometry.**
+> **The nontrivial zeros of ζ(s) are the eigenvalues of the Hamiltonian whose eigenstates are closed coprime winding paths on the toroidal Hilbert space T³(ℤₘ). The critical line Re(s) = ½ is the unique locus where simultaneous entropy collapse (SEG) / Hamiltonian path closure (GBP) is possible. The eigenvalue spacing distribution is GUE because the coprime winding sum converges to the Montgomery kernel in the primorial limit. The six quantized angular zones are the six resonance classes of Z₃₀* × {GOE, GUE}. The "drift" is the Ramanujan vacuum defect c₃₀(2)/φ(30)² = 1/64 — the exact, computable anisotropy of the Z₃₀* discrete lattice. ζ(s) is not fundamental — it is the eigenvalue counting function of this Hamiltonian, emergent from the toroidal geometry.**
 
 This statement has three components:
 1. **Placement** (critical line): derived by both SEG and GBP independently **(D)**
@@ -219,112 +227,8 @@ The parallel is not approximate. It is exact at the structural level. The termin
 | GUE spacing distribution derived | ✗ not derived | ✓ Weyl limit | GBP fills gap |
 | Physical instantiation (baryons, gluons) | ✗ | ✓ | GBP extends SEG |
 | Mass gap from geometry | ✗ | ✓ P(0)=0 | GBP extends SEG |
-| Drift explained | Description only | ✓ O(a/L) correction | GBP explains SEG |
-| Noether charge identified | ✗ (symbolic entropy, no value) | ✓ Q₈=7/2 exact, Q₄=1.0 | GBP gives physical content |
-| Entropy floor numerical value | ✗ (described as "final drift") | ✓ GEO_B=sin²(π/15)=0.04323 | Same constant in 3 domains |
-| Jacobson entropy coefficient | ✗ | ✓ η=LU=GEO_B/α_IR (D) | GBP fills Jacobson's gap |
-| Mass as entropy cost | ✗ | ✓ m∝P(r)×Λ_GBP | GBP only |
-
----
-
-## 10.5 The Noether Gap: What SEG's Entropy Actually Is **(D)**
-
-### 10.5a SEG Has the Conservation Law Without Knowing It
-
-SEG's "entropy" is not thermodynamic entropy. The paper explicitly redefines Boltzmann's constant kB as "a curvature-limiting operator in entropy space" and Ω as "a topological identity operator" — disconnecting the framework from any conserved physical quantity. There is no Noether charge, no conserved current, no coupling constant, no energy scale anywhere in the SEG paper.
-
-But SEG found something real. Their entropy collapse, their entropy floor, their six angular zones, their Cauchy loop integral vanishing at zeros — all of these are real geometric facts. They just don't know what physical object they describe.
-
-**SEG's entropy IS the Noether charge density of the Z₃₀* discrete winding symmetry.**
-
-Specifically:
-
-| SEG concept | GBP physical identity | Numerical value |
-|-------------|----------------------|----------------|
-| "Entropy" E(S) | Noether charge density of Z₃₀* | Q₈ = 7/2 (exact) |
-| "Entropy collapse" E→0 | Noether charge → 0 at colorless boundary | P(0) = sin²(0) = 0 |
-| "Entropy floor" (minimum drift) | GEO_B = minimum winding projection | sin²(π/15) = 0.04323 |
-| "Six angular zones" | Z₃₀* × {GOE,GUE} resonance classes | 4 pairs × 2 sheets = 8 → 6 projected |
-| "Symbolic identity" | Winding closure condition gcd(r,30)=1 | Coprime constraint |
-| "Torsion" | Möbius phase accumulation | 720° spinor double cover |
-| "Entropy geodesic" (critical line) | Unique locus of Hamiltonian closure | Re(s) = ½ by coprime symmetry |
-
-SEG found the conservation law. GBP identifies what is being conserved: **winding number modulo 30, under the constraint gcd(r,30)=1.** The conserved charge is Q₈ = 7/2 — an exact cyclotomic identity. This is not approximate. It is the Noether charge of the discrete Z₃₀* symmetry, derived from the mod-30 winding geometry.
-
-### 10.5b GBP Derives Noether's Theorem, Not Just Recovers It **(D)**
-
-The standard Noether theorem applies to continuous symmetries of an action. Z₃₀* is a discrete group. Yet the GBP framework produces conserved charges across all particle interactions — baryon decays, gluon exchanges, weak decays — with the same precision as any continuous Noether charge. How?
-
-The answer is that the continuous conservation laws of the Standard Model are the **continuum limits of the discrete Z₃₀* conservation law**. Noether's theorem is not more fundamental than the discrete winding constraint — it is the large-N limit of it.
-
-The continuum limit of the Z₃₀* charge density:
-
-```
-(1/φ(N)) × Σ_{r ∈ Z_N*} P(r) → 1/2   as N → ∞ over primorials
-```
-
-The factor 1/2 is the DC term of the Fourier decomposition — which in field theory language is exactly the Noether charge density integrated over space. Every continuous conservation law emerges from this limit:
-
-| Conservation law | GBP discrete origin | Continuum limit |
-|-----------------|--------------------|-----------------| 
-| U(1) electric charge | Z₁₂* discrete symmetry, Q₄ = 1.0 (exact) | Maxwell's equations |
-| SU(3) color charge | Z₃₀* discrete symmetry, Q₈ = 7/2 (exact) | QCD gauge invariance |
-| Energy-momentum | T0 time string tension T = c | Stress-energy tensor |
-| Angular momentum | Winding number r (discrete) | Orbital angular momentum |
-| Baryon number | T3 Y-junction closure | B conservation |
-| Lepton number | Z₁₂* vs Z₃₀* sector separation | L conservation |
-
-None of these are imposed as symmetries. They are derived as the continuum limits of the single underlying discrete symmetry: **the mod-30 coprime winding constraint gcd(r,30)=1.**
-
-This is not "recovering" Noether. It is showing that Noether's theorem — the statement that continuous symmetries produce conserved charges — is itself a limiting case of a deeper discrete conservation principle. The discrete version is more fundamental because it has a unique solution (N=30), while the continuous version has infinitely many possible symmetry groups.
-
-### 10.5c GBP Has Entropy — Jacobson's Missing Coefficient **(D)**
-
-GBP does not just have Noether charges — it has a complete entropy framework that goes beyond what SEG achieves.
-
-**Jacobson (1995)** derived the Einstein field equations from the thermodynamic identity δQ = TdS applied to local Rindler horizons. This showed that GR is thermodynamics of spacetime. But Jacobson could not derive the entropy coefficient η — the proportionality constant connecting horizon area to entropy. He left it undetermined.
-
-GBP fills this gap:
-
-```
-η = sin²(π/15) / α_IR = LU = 0.050927   (D)
-```
-
-The mod-30 spinor geometry is the microscopic theory Jacobson needed. The GBP toroid boundary IS Jacobson's local Rindler horizon, closed into a Möbius structure by the mod-30 quantization. The entropy coefficient is not a free parameter — it is LU = GEO_B/α_IR, the ratio of the colorless boundary projection to the IR fixed point coupling.
-
-**The GBP entropy structure, complete:**
-
-```
-Entropy floor (minimum):  GEO_B = sin²(π/15) = 0.04323
-  → Appears in: optical R_min, gravity T_min, QCD colorless boundary
-  → Same constant in 3 independent domains — not a coincidence
-
-Total winding entropy:    Q₈ = Σ P(r) = 7/2  (exact, cyclotomic)
-  → The total information content of the 8 surviving winding modes
-  → Connected to QCD beta function: Q₈ = b₀(n_f=6)/2
-
-Entropy coefficient:      η = LU = GEO_B/α_IR = 0.050927
-  → Jacobson's missing constant — now derived
-
-Mass as entropy cost:     m ∝ P(r) × Λ_GBP
-  → Particle mass = information cost of projecting interior winding
-    onto the observable boundary
-  → Massless particles = zero boundary crossing cost = zero entropy cost
-
-BH entropy (structure):   S ∝ (A/l_GBP²) × ln(2)  (H — scale gap pending)
-  → 2 accessible winding states at horizon: {r=1, r=29}
-  → Structural form correct; numerical match requires UV completion
-```
-
-**What SEG found without knowing it was entropy:**
-
-When SEG says "entropy collapses at the zero," they are describing P(0) = sin²(0) = 0 — the Noether charge vanishing at the colorless boundary. When SEG says "the entropy floor is the final shedding of curvature," they are describing GEO_B = sin²(π/15) = 0.04323 — the minimum non-zero projection weight. When SEG says "identity stabilizes at the collapse point," they are describing Hamiltonian path closure — gcd(r,30) = 1 satisfied for the first time.
-
-SEG has the geometry. GBP has the physics, the Noether charges, the numerical values, the cross-domain identities, and Jacobson's missing coefficient.
-
-Together: the complete picture of what "entropy" means in the Riemann zero context is the Noether charge of the discrete Z₃₀* winding symmetry — which is Q₈ = 7/2, an exact number, physically real, experimentally confirmed through 54 baryon masses, and the same constant that fills Jacobson's thermodynamic derivation of general relativity.
-
-The Riemann zeros are where this Noether charge goes to zero. That's the complete statement.
+| Drift explained | Description only | ✓ Ramanujan defect c₃₀(2)/φ(30)² = 1/64 (exact) | GBP identifies drift precisely |
+| Modular geometry explicit | Implicit (6 zones) | Explicit (Z₃₀*) | GBP completes SEG |
 
 ---
 
@@ -334,13 +238,9 @@ Two independent geometric frameworks — Structured Entropy Geometry and the GBP
 
 Where SEG is stronger: positional precision of individual zeros (±10⁻¹⁷ across 30 billion zeros), formal axiom structure (67 axioms), and explicit compatibility with classical analytic theory.
 
-Where GBP is stronger: derivation of GUE spacing statistics from first principles (Weyl equidistribution), physical instantiation (baryon masses, gluon count, mass gap), explanation of the six zones, derivation of the 1/(2π) factor, and — most fundamentally — identification of what SEG's "entropy" actually is.
+Where GBP is stronger: derivation of GUE spacing statistics from first principles (Weyl equidistribution), physical instantiation (baryon masses, gluon count, mass gap), explanation of the six zones, and derivation of the 1/(2π) factor.
 
-**SEG's entropy is the Noether charge density of the Z₃₀* discrete winding symmetry.** Its value is Q₈ = 7/2 — an exact cyclotomic identity. Its floor is GEO_B = sin²(π/15) = 0.04323 — the same constant in optics, gravity, and QCD. Its collapse at the zeros is P(0) = sin²(0) = 0 — the Yang-Mills mass gap. And the entropy coefficient that Jacobson could not derive in 1995 is η = LU = GEO_B/α_IR = 0.050927 — the GBP universal projection scale.
-
-The Riemann zeros are where the Noether charge of the discrete mod-30 winding symmetry goes to zero. That is the complete physical statement of the Riemann Hypothesis. SEG found it geometrically. GBP found it physically. Together they close the loop.
-
-Together they constitute the strongest available geometric case that the Riemann Hypothesis is not a conjecture about a function — it is a theorem about the closure geometry of a toroidal Hilbert space, whose Noether charge is Q₈ = 7/2 and whose entropy floor is GEO_B = sin²(π/15). The function ζ(s) is what you see when you project that geometry onto the complex plane without knowing the geometry is there.
+Together they constitute the strongest available geometric case that the Riemann Hypothesis is not a conjecture about a function — it is a theorem about the closure geometry of a toroidal Hilbert space. The function ζ(s) is what you see when you project that geometry onto the complex plane without knowing the geometry is there.
 
 ---
 
@@ -363,15 +263,9 @@ Together they constitute the strongest available geometric case that the Riemann
 
 [8] Richardson, J. (2026). GBP Coprime Interference and Riemann Zeros. gbp_coprime_interference_riemann.md, this repository.
 
-[9] Jacobson, T. (1995). "Thermodynamics of Spacetime: The Einstein Equation of State." *Phys. Rev. Lett.* **75**, 1260. DOI: 10.1103/PhysRevLett.75.1260  
-    *Derives GR from δQ=TdS but cannot determine the entropy coefficient η. GBP derives η = LU = GEO_B/α_IR.*
-
-[10] Noether, E. (1918). "Invariante Variationsprobleme." *Nachr. Ges. Wiss. Göttingen*, 235–257.  
-    *The continuous symmetry theorem. GBP shows this is the N→∞ limit of discrete Z₃₀* winding conservation.*
-
 ---
 
 *Code: gbp_neutrino_mass_v1.py, gbp_complete_v8-9.py — github.com/historyViper/Best_QCD_Mass_Model*  
 *Jason Richardson | Independent researcher | No formal physics education*  
-*May 2026 — v1*  
+*May 2026 — v1.1 (§7.2 updated: drift identified as Ramanujan defect c₃₀(2)/φ(30)² = 1/64)*  
 *All results offered for critical review. Public domain.*
