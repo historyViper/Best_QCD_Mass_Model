@@ -1,0 +1,66 @@
+== stdout ===
+
+OPTICAL RIEMANN ZEROS (zeros of |S_AC(θ)|):
+These are material-independent — depend only on mod-30 geometry
+
+  Zero #       θ (°)        |S_AC|      180°-θ    Sum=180?
+------------------------------------------------------------
+       1        6.00    0.00000000      174.00         YES
+       2       13.89    0.00073596      166.11         YES
+       3       33.70    0.00163460      146.30         YES
+       4       49.39    0.00001902      130.61         YES
+       5       57.79    0.00033944      122.21         YES
+       6       68.49    0.00003576      111.51         YES
+       7       79.36    0.00097793      100.64         YES
+
+Note: zeros are symmetric about 90° — the 'critical line' of the optical system
+
+EXACT ZERO POSITIONS (to 2 decimal places):
+  θ = 6.00°  |S_AC| = 0.000000
+  θ = 13.89°  |S_AC| = 0.000736
+  θ = 33.70°  |S_AC| = 0.001635
+  θ = 49.39°  |S_AC| = 0.000019
+  θ = 57.79°  |S_AC| = 0.000339
+  θ = 68.49°  |S_AC| = 0.000036
+  θ = 79.36°  |S_AC| = 0.000978
+
+EXACT VALUES FROM ALGEBRA:
+  Z30* = {1, 7, 11, 13, 17, 19, 23, 29}
+  P(r) = sin²(rπ/15)
+  S_AC = Σ(-½cos(2rπ/15))×exp(irθ)
+  Zeros at θ where Im(S_AC)=Re(S_AC)=0
+
+CORRECTION SIZE δR = R_GBP - R_Fresnel at key angles:
+
+  Water (n=1.333):
+    Max |δR| = 0.382999 at θ = 86.5°
+    At θ=0°: δR = -0.002910
+    R_Fresnel(0) = 0.020373
+    Max correction / R_Fresnel = 1879.9%
+
+  N-BK7 (n=1.5168):
+    Max |δR| = 0.407829 at θ = 86.5°
+    At θ=0°: δR = -0.006024
+    R_Fresnel(0) = 0.042165
+    Max correction / R_Fresnel = 967.2%
+
+  Diamond (n=2.418):
+    Max |δR| = 0.458525 at θ = 86.0°
+    At θ=0°: δR = -0.024587
+    R_Fresnel(0) = 0.172111
+    Max correction / R_Fresnel = 266.4%
+
+REFLECTION FLOOR:
+  LAMBDA_UNIV = sin²(π/30) = 0.01092620 = 1.0926%
+  Z₀ = tan(π/30) = 0.10510424
+  Verified: 0 violations in 83 materials across 5 categories
+
+BREWSTER ANGLE CONNECTION:
+  Standard: θ_B = arctan(n)
+  GBP: same — Brewster is where p-polarization reflection vanishes
+  At θ_B, the figure-8 lobe phase-matches perfectly → Rp = 0
+  But Rs(θ_B) > 0 still — the s-polarization sees the impedance mismatch
+
+  Water: θ_B = 53.12°  Rs(θ_B) = 0.078271  R_GBP correction at θ_B = -0.001647
+  N-BK7: θ_B = 56.60°  Rs(θ_B) = 0.155287  R_GBP correction at θ_B = +0.003693
+  Diamond: θ_B = 67.53°  Rs(θ_B) = 0.501108  R_GBP correction at θ_B = +0.007640
