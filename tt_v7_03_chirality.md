@@ -71,3 +71,69 @@ Each push direction (left or right chirality) produces three internal spatial de
 3. The phase along the string (longitudinal) → T3 geometry
 
 These are NOT three separate observable dimensions. They are the three coordinates needed to specify a point inside the parabolic volume.
+
+---
+
+### 3.3 Three Consequences of Local Space Opening
+
+#### 3.3a The Aharonov-Bohm Effect — Direct Evidence of New Space **(D)**
+
+The Aharonov-Bohm experiment sends an electron around a solenoid containing magnetic flux. Outside the solenoid, B = 0 — no magnetic field. By standard classical reasoning, nothing should happen to the electron. But it picks up a measurable phase shift that depends on the enclosed flux.
+
+Standard QM explains this by saying the vector potential A is "more fundamental than B." That is correct but incomplete — it doesn't say *why* A affects the electron in a region where B = 0.
+
+GBP provides the geometric reason: **the electron's T1 parabolic volume is a new local space that it carries with it.** As the electron passes around the solenoid, this local space encloses the flux region even when the electron itself is outside it. The phase shift is not from the field at the electron's location — it is from the topology of the local chirality space the electron opened as it passed.
+
+The vector potential A is the boundary projection of the T1 chirality space onto the global frame. B = ∇×A is the curl of that projection — which requires two spatial dimensions (T2) to compute. This is why A appears at T1 and B at T2 in the toroid hierarchy. The Aharonov-Bohm effect is the experimental confirmation that the T1 local space is real and topologically non-trivial, independent of the fields that exist in the global frame.
+
+The flux quantization condition Φ₀ = h/2e follows directly: the T1 Möbius winding requires two traversals to close (720° spinor double cover), so the minimum enclosed flux that produces a complete phase cycle is h/2e — not h/e. This is the same topological fact as the spinor double cover, now visible in the flux threading the enclosed area. Confirmed: Deaver & Fairbank (1961).
+
+#### 3.3b The EM Field as Single-Frame Spacetime Curvature **(H)**
+
+Gravity is spacetime curvature — the global deflection of the time string by accumulated mass-energy. The claim here is that the electromagnetic field is the same thing at a smaller scale: **spacetime curvature in a single frame, before ensemble averaging washes it into gravity.**
+
+When one electron passes a point in space, it opens a T1 parabolic volume — one spatial dimension, one local frame, one winding cycle. The curvature this produces in the time string is real but tiny, and it exists only in the single frame where the parabola is open. From outside, projected onto the global spacetime, this single-frame curvature IS the electric field E. The field lines of E are the projections of the T1 parabolic boundary onto the global frame.
+
+**Why the electron has charge — the raindrop analogy **(H):**
+
+A raindrop falling through air accumulates electric charge. The mechanism: the leading face of the drop experiences higher air pressure and shear than the trailing face. This asymmetric shear separates charge — positive on one face, negative on the other. The drop doesn't start charged. The asymmetry of its interaction with the medium creates the charge.
+
+The electron's charge arises by the same mechanism at the geometric level. The mod-12 cross-point — where all four prime lanes {1,5,7,11} intersect — is not symmetric under reflection. The leading face of the winding (the face that hits the T1 boundary first) deposits projection energy at a different rate than the trailing face. This asymmetric boundary deposition creates a permanent nonzero ∇·E at the cross-point. That permanent divergence IS the electric charge.
+
+A neutral particle (neutron, neutrino) has either no cross-point asymmetry (GOE statistics, no preferred direction) or a cancelling pair of opposite asymmetries. The electron's charge is not a property added to the geometry — it is an inevitable consequence of the mod-12 cross-point being asymmetric under the winding direction.
+
+**The vacuum as the medium **(H):**
+
+The vacuum plays the role of the air in the raindrop analogy. The time string at T=c is the medium. The electron moving through it at sub-c velocity creates a velocity differential at its boundary — exactly the Venturi effect from Chapter 01. The leading face of the T1 winding is moving into undisturbed vacuum; the trailing face is moving through vacuum already displaced by the winding. The pressure differential between them is the electric field. The curl of that pressure differential — which requires the second spatial dimension, T2 — is the magnetic field.
+
+**EM field and gravity are therefore the same physical object at different scales** **(H):** single-frame T1 curvature (one electron, one frame) vs. accumulated T3 curvature (10²³ atoms, ensemble-averaged over all frames).
+
+#### 3.3c The Missing Bridge — Why EM Curvature Is So Much Weaker Than Gravity **(H)**
+
+The obvious question: if EM and gravity are both spacetime curvature, why is gravity so much weaker? The electromagnetic force between two electrons is ~10⁴² times stronger than their gravitational attraction. How does the same geometric mechanism produce such different magnitudes?
+
+The answer is in the ensemble averaging — and in the T1 vs T3 topology.
+
+**Single electron — T1, one spatial dimension open:**
+
+One electron opens one local T1 parabolic volume. The curvature it produces is real but it exists in one frame, in one spatial dimension. When you average over the 10²³ electrons in a macroscopic object, their T1 volumes open at different locations and different times — asynchronously. The AC terms in the Fourier decomposition of P(r) cancel by the Riemann-Lebesgue argument (Chapter 05). What survives is the DC term — the 1/2 average — which becomes the classical EM field. The EM field is therefore the ensemble average of single-frame T1 curvatures. It is already washed out once by the averaging.
+
+**One atom — T3, three spatial dimensions open:**
+
+An atom has T3 topology — three quarks at a Y-junction, three spatial dimensions fully open, three arms reinforcing at the junction constructively. The T3 Y-junction does NOT cancel in the ensemble average the way T1 does, because the three arms meet at a single point. The junction itself is where the reinforcement happens — it is already the result of three-way constructive interference. Averaging over many atoms averages the arm orientations but not the junction energy, because the junction is topologically protected.
+
+The result: gravity survives the ensemble average because T3 junction energy is constructively reinforced and topologically stable. EM is washed down by the asynchronous T1 averaging. The ratio of their strengths reflects the ratio of T3 to T1 mass scales:
+
+```
+T1 mass scale: ~0.511 MeV  (electron)
+T3 mass scale: ~938 MeV    (proton)
+Ratio: ~1836
+```
+
+The proton-to-electron mass ratio of 1836 is the same factor that appears in the ratio of electromagnetic to gravitational coupling when expressed in natural units at the single-particle level. This is not a coincidence — it is the T1/T3 mass hierarchy showing up in the force hierarchy. **(H — the formal derivation of the exact ratio from T1/T3 topology is pending.)**
+
+**The missing bridge **(H):**
+
+The formal connection that is not yet derived: a rigorous proof that the T3 Y-junction constructive reinforcement produces exactly the right gravitational coupling G in terms of LU, α_IR, and Λ_QCD. The Jacobson derivation (Chapter 10) gets close — the missing coefficient is LU — but the step from T3 topology to the exact value of G is open. The physical mechanism is proposed here. The formal proof is pending.
+
+A second open question: most EM curvature gets washed out in the ensemble average, but not all of it. The residual — the part that doesn't cancel — may be the source of the cosmological constant. The same P(0)=0 unreachable floor that produces ZPE (Chapter 03 §3.2) would prevent complete cancellation of the T1 curvature ensemble, leaving a small positive residual vacuum energy density. Whether this residual matches the observed cosmological constant is a calculation that has not been done.
