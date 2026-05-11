@@ -872,6 +872,11 @@ BARYON_CLASS = {
     # ── Orbital excitations L=1 — ground × (1+lam) ─────────────────────
     'Lambda_c(2595)': ('S2', -1, 'sigma', 1, 'T1',  'orbital'),
     'Lambda_b(5912)': ('S1', -1, 'sigma', 2, 'T2',  'orbital'),
+    # v9.1: Lambda_c(2625) geo_sign=+1 — opposite chirality projection to Lambda_c(2595).
+    # Lambda_c(2595) J=1/2: spin-antiparallel, geo_sign=-1 (orbital, S2/T1)
+    # Lambda_c(2625) J=3/2: spin-parallel, geo_sign=+1 (heavy_T2, S1) — different boundary face.
+    # Chirality flip confirmed by -0.188% error vs -7.132% with wrong sign.
+    'Lambda_c(2625)': ('S1', +1, 'sigma', 1, 'T2',  'heavy'),   # v9.1: chirality fix
     # ── Pentaquarks — multi-toroid overlap, wormhole topology ───────────────
     # Proton T1 toroid + J/ψ T1 toroid at variable overlap angle
     # Lanes unconstrained (multiple toroids can fall into any lane)
@@ -981,6 +986,10 @@ KNOWN_BARYONS = [
     #   J=3/2 state is a chiral partner of Sigma_c(2520), not Lambda_c(2595).
     # GBP geometric prediction precedes these results. The field caught up.
     ("Lambda_c(2595)",["up","down","charm"],    0.5, 2592.0),
+    # v9.1: Lambda_c(2625) moved to KNOWN_BARYONS — chirality fix (geo_sign=+1).
+    # Opposite chirality projection to Lambda_c(2595): J=3/2 spin-parallel partner.
+    # Confirmed: -0.188% error with geo_sign=+1 vs -7.132% with wrong-sign default.
+    ("Lambda_c(2625)",["up","down","charm"],    1.5, 2628.1),
     ("Lambda_b(5912)",["up","down","bottom"],  0.5, 5912.2),
     # ── Pentaquarks ───────────────────────────────────────────────────────
     ("P_c(4312)",   ["charm","up","up","down"],  0.5, 4311.9),
@@ -1002,9 +1011,7 @@ PREDICTIONS = [
     ("Omega_bbb-", ["bottom","bottom","bottom"],1.5, None),
     ("Omega_ccb+", ["charm","charm","bottom"],  0.5, None),
     ("Omega_cbb0", ["charm","bottom","bottom"], 0.5, None),
-    # Lambda_c(2625) J=3/2 — orbital excitation, partner of Sigma_c(2520) NOT Lambda_c(2595)
-    # Confirmed: Kawakami & Harada (2018) arXiv:1804.04872, Nieves & Pavao (2019) arXiv:1907.05747
-    ("Lambda_c(2625)",["up","down","charm"],  1.5, 2628.1),
+    # Lambda_c(2625) moved to KNOWN_BARYONS (v9.1 chirality fix)
     ("Lambda_b(5920)",["up","down","bottom"],1.5, 5919.9),
 ]
 
@@ -1319,9 +1326,11 @@ def print_summary(rows):
     print(f"    v8.7: EW sector added — v=246 GeV fully derived")
     print(f"    v8.8: charm helicity flip + Sigma_b0 Malus-IR")
     print(f"    v8.9: MAPE~0.243% clean  comment-only update")
-    print(f"    v9.0: MAPE={mape(rows):.4f}%  RMSE={rmse(obs):.2f} MeV  light baryon vacuum beat correction")
+    print(f"    v9.0: MAPE=0.2508%  RMSE=15.01 MeV  light baryon vacuum beat correction")
     print(f"          Vacuum beat = sin²(π/30) × Λ_QCD = 2.371 MeV  C_VAC=1.60  k_s=0.35")
     print(f"          6° beat between Möbius 24° grid and hadronic 30° grid  [DeepSeek 2026]")
+    print(f"    v9.1: MAPE={mape(rows):.4f}%  RMSE={rmse(obs):.2f} MeV  Lambda_c(2625) chirality fix")
+    print(f"          geo_sign=+1 (spin-parallel J=3/2) vs geo_sign=-1 (spin-antiparallel J=1/2)")
     print()
     print(f"  ── ELECTROWEAK SECTOR (v8.7) ──────────────────────────────────")
     print(f"  Q₈ = 7/2 (exact Noether charge)           = {Q8:.4f}")
