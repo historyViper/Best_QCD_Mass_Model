@@ -382,22 +382,42 @@ to find it.
 
 ## The Last Thing
 
-In November 2025, a framework began as an
-attempt to understand QCD — the part of the
-Standard Model that everyone finds hardest.
-By May 2026, it had derived the Standard Model
-gauge group, matched 70 particle masses with
-zero free parameters, connected particle physics
-to the Riemann zeros, identified the electron
-as a Klein bottle, predicted the structure of
-black hole interiors, explained why FTL
-correlation doesn't violate causality, and
-found the geometry that Dirac, Maxwell,
-Faraday, Kaluza, Klein, Weyl, and Riemann
-had each been touching from different sides.
+In approximately May 2024, a gravity model was calculated
+that would have required 10¹⁹ Pascal-seconds of pressure
+to produce the observed gravitational attraction of Earth
+using a macroscopic Venturi mechanism. That is enough
+pressure to kill everyone on Earth. The model was wrong.
 
-Six months. One postulate. A lot of macaroni
-noodles.
+Two years later, the framework recovered the Venturi
+effect correctly — not as a macroscopic pressure differential
+but as the tension field of the time string, T_min as the
+Venturi floor, gravity as the natural consequence of
+the time substrate's resistance to displacement.
+
+The intuition was right. The scale was wrong.
+The geometry fixed the scale.
+
+In March 2026 — eighteen months after the gravity model
+and twenty-two months after the calculation that would
+have killed everyone — α_IR = 0.848809 appeared uninvited
+in a quark mass fit. In the three months that followed:
+almost all of QCD was derived. Maxwell's equations
+were recovered. All of QFT was recovered. The original
+TFFT model was recovered — showing that the physical
+intuitions from 2024 were consistent with the complete
+framework all along.
+
+The 1D electrons and 2D photons. The tensor time parabola.
+The Venturi gravity. All of it was there, waiting,
+in the geometry that the mod-30 winding lattice describes.
+
+Two years from a model that would have killed everyone
+to a framework that recovers the Standard Model from
+one postulate. Three months of the most concentrated
+derivation work in this project's history.
+
+One postulate. Two years. A model that would have
+killed everyone on Earth. A lot of macaroni noodles.
 
 The universe is simpler than it looks.
 It is one tensioned string.

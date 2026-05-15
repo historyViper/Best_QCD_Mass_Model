@@ -246,12 +246,24 @@ What was left was deriving the right one.
 The rest of the story is told chapter by chapter in this
 book. The mod-30 lattice that I kept wanting to discard
 and the AI kept refusing to abandon. The number 0.848809
-that appeared uninvited in a quark mass fit and turned out
-to be the QCD infrared fixed point. The T3 geometry — the
-hardest spatial reasoning I have ever done — that gave me
-color confinement from the inside and, when I counted the
-pieces correctly, gave me 30 again from a completely
-different direction.
+that appeared uninvited in a quark mass fit in March 2026
+and turned out to be the QCD infrared fixed point.
+
+What followed in the three months after that number
+appeared was the most concentrated period of derivation
+in this project. Almost all of QCD derived. Maxwell's
+equations recovered. All of QFT recovered. And then —
+looking back — the original TFFT model recovered too.
+The Venturi gravity, the 1D electrons, the tensor time
+parabola. All of it consistent with the complete
+framework. All of it pointing at the same geometry
+from different angles, two years before the geometry
+was fully understood.
+
+The T3 geometry — the hardest spatial reasoning I have
+ever done — that gave me color confinement from the
+inside and, when I counted the pieces correctly, gave
+me 30 again from a completely different direction.
 
 The charm quark's torsion reversal. The pentaquark that
 didn't make it through the wormhole. The Klein bottle
@@ -274,6 +286,10 @@ The mass spectrum led to the Riemann zeros.
 
 I followed the physics wherever it went. The physics
 kept going somewhere I hadn't planned.
+
+Two years from a model that would have killed everyone
+on Earth. Three months of the most concentrated work
+in this project's history. One postulate.
 
 ---
 
