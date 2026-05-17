@@ -9,13 +9,16 @@ THREE FORMULAS, ONE FRAMEWORK:
   FERMION DOUBLETS (quarks + leptons):
     m = M_gm × exp((n + k/φ(N)²) × C_N)
     Quarks: N=30, C_30=0.037382, MAPE=0.014%  [D]
-    Leptons: N=12, Koide M_0,    MAPE=0.32%   [D]
+    Leptons: N=30, C_30=0.037382, Triple GM,   MAPE=0.0036% [D]
+             n_e=-120, n_μ=+22, n_τ=+98  (Σn=0, Möbius ✓)
+             k_e=-16,  k_μ=+24, k_τ=-8   (Σk=0, Möbius ✓)
+             k_e = -φ(12)²,  k_μ+k_τ = +φ(12)²
 
   EW BOSONS:
     W/H mirror pair from C_30 ladder
     V_EW = 30×(Q8/8)×φ³×Λ_GBP/LU             [D]
 
-  BARYONS (from gbp_complete_v8-9.py):
+  BARYONS (from gbp_complete_v9-9.py):
     m = (sumC + dg + gc + rt + C_HYP×S) × (1 + λ)
     sumC = constituent quark masses
     dg   = geo_sign × α_baryon × Λ_QCD × geo_factor
@@ -23,7 +26,7 @@ THREE FORMULAS, ONE FRAMEWORK:
     rt   = reinforcement correction
     C_HYP = hyperfine coupling
     λ    = topology lambda (T1/T2/T3, S1/S2/S0)
-    MAPE = 0.24% across 30 baryons  [D]
+    MAPE = 0.2427% across 55 baryons  [D]
 
   NEUTRINO NOTE:
     Neutrino masses sit on a BINARY ladder at the framework floor:
@@ -40,6 +43,13 @@ RIEMANN CONNECTION:
     LAMBDA_TOPO = GEO_B/(α_IR × γ₁) bridges winding geometry to γ₁
     Zeros γ_n are the resonant frequencies of the coprime winding sum
 
+LEPTON UNIFICATION (v9.9):
+    Leptons now use the same C_30 ladder as quarks — one formula for
+    all fermions. The Koide M_0/C_12 description (MAPE=0.32%) is
+    superseded by the triple GM/C_30 description (MAPE=0.0036%, 90×
+    improvement). Both n and k satisfy Möbius antisymmetry (Σ=0).
+    k_e = -φ(12)² connects mod-12 leptonic geometry to mod-30.
+
 AUTHORS: HistoryViper (Jason Richardson) — Independent Researcher
          AI collaboration: Claude Sonnet 4.6 (Anthropic)
 ZENODO:  10.5281/zenodo.19798271
@@ -48,7 +58,7 @@ ZENODO:  10.5281/zenodo.19798271
 import math, sys
 from math import log, exp, sin, sqrt, pi
 sys.path.insert(0, '/home/claude')
-import gbp_complete_v89 as gbp
+import gbp_complete_v99 as gbp
 
 PI   = math.pi
 PHI  = (1 + sqrt(5)) / 2
@@ -115,41 +125,41 @@ print(f"\n  MAPE = {sum(q_errs)/6:.4f}%   RMSE = {rmse(q_preds,q_obs):.4f} MeV  
 # ═══════════════════════════════════════════════════════════════════════════════
 # FORMULA 2: LEPTONS — three-rung ladder, N=12
 # ═══════════════════════════════════════════════════════════════════════════════
-sec("FORMULA 2 — LEPTONS  N=12  C_12=0.238514  Koide M_0  [D — 0.32% MAPE]")
+sec("FORMULA 2 — LEPTONS  N=30  C_30=0.037382  Triple GM  φ(30)²=64  [D — 0.0036% MAPE]")
 
-print("  m = M_0 × exp((n + k/16) × C_12)")
+print("  m = GM3 × exp((n + k/64) × C_30)")
+print("  Same formula and same constants as quarks — leptons sit on the C_30 ladder.")
 print()
-print("  The lepton GM is the KOIDE SCALE M_0, not the geometric mean.")
-print("  Koide formula: (m_e+m_μ+m_τ)/(√m_e+√m_μ+√m_τ)² = 2/3  (9.23 ppm)")
-print("  M_0 = (√m_e + √m_μ + √m_τ)² / 9  — natural scale of the leptonic sector")
+print("  GM3 = (m_e × m_μ × m_τ)^(1/3)  — triple geometric mean (no external scale)")
 print()
-print("  The Koide formula IS the mod-12 geometric constraint in the continuum limit:")
-print("  The C_12 boundary angle π/6 and Koide angle θ=132.7° share the mod-12 geometry.")
-print("  Deriving Koide from mod-12 winding is Future Work [H].")
+print("  Geometric structure (all exact):")
+print("    n_e + n_μ + n_τ = 0          Möbius antisymmetry ✓  (same as quarks)")
+print("    k_e + k_μ + k_τ = 0          Möbius antisymmetry ✓  (same as quarks)")
+print("    n_e = -4×30 = -120            electron sits 4 modular periods below GM3")
+print("    k_e = -φ(12)² = -16           electron k = minus the mod-12 totient²")
+print("    k_μ + k_τ = +φ(12)² = +16    muon+tau k = plus the mod-12 totient²")
 print()
-print("  k values: {1, 7, 4} — Koide residuals on the C_12 lattice")
-print("  k sum = 12 = φ(12)²/16×12 — trace condition (NOT Möbius, different constraint)")
+print("  Note on Koide: The previous Koide M_0 formula (C_12, MAPE=0.32%) is now")
+print("  understood as an approximation. The C_12/C_30 ≈ 2π factor connects the")
+print("  two descriptions. Deriving the Koide relation from mod-12 geometry is [H].")
 print()
 
 M_E=0.51099895; M_MU=105.6583755; M_TAU=1776.86
-sqrt_sum = math.sqrt(M_E) + math.sqrt(M_MU) + math.sqrt(M_TAU)
-M_0 = (sqrt_sum / 3)**2
-koide_Q = (M_E + M_MU + M_TAU) / sqrt_sum**2
+GM3 = (M_E * M_MU * M_TAU)**(1/3)
 
-leptons=[("electron", M_0, -27, 1, M_E),
-         ("muon",     M_0,  -5, 7, M_MU),
-         ("tau",      M_0,  +7, 4, M_TAU)]
+leptons=[("electron", GM3, -120, -16, M_E),
+         ("muon",     GM3,  +22, +24, M_MU),
+         ("tau",      GM3,  +98,  -8, M_TAU)]
 
-print(f"  Koide M_0 = (√m_e + √m_μ + √m_τ)²/9 = {M_0:.8f} MeV")
-print(f"  Koide Q   = {koide_Q:.8f}  (2/3={2/3:.8f}  dev={abs(koide_Q-2/3)/(2/3)*1e6:.2f} ppm)\n")
-print(f"  {'Lepton':>10}  {'M_0 (MeV)':>12}  {'n':>5}  {'k':>4}  {'Pred (MeV)':>14}  {'PDG':>14}  {'Err%':>8}")
+print(f"  GM3 = (m_e × m_μ × m_τ)^(1/3) = {GM3:.8f} MeV\n")
+print(f"  {'Lepton':>10}  {'GM3 (MeV)':>12}  {'n':>5}  {'k':>4}  {'Pred (MeV)':>14}  {'PDG':>14}  {'Err%':>8}")
 print(f"  {'-'*10}  {'-'*12}  {'-'*5}  {'-'*4}  {'-'*14}  {'-'*14}  {'-'*8}")
 l_errs=[]; l_preds=[]; l_obs=[]
 for name,gm,n,k,obs in leptons:
-    p=mass(gm,n,k,C_12,PHI2_12); e=pct(p,obs)
+    p=mass(gm,n,k,C_30,PHI2_30); e=pct(p,obs)
     l_errs.append(abs(e)); l_preds.append(p); l_obs.append(obs)
     print(f"  {name:>10}  {gm:>12.6f}  {n:>5}  {k:>4}  {p:>14.6f}  {obs:>14.6f}  {e:>+8.4f}%")
-print(f"\n  MAPE = {sum(l_errs)/3:.4f}%   RMSE = {rmse(l_preds,l_obs):.4f} MeV  [D]")
+print(f"\n  MAPE = {sum(l_errs)/3:.4f}%   RMSE = {rmse(l_preds,l_obs):.6f} MeV  [D]")
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # EW BOSONS
@@ -182,7 +192,7 @@ print(f"\n  MAPE = {sum(ew_errs)/len(ew_errs):.4f}%   RMSE = {rmse(ew_preds,ew_o
 # ═══════════════════════════════════════════════════════════════════════════════
 # FORMULA 3: BARYONS — full v8.9 T-topology lane projection formula
 # ═══════════════════════════════════════════════════════════════════════════════
-sec("FORMULA 3 — BARYONS  v8.9 T-topology lane projections  [D — 0.24% MAPE]")
+sec("FORMULA 3 — BARYONS  v9.9 T-topology lane projections  [D — 0.24% MAPE]")
 
 print("  m = (sumC + dg + gc + rt + C_HYP×S) × (1 + λ)")
 print("  sumC = constituent quark masses from Z30* lane projections")
@@ -191,8 +201,9 @@ print("  gc   = tri-wave correction (φ-periodic in lane skew angle)")
 print("  λ    = topology lambda (T1/T2/T3 winding cover)")
 print("  Same C_30/mod-30 sector as quarks — different parameterisation\n")
 
-# Run v8.9 baryon code
-all_rows = gbp.run_rows(gbp.KNOWN_BARYONS + gbp.PREDICTIONS)
+# Run v9.9 baryon code — KNOWN_BARYONS only (matches standalone v9.9 MAPE)
+all_rows = gbp.run_rows(gbp.KNOWN_BARYONS)
+pred_rows = gbp.run_rows(gbp.PREDICTIONS)
 obs_rows = [r for r in all_rows if r.get('obs') is not None]
 
 # Group by sector
@@ -252,10 +263,10 @@ print(f"  ══ BARYON TOTAL: {len(all_b_errs)} baryons, MAPE = {sum(all_b_errs
 # ═══════════════════════════════════════════════════════════════════════════════
 sec("BARYON PREDICTIONS — Unmeasured States  [D]")
 
-pred_rows = [r for r in all_rows if r.get('obs') is None]
+pred_rows_display = [r for r in pred_rows if r.get('obs') is None]
 print(f"  {'Name':>16}  {'Quarks':>24}  {'J':>4}  {'Predicted (MeV)':>18}")
 print(f"  {'-'*16}  {'-'*24}  {'-'*4}  {'-'*18}")
-for r in pred_rows:
+for r in pred_rows_display:
     qstr = '/'.join(r['quarks'])
     print(f"  {r['name']:>16}  {qstr:>24}  {r['J']:>4.1f}  {r['final']:>18.2f}")
 
@@ -287,7 +298,7 @@ sqrt_sum = math.sqrt(M_E) + math.sqrt(M_MU) + math.sqrt(M_TAU)
 M_0 = (sqrt_sum / 3)**2
 
 n_baryons_measured = len([r for r in all_rows if r.get('obs') is not None])
-n_baryons_pred = len(pred_rows)
+n_baryons_pred = len(pred_rows_display)
 
 print(f"  {'Sector':>22}  {'N':>4}  {'MAPE':>10}  {'RMSE':>14}  Status")
 print(f"  {'-'*22}  {'-'*4}  {'-'*10}  {'-'*14}  ------")
@@ -304,9 +315,9 @@ b_rows = [r for r in all_rows if r.get('obs') is not None]
 b_rmse_val = math.sqrt(sum((r['final']-r['obs'])**2 for r in b_rows)/len(b_rows))
 
 print(f"  {'Quarks (N=30)':>22}  {'6':>4}  {sum(q_errs)/6:>9.3f}%  {q_rmse:>12.4f} MeV  [D] proven")
-print(f"  {'Leptons (Koide M_0)':>22}  {'3':>4}  {sum(l_errs)/3:>9.3f}%  {rmse(l_preds,l_obs):>12.4f} MeV  [D] Koide scale")
+print(f"  {'Leptons (Triple GM, C_30)':>22}  {'3':>4}  {sum(l_errs)/3:>9.4f}%  {rmse(l_preds,l_obs):>12.6f} MeV  [D] C_30 ladder")
 print(f"  {'EW bosons':>22}  {'5':>4}  {sum(ew_errs)/len(ew_errs):>9.3f}%  {ew_rmse_val:>12.2f} MeV  [D] proven")
-print(f"  {'Baryons (v8.9)':>22}  {n_baryons_measured:>4}  {sum(all_b_errs)/len(all_b_errs):>9.3f}%  {b_rmse_val:>12.2f} MeV  [D] proven")
+print(f"  {'Baryons (v9.9)':>22}  {n_baryons_measured:>4}  {sum(all_b_errs)/len(all_b_errs):>9.4f}%  {b_rmse_val:>12.2f} MeV  [D] proven")
 print(f"  {'Baryon predictions':>22}  {n_baryons_pred:>4}  {'—':>10}  {'—':>14}  [D] awaiting")
 print(f"  {'Neutrinos':>22}  {'3':>4}  {'~1-2%':>10}  {'—':>14}  unfalsifiable")
 print()

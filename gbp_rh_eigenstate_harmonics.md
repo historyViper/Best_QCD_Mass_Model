@@ -224,13 +224,15 @@ All eigenstate values confirmed from the complete mass ladder: **(D)**
 | Observable | GBP prediction | Measured | MAPE |
 |-----------|---------------|----------|------|
 | 6 quark masses | Doublet GM formula | PDG 2024 | 0.014% |
-| 3 lepton masses | Koide M₀ on C₁₂ | PDG 2024 | 0.321% |
+| 3 lepton masses | Triple GM on C₃₀ (same ladder as quarks) | PDG 2024 | 0.0036% |
 | W, H, Z, V_EW | EW ladder | PDG / SM | 0.108% |
-| 56 baryon masses | T-topology v8.9 | PDG 2024 | 0.410% |
-| **Total 70 particles** | | | **0.351%** |
+| 55 baryon masses | T-topology v9.9 | PDG 2024 | 0.2427% |
+| **Total 69 particles** | | | **0.2027%** |
 | β(N) = -2 | d(ln C_N)/d(ln N) | — | exact |
 | C_N×N² → 4α_IR π² | Primorial limit | — | < 10⁻⁸ |
 | Q₈ = 7/2 | Σ P(r) over Z₃₀* | — | exact |
+
+**Lepton unification note (v9.9):** Leptons now use the same C_30 ladder as quarks — triple geometric mean GM3 = (m_e×m_μ×m_τ)^(1/3), with n_e=−120, n_μ=+22, n_τ=+98 and k_e=−16, k_μ=+24, k_τ=−8. Both Σn=0 and Σk=0 (Möbius antisymmetry, same as quarks). The k_e = −φ(12)² = −16 encodes the mod-12 leptonic geometry within the mod-30 framework. The previous Koide M₀/C₁₂ description (MAPE=0.321%) is superseded; it is now understood as an approximation connected via C₁₂/C₃₀ ≈ 2π.
 
 ---
 
