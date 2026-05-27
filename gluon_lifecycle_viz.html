@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Gluon Lifecycle</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; touch-action:manipulation; }
+  body { background:#000; color:#fff; font-family:'Courier New',monospace; overflow:hidden; width:100vw; height:100vh; }
+  canvas { position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:1; }
+  #ui {
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    background:rgba(0,0,0,0.88); padding:8px 12px 6px;
+    display:flex; flex-direction:column; gap:4px; pointer-events:all;
+  }
+  #title { font-size:11px; color:#0ff; letter-spacing:2px; }
+  #gluon_bars { display:flex; flex-direction:column; gap:3px; }
+  .gbar { display:flex; align-items:center; gap:6px; }
+  .glbl { font-size:9px; width:14px; text-align:right; flex-shrink:0; }
+  .gtrack { flex:1; height:10px; background:#111; border-radius:2px; position:relative; overflow:hidden; }
+  .gfill { height:100%; border-radius:2px; transition:width 0.05s; }
+  .gstage { font-size:9px; width:80px; flex-shrink:0; letter-spacing:0; }
+  .gstate { font-size:9px; width:48px; flex-shrink:0; text-align:right; }
+  #lock_display {
+    font-size:10px; color:#f44; text-align:center; letter-spacing:1px;
+    min-height:14px;
+  }
+  #spd_row { display:flex; align-items:center; gap:8px; }
+  .lbl { font-size:10px; color:#fa0; width:28px; }
+  input[type=range] {
+    flex:1; height:20px; accent-color:#0ff;
+    -webkit-appearance:none; background:transparent;
+  }
+  input[type=range]::-webkit-slider-runnable-track { height:3px; background:#1a4060; border-radius:2px; }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance:none; width:22px; height:22px;
+    border-radius:50%; background:#0ff; cursor:pointer; margin-top:-10px;
+  }
+  .val { font-size:10px; color:#0ff; width:32px; text-align:right; }
+  #bottom {
+    position:fixed; bottom:0; left:0; right:0; z-index:100;
+    background:rgba(0,0,0,0.88); padding:5px 12px 7px;
+    pointer-events:none; display:flex; flex-direction:column; gap:2px;
+  }
+  .bl { font-size:9px; color:#666; text-align:center; letter-spacing:1px; }
+  .bl.hi { color:#fa0; font-size:10px; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="ui">
+  <div id="title">3 GLUONS — PHASE-LOCKED CONFINEMENT CYCLE</div>
+  <div id="gluon_bars">
+    <div class="gbar">
+      <div class="glbl" style="color:#ff6a00">G1</div>
+      <div class="gtrack"><div class="gfill" id="gf0" style="background:#ff6a00;width:0%"></div></div>
+      <div class="gstage" id="gs0" style="color:#ff6a00">—</div>
+      <div class="gstate" id="gst0" style="color:#ff6a00">—</div>
+    </div>
+    <div class="gbar">
+      <div class="glbl" style="color:#00e5ff">G2</div>
+      <div class="gtrack"><div class="gfill" id="gf1" style="background:#00e5ff;width:0%"></div></div>
+      <div class="gstage" id="gs1" style="color:#00e5ff">—</div>
+      <div class="gstate" id="gst1" style="color:#00e5ff">—</div>
+    </div>
+    <div class="gbar">
+      <div class="glbl" style="color:#a0ff00">G3</div>
+      <div class="gtrack"><div class="gfill" id="gf2" style="background:#a0ff00;width:0%"></div></div>
+      <div class="gstage" id="gs2" style="color:#a0ff00">—</div>
+      <div class="gstate" id="gst2" style="color:#a0ff00">—</div>
+    </div>
+  </div>
+  <div id="lock_display"> </div>
+  <div id="spd_row">
+    <div class="lbl">SPD</div>
+    <input type="range" id="sl_spd" min="1" max="30" step="1" value="6">
+    <div class="val" id="v_spd">×1</div>
+  </div>
+</div>
+<div id="bottom">
+  <div class="bl hi" id="b_eq">P(0) = sin²(0) = 0 — death releases hinge — next gluon born</div>
+  <div class="bl">quarks frozen in color until hinge opens — this IS confinement</div>
+</div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+let W, H, cx, cy;
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+  cx = W/2; cy = H/2;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const PI = Math.PI;
+function Pr(r) { return Math.pow(Math.sin(r*PI/15),2); }
+
+// Lifecycle stages per gluon
+// Each gluon takes 5 stages × stageLen frames
+// Gluons are offset by stageLen × 5/3 (120° phase offset)
+const STAGE_NAMES = ['BORN {7,11}','T2 {13,17}','T3 {19,23}','DIES {1,29}','HINGE'];
+const STAGE_COLS  = ['#ff2200','#ff8800','#00ff44','#888888','#ffffff'];
+const STAGE_LANES = [[7,11],[13,17],[19,23],[1,29],[0,0]];
+
+// Energy at each stage boundary
+const E0 = 1.0;
+function stageEnergy(stageN) {
+  let E = E0;
+  for(let i=0;i<stageN;i++) {
+    const lanes = STAGE_LANES[i];
+    if(lanes[0]===0) break;
+    const avg = (Pr(lanes[0])+Pr(lanes[1]))/2;
+    E *= avg;
+  }
+  return E;
+}
+
+// Color-anticolor states cycling through 6 color combos
+const CC = [
+  {a:'#ff2200',b:'#00ff88'},
+  {a:'#ff2200',b:'#0088ff'},
+  {a:'#00ff44',b:'#ff2200'},
+  {a:'#00ff44',b:'#0088ff'},
+  {a:'#0088ff',b:'#ff2200'},
+  {a:'#0088ff',b:'#00ff44'},
+];
+
+function parseHex(c){
+  // handles #rrggbb or rgb(...) strings
+  if(c.startsWith('#')){
+    return [parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)];
+  }
+  const m=c.match(/rgb\((\d+),(\d+),(\d+)\)/);
+  return m?[parseInt(m[1]),parseInt(m[2]),parseInt(m[3])]:[0,0,0];
+}
+function colToRgba(c,a){
+  const [r,g,b]=parseHex(c);
+  return `rgba(${r},${g},${b},${a})`;
+}
+function lerpCol(c1,c2,t){
+  const [r1,g1,b1]=parseHex(c1);
+  const [r2,g2,b2]=parseHex(c2);
+  return `rgb(${Math.round(r1+(r2-r1)*t)},${Math.round(g1+(g2-g1)*t)},${Math.round(b1+(b2-b1)*t)})`;
+}
+
+let speed = 6;
+document.getElementById('sl_spd').addEventListener('input',function(){
+  speed=parseInt(this.value);
+  document.getElementById('v_spd').textContent='×'+Math.round(speed/6*10)/10;
+});
+
+// Quark positions (3 quarks at Y-junction)
+function qPos(i,sc){
+  const a = i*2*PI/3 - PI/2;
+  return {x:cx+sc*0.48*Math.cos(a), y:cy+sc*0.48*Math.sin(a)*0.75};
+}
+
+// Routes: which quarks each gluon travels between at each stage
+const ROUTES_PER_GLUON = [
+  [[0,1],[1,2],[2,0],[0,1]],  // G1
+  [[1,2],[2,0],[0,1],[1,2]],  // G2
+  [[2,0],[0,1],[1,2],[2,0]],  // G3
+];
+
+function gluonPathPt(frac, fromQ, toQ, sc) {
+  const a = qPos(fromQ,sc), b = qPos(toQ,sc);
+  if(frac<0.5){
+    const f=frac*2;
+    const wx=-(b.y-a.y)/sc*0.18*sc, wy=(b.x-a.x)/sc*0.18*sc;
+    return {x:a.x+(cx-a.x)*f+wx*Math.sin(f*PI), y:a.y+(cy-a.y)*f+wy*Math.sin(f*PI)};
+  } else {
+    const f=(frac-0.5)*2;
+    const wx=-(b.y-cy)/sc*0.18*sc, wy=(b.x-cx)/sc*0.18*sc;
+    return {x:cx+(b.x-cx)*f+wx*Math.sin((1-f)*PI), y:cy+(b.y-cy)*f+wy*Math.sin((1-f)*PI)};
+  }
+}
+
+const STAGE_LEN = 80; // frames per stage
+const TOTAL_LEN = STAGE_LEN * 5;
+const PHASE_OFF = Math.round(TOTAL_LEN / 3); // 120° offset between gluons
+
+// Gluon state
+const gluons = [
+  { id:0, t:0,          trail:[], col:'#ff6a00', locked:false },
+  { id:1, t:PHASE_OFF,  trail:[], col:'#00e5ff', locked:false },
+  { id:2, t:PHASE_OFF*2,trail:[], col:'#a0ff00', locked:false },
+];
+
+// Quark color state — changes when hinge fires
+let quarkColors = ['#ff4444','#44ff44','#4488ff'];
+let quarkFrozen = [false,false,false];
+let hingeFlash = 0;
+let hingeQuark = 0;
+
+let globalT = 0;
+
+// Track trails per gluon
+const trails = [[],[],[]];
+const MAX_TRAIL = 100;
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  const sc = Math.min(W,H)*0.28;
+
+  globalT += speed * 0.2;
+
+  // --- Update each gluon ---
+  let anyHinge = false;
+  let lockMsg = '';
+
+  gluons.forEach((g,gi)=>{
+    g.t = (g.t + speed*0.2) % TOTAL_LEN;
+    const stageN = Math.min(4, Math.floor(g.t / STAGE_LEN));
+    const stageFrac = (g.t % STAGE_LEN) / STAGE_LEN;
+    const E = stageN<4 ? stageEnergy(stageN) : 0;
+
+    // UI bars
+    document.getElementById('gf'+gi).style.width = (E/E0*100)+'%';
+    document.getElementById('gs'+gi).textContent = STAGE_NAMES[stageN];
+
+    // Lock check: gluon is "waiting" if previous gluon hasn't died yet
+    // Gluon n waits for gluon (n-1) to finish hinge before being born
+    // Simplified: show lock state
+    const isHinge = stageN === 4;
+    const isBorn  = stageN === 0;
+
+    if(isHinge){
+      anyHinge = true;
+      hingeFlash = 1.0;
+      hingeQuark = gi;
+      document.getElementById('gst'+gi).textContent = 'HINGE';
+    } else if(isBorn && stageFrac < 0.1) {
+      document.getElementById('gst'+gi).textContent = 'BORN ✓';
+    } else {
+      document.getElementById('gst'+gi).textContent = stageN<4 ? 'LIVE':'—';
+    }
+
+    // Compute position
+    if(stageN < 4){
+      const route = ROUTES_PER_GLUON[gi][stageN];
+      const pt = gluonPathPt(stageFrac, route[0], route[1], sc);
+
+      // Color changes through lifecycle
+      const ccIdx = (stageN + gi*2) % CC.length;
+      const cc = CC[ccIdx];
+      const gcol = lerpCol(cc.a, cc.b, Math.sin(stageFrac*PI*2)*0.5+0.5);
+
+      trails[gi].push({...pt, col:gcol, E});
+      if(trails[gi].length>MAX_TRAIL) trails[gi].shift();
+    } else {
+      // Dying — trail fades
+      if(trails[gi].length>0) trails[gi].shift();
+    }
+  });
+
+  // Quark color rotation on hinge
+  hingeFlash = Math.max(0, hingeFlash - 0.015*speed);
+  if(hingeFlash > 0.8 && anyHinge){
+    // Rotate quark colors
+    const tmp = quarkColors[0];
+    quarkColors = [quarkColors[1],quarkColors[2],tmp];
+  }
+
+  // ---- Draw Y arms ----
+  [0,1,2].forEach(i=>{
+    const q = qPos(i,sc);
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(q.x,q.y);
+    ctx.strokeStyle='#1a4060'; ctx.lineWidth=3; ctx.stroke();
+  });
+
+  // ---- Draw trails (sorted roughly by depth — just draw all) ----
+  [0,1,2].forEach(gi=>{
+    const tr = trails[gi];
+    for(let i=1;i<tr.length;i++){
+      const a = i/tr.length;
+      ctx.beginPath();
+      ctx.moveTo(tr[i-1].x,tr[i-1].y);
+      ctx.lineTo(tr[i].x,tr[i].y);
+      ctx.strokeStyle=tr[i].col;
+      ctx.lineWidth=3;
+      ctx.globalAlpha=a*0.85;
+      ctx.stroke();
+      ctx.globalAlpha=1;
+    }
+    // Current dot
+    if(tr.length>0){
+      const pt=tr[tr.length-1];
+      ctx.beginPath(); ctx.arc(pt.x,pt.y,7,0,PI*2);
+      ctx.fillStyle=pt.col; ctx.fill();
+      // glow
+      const grd=ctx.createRadialGradient(pt.x,pt.y,0,pt.x,pt.y,sc*0.09);
+      grd.addColorStop(0,colToRgba(pt.col,0.53)); grd.addColorStop(1,'transparent');
+      ctx.beginPath(); ctx.arc(pt.x,pt.y,sc*0.09,0,PI*2);
+      ctx.fillStyle=grd; ctx.fill();
+    }
+  });
+
+  // ---- Draw quarks ----
+  [0,1,2].forEach(i=>{
+    const q=qPos(i,sc);
+    // Frozen indicator
+    const frozen = gluons.every(g=>{
+      const sn=Math.min(4,Math.floor(g.t/STAGE_LEN));
+      return sn===4;
+    });
+
+    const qc = quarkColors[i];
+    // Glow
+    const grd=ctx.createRadialGradient(q.x,q.y,0,q.x,q.y,sc*0.13);
+    grd.addColorStop(0,colToRgba(qc,0.4)); grd.addColorStop(1,'transparent');
+    ctx.beginPath(); ctx.arc(q.x,q.y,sc*0.13,0,PI*2);
+    ctx.fillStyle=grd; ctx.fill();
+
+    ctx.beginPath(); ctx.arc(q.x,q.y,sc*0.072,0,PI*2);
+    ctx.fillStyle=qc; ctx.globalAlpha=0.9; ctx.fill();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.globalAlpha=1;
+
+    const qnames=['u','d','s'];
+    ctx.fillStyle='#fff'; ctx.font='bold 11px Courier New'; ctx.textAlign='center';
+    ctx.fillText(qnames[i],q.x,q.y+4);
+    ctx.textAlign='left';
+  });
+
+  // ---- Center Y-junction ----
+  ctx.beginPath(); ctx.arc(cx,cy,sc*0.045,0,PI*2);
+  ctx.fillStyle='#1a4060'; ctx.fill();
+  ctx.strokeStyle='#0ff4'; ctx.lineWidth=1; ctx.stroke();
+
+  // ---- Hinge flash ----
+  if(hingeFlash>0){
+    const grd=ctx.createRadialGradient(cx,cy,0,cx,cy,sc*0.5);
+    grd.addColorStop(0,`rgba(255,255,255,${hingeFlash*0.3})`);
+    grd.addColorStop(0.5,`rgba(0,255,255,${hingeFlash*0.15})`);
+    grd.addColorStop(1,'transparent');
+    ctx.beginPath(); ctx.arc(cx,cy,sc*0.5,0,PI*2);
+    ctx.fillStyle=grd; ctx.fill();
+
+    if(hingeFlash>0.3){
+      ctx.fillStyle=`rgba(255,255,255,${hingeFlash})`;
+      ctx.font=`bold ${Math.round(11+hingeFlash*4)}px Courier New`;
+      ctx.textAlign='center';
+      ctx.fillText('P(0)=0 — HINGE OPEN',cx,cy-8);
+      ctx.fillText('COLOR ROTATES → NEXT BORN',cx,cy+12);
+      ctx.textAlign='left';
+    }
+  }
+
+  // ---- Lock status ----
+  // Show which gluons are waiting
+  const stages = gluons.map(g=>Math.min(4,Math.floor(g.t/STAGE_LEN)));
+  const waiting = gluons.filter(g=>{
+    const sn=Math.min(4,Math.floor(g.t/STAGE_LEN));
+    return sn===0 && (g.t%STAGE_LEN)/STAGE_LEN < 0.15;
+  });
+
+  const lockEl = document.getElementById('lock_display');
+  if(waiting.length>0){
+    lockEl.textContent = 'G'+(waiting[0].id+1)+' WAITING — hinge must open first';
+    lockEl.style.color='#f44';
+  } else if(hingeFlash>0.5){
+    lockEl.textContent = '⚡ HINGE FIRES — energy recycled — G born';
+    lockEl.style.color='#0ff';
+  } else {
+    lockEl.textContent = 'phase-locked: 3 gluons, 120° offset — quarks confined';
+    lockEl.style.color='#888';
+  }
+
+  // ---- Energy recycling arrow ----
+  // Show energy flowing back from center to quark at hinge
+  if(hingeFlash>0.2){
+    const q = qPos(hingeQuark%3, sc);
+    const arrowFrac = 1-hingeFlash;
+    const ax = cx + (q.x-cx)*arrowFrac;
+    const ay = cy + (q.y-cy)*arrowFrac;
+    ctx.beginPath(); ctx.arc(ax,ay,5,0,PI*2);
+    ctx.fillStyle=`rgba(255,255,255,${hingeFlash})`;
+    ctx.fill();
+  }
+
+  requestAnimationFrame(draw);
+}
+
+draw();
+</script>
+</body>
+</html>

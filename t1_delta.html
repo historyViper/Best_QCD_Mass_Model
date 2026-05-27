@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>T1 — Single Δ</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; touch-action:manipulation; }
+  body { background:#000; color:#fff; font-family:'Courier New',monospace; overflow:hidden; width:100vw; height:100vh; }
+
+  canvas#c { display:block; position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:1; }
+
+  #ui {
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    background:rgba(0,0,0,0.88);
+    padding:10px 14px 8px;
+    display:flex; flex-direction:column; gap:5px;
+    pointer-events:all;
+  }
+  #title { font-size:11px; color:#0ff; letter-spacing:2px; }
+
+  .row { display:flex; align-items:center; gap:10px; }
+  .lbl { font-size:11px; color:#fa0; width:36px; flex-shrink:0; }
+  .lbl2 { font-size:10px; color:#0f8; width:36px; flex-shrink:0; }
+  input[type=range] {
+    flex:1; height:22px; accent-color:#0ff;
+    -webkit-appearance:none; background:transparent; cursor:pointer;
+    position:relative; z-index:200;
+  }
+  input[type=range]::-webkit-slider-runnable-track {
+    height:4px; background:#1a4060; border-radius:2px;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance:none; width:26px; height:26px;
+    border-radius:50%; background:#0ff; cursor:pointer;
+    margin-top:-11px;
+  }
+  .val { font-size:12px; color:#0ff; width:44px; text-align:right; flex-shrink:0; }
+  .locked { font-size:10px; color:#0f8; text-align:center; letter-spacing:1px; }
+
+  #stats {
+    font-size:10px; line-height:1.75; color:#aaa;
+    display:grid; grid-template-columns:1fr 1fr; gap:0 12px;
+  }
+  .s_hi { color:#0ff; }
+  .s_fa { color:#fa0; }
+  .s_gr { color:#0f8; }
+  .s_mg { color:#f0f; }
+
+  #bottom {
+    position:fixed; bottom:0; left:0; right:0; z-index:100;
+    background:rgba(0,0,0,0.88);
+    padding:7px 14px;
+    display:flex; flex-direction:column; gap:2px;
+    pointer-events:none;
+  }
+  .bl { font-size:10px; letter-spacing:1px; }
+  .inv { color:#666; font-size:9px; margin-top:2px; }
+
+  #modring {
+    position:fixed; bottom:80px; right:10px; z-index:100;
+    pointer-events:none;
+  }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div id="ui">
+  <div id="title">T1 MÖBIUS — SINGLE Δ DRIVES BOTH AXES</div>
+  <div class="row">
+    <div class="lbl">Δ X</div>
+    <input type="range" id="sl_delta" min="1" max="89" step="1" value="24">
+    <div class="val" id="v_delta">24°</div>
+  </div>
+  <div class="row">
+    <div class="lbl2">= Y</div>
+    <div style="flex:1; height:4px; background:#0f84; border-radius:2px; position:relative;">
+      <div id="y_track" style="position:absolute;top:0;left:0;height:100%;background:#0f8;border-radius:2px;width:26%"></div>
+    </div>
+    <div class="val" id="v_delta2" style="color:#0f8">24°</div>
+  </div>
+  <div class="locked">X = Y = Δ — locked by geometry</div>
+  <div class="row">
+    <div class="lbl">SPD</div>
+    <input type="range" id="sl_speed" min="1" max="40" step="1" value="12">
+    <div class="val" id="v_speed">×1</div>
+  </div>
+  <div id="stats">
+    <div>STEPS: <span class="s_fa" id="st_steps">15</span></div>
+    <div>WINDS: <span class="s_hi" id="st_winds">1×360°</span></div>
+    <div>OUTER: <span class="s_fa" id="st_outer">30° fixed</span></div>
+    <div>INNER: <span class="s_mg" id="st_inner">24° fixed</span></div>
+    <div>BEAT: <span class="s_mg" id="st_beat">6°=π/30 ✓</span></div>
+    <div>MOD: <span class="s_gr" id="st_mod">MOD-30 ✓</span></div>
+  </div>
+</div>
+
+<canvas id="modring" width="88" height="88"></canvas>
+
+<div id="bottom">
+  <div class="bl" style="color:#fa0">OUTER 30° — parallelogram face (outside)</div>
+  <div class="bl" style="color:#0f8">INNER 24° — Möbius H_beat (inside)</div>
+  <div class="bl" style="color:#f0f">BEAT = 30°−24° = 6° = π/30 — invariant</div>
+  <div class="inv">Δ changes shape. Beat stays. Mod-30 is geometry.</div>
+</div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const mrc = document.getElementById('modring');
+const mrx = mrc.getContext('2d');
+
+let W, H, cx, cy;
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+  cx = W/2; cy = H/2;
+}
+resize();
+window.addEventListener('resize', resize);
+
+let delta = 24;
+let speed = 12;
+let t = 0;
+
+const slDelta = document.getElementById('sl_delta');
+const slSpeed = document.getElementById('sl_speed');
+
+slDelta.addEventListener('input', function() {
+  delta = parseInt(this.value);
+  document.getElementById('v_delta').textContent = delta+'°';
+  document.getElementById('v_delta2').textContent = delta+'°';
+  // update Y mirror track width
+  document.getElementById('y_track').style.width = ((delta-1)/88*100)+'%';
+  updateStats();
+});
+slSpeed.addEventListener('input', function() {
+  speed = parseInt(this.value);
+  document.getElementById('v_speed').textContent = '×'+Math.round(speed/12*10)/10;
+});
+
+function gcd(a,b){ return b===0?a:gcd(b,a%b); }
+
+function computePath(d) {
+  let tor=0, pol=0, steps=0;
+  const pts=[];
+  const MAX=3600;
+  do {
+    pts.push({tor:tor*Math.PI/180, pol:pol*Math.PI/180});
+    tor=(tor+d)%360; pol=(pol+d)%360;
+    steps++;
+  } while((tor!==0||pol!==0)&&steps<MAX);
+  pts.push({tor:0,pol:0});
+  const totalTor=steps*d;
+  const winds=Math.round(totalTor/360);
+  return {pts,steps,winds};
+}
+
+function updateStats() {
+  const {steps,winds} = computePath(delta);
+  document.getElementById('st_steps').textContent = steps;
+  document.getElementById('st_winds').textContent = winds+'×360°';
+  document.getElementById('st_outer').textContent = '30° fixed';
+  document.getElementById('st_inner').textContent = '24° fixed';
+  document.getElementById('st_beat').textContent = '6°=π/30 ✓';
+  document.getElementById('st_mod').textContent = 'MOD-30 ✓';
+}
+updateStats();
+
+function torusPoint(tor,pol,R,r){
+  return {
+    x:(R+r*Math.cos(pol))*Math.cos(tor),
+    y:(R+r*Math.cos(pol))*Math.sin(tor),
+    z:r*Math.sin(pol)
+  };
+}
+
+function proj(p,rX,rY,sc){
+  let x=p.x*Math.cos(rY)+p.z*Math.sin(rY);
+  let z=-p.x*Math.sin(rY)+p.z*Math.cos(rY);
+  let y=p.y;
+  let y2=y*Math.cos(rX)-z*Math.sin(rX);
+  let z2=y*Math.sin(rX)+z*Math.cos(rX);
+  const fov=480;
+  const s=fov/(fov+z2+sc*0.4);
+  return{sx:cx+x*s*sc, sy:cy+y2*s*sc, depth:z2, sc:s};
+}
+
+const NC=['#ff6a00','#00e5ff','#a0ff00','#ff00cc'];
+
+function drawRing(d){
+  const mw=mrc.width, mh=mrc.height;
+  mrx.clearRect(0,0,mw,mh);
+  const cr=mw*0.36, ccx=mw/2, ccy=mh/2;
+  mrx.beginPath(); mrx.arc(ccx,ccy,cr,0,Math.PI*2);
+  mrx.strokeStyle='#1a4060'; mrx.lineWidth=1; mrx.stroke();
+
+  // Z30* dots
+  [1,7,11,13,17,19,23,29].forEach(r=>{
+    const a=r*Math.PI*2/30-Math.PI/2;
+    mrx.beginPath();
+    mrx.arc(ccx+cr*Math.cos(a), ccy+cr*Math.sin(a), 3,0,Math.PI*2);
+    mrx.fillStyle='#0ff'; mrx.fill();
+  });
+
+  // Delta steps
+  const {steps} = computePath(d);
+  for(let i=0;i<Math.min(steps,120);i++){
+    const a=(i*d%360)*Math.PI/180-Math.PI/2;
+    mrx.beginPath();
+    mrx.arc(ccx+cr*0.65*Math.cos(a), ccy+cr*0.65*Math.sin(a), 2,0,Math.PI*2);
+    mrx.fillStyle='#fa06'; mrx.fill();
+  }
+
+  // Outer 30° arc
+  mrx.beginPath();
+  mrx.arc(ccx,ccy,cr*1.13,-Math.PI/2,-Math.PI/2+Math.PI/6);
+  mrx.strokeStyle='#fa0'; mrx.lineWidth=2.5; mrx.stroke();
+  // Inner 24° arc
+  mrx.beginPath();
+  mrx.arc(ccx,ccy,cr*0.5,-Math.PI/2,-Math.PI/2+Math.PI*24/180);
+  mrx.strokeStyle='#0f8'; mrx.lineWidth=2.5; mrx.stroke();
+
+  mrx.font='7px Courier New';
+  mrx.fillStyle='#fa0'; mrx.fillText('30°',ccx+cr*1.16,ccy-cr*0.1);
+  mrx.fillStyle='#0f8'; mrx.fillText('24°',ccx+cr*0.35,ccy-cr*0.55);
+  mrx.fillStyle='#f0f'; mrx.fillText('Δ='+d+'°',ccx-10,ccy+cr*1.32);
+}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  const rY=t*0.28;
+  const rX=-0.38+Math.sin(t*0.06)*0.05;
+  const sc=Math.min(W,H)*0.185;
+  const R=1.0, r=0.38;
+
+  // faint torus
+  ctx.globalAlpha=0.06;
+  const TU=28,TV=14;
+  for(let i=0;i<TU;i++){
+    const u1=(i/TU)*Math.PI*2,u2=((i+1)/TU)*Math.PI*2;
+    for(let j=0;j<TV;j++){
+      const v1=(j/TV)*Math.PI*2,v2=((j+1)/TV)*Math.PI*2;
+      const a=proj(torusPoint(u1,v1,R,r),rX,rY,sc);
+      const b=proj(torusPoint(u2,v1,R,r),rX,rY,sc);
+      const c2=proj(torusPoint(u2,v2,R,r),rX,rY,sc);
+      const d2=proj(torusPoint(u1,v2,R,r),rX,rY,sc);
+      ctx.beginPath();
+      ctx.moveTo(a.sx,a.sy); ctx.lineTo(b.sx,b.sy);
+      ctx.lineTo(c2.sx,c2.sy); ctx.lineTo(d2.sx,d2.sy);
+      ctx.closePath(); ctx.fillStyle='#0a2030'; ctx.fill();
+    }
+  }
+  ctx.globalAlpha=1;
+
+  // path
+  const {pts,steps} = computePath(delta);
+  const noodleSz=Math.max(1,Math.floor(steps/4));
+  const INTERP=10;
+  const sPts=[];
+  for(let i=0;i<pts.length-1;i++){
+    for(let k=0;k<INTERP;k++){
+      const f=k/INTERP;
+      let dtor=pts[i+1].tor-pts[i].tor;
+      let dpol=pts[i+1].pol-pts[i].pol;
+      if(dtor<-Math.PI) dtor+=Math.PI*2;
+      if(dpol<-Math.PI) dpol+=Math.PI*2;
+      const tor=pts[i].tor+dtor*f;
+      const pol=pts[i].pol+dpol*f;
+      const ni=Math.floor(i/noodleSz)%4;
+      sPts.push({...proj(torusPoint(tor,pol,R,r),rX,rY,sc),ni,idx:i});
+    }
+  }
+
+  const segN=pts.length-1;
+  Array.from({length:segN},(_,i)=>i)
+    .sort((a,b)=>(sPts[a*INTERP]?.depth||0)-(sPts[b*INTERP]?.depth||0))
+    .forEach(i=>{
+      const chunk=sPts.slice(i*INTERP,(i+1)*INTERP+1);
+      if(chunk.length<2) return;
+      ctx.beginPath();
+      ctx.moveTo(chunk[0].sx,chunk[0].sy);
+      for(let k=1;k<chunk.length;k++) ctx.lineTo(chunk[k].sx,chunk[k].sy);
+      ctx.strokeStyle=NC[chunk[0].ni];
+      ctx.lineWidth=3; ctx.globalAlpha=0.85; ctx.stroke(); ctx.globalAlpha=1;
+    });
+
+  // markers
+  pts.slice(0,-1).forEach((pt,i)=>{
+    const pr=proj(torusPoint(pt.tor,pt.pol,R,r),rX,rY,sc);
+    ctx.beginPath();
+    ctx.arc(pr.sx,pr.sy,5*pr.sc,0,Math.PI*2);
+    ctx.fillStyle=NC[Math.floor(i/noodleSz)%4];
+    ctx.globalAlpha=0.9; ctx.fill(); ctx.globalAlpha=1;
+  });
+
+  // outer 30° arc annotation
+  {
+    const A=20;
+    ctx.beginPath();
+    for(let k=0;k<=A;k++){
+      const a=(k/A)*(Math.PI/6);
+      const pr=proj(torusPoint(a,0,R+r*1.25,0.01),rX,rY,sc);
+      k===0?ctx.moveTo(pr.sx,pr.sy):ctx.lineTo(pr.sx,pr.sy);
+    }
+    ctx.strokeStyle='#fa0'; ctx.lineWidth=3.5; ctx.globalAlpha=0.95; ctx.stroke(); ctx.globalAlpha=1;
+    const mp=proj(torusPoint(Math.PI/12,0,R+r*1.65,0.01),rX,rY,sc);
+    ctx.fillStyle='#fa0'; ctx.font='bold 13px Courier New'; ctx.fillText('30°',mp.sx-10,mp.sy);
+  }
+
+  // inner 24° arc annotation
+  {
+    const A=20;
+    ctx.beginPath();
+    for(let k=0;k<=A;k++){
+      const a=(k/A)*(Math.PI*24/180);
+      const pr=proj(torusPoint(a,Math.PI,R-r*1.2,0.01),rX,rY,sc);
+      k===0?ctx.moveTo(pr.sx,pr.sy):ctx.lineTo(pr.sx,pr.sy);
+    }
+    ctx.strokeStyle='#0f8'; ctx.lineWidth=3.5; ctx.globalAlpha=0.95; ctx.stroke(); ctx.globalAlpha=1;
+    const mp=proj(torusPoint(Math.PI*12/180,Math.PI,R-r*1.7,0.01),rX,rY,sc);
+    ctx.fillStyle='#0f8'; ctx.font='bold 13px Courier New'; ctx.fillText('24°',mp.sx-10,mp.sy);
+  }
+
+  // beat label
+  ctx.fillStyle='#f0f'; ctx.font='bold 12px Courier New';
+  ctx.textAlign='center';
+  ctx.fillText('6° = π/30',cx,cy+sc*1.42);
+  ctx.textAlign='left';
+
+  drawRing(delta);
+
+  t+=speed*0.001;
+  requestAnimationFrame(draw);
+}
+
+draw();
+</script>
+</body>
+</html>
