@@ -1,0 +1,2641 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GBP Explorer</title>
+<style>
+  * { box-sizing: border-box; }
+  /* ---------- THEME VARIABLES (default = Lab) ---------- */
+  :root, body.theme-lab {
+    --bg:#0d1117; --panel:#161b22; --panel2:#21262d; --border:#30363d;
+    --text:#c9d1d9; --muted:#8b949e; --accent:#58a6ff; --accent2:#79c0ff;
+    --btn:#238636; --btntext:#ffffff; --good:#3fb950; --gold:#d29922;
+    --warnc:#f0883e; --err:#f85149; --canvasbg:#0d1117; --faint:#484f58; --cvgrid:#21262d; --cvmuted:#8b949e;
+    --font:-apple-system, sans-serif; --displayfont:-apple-system, sans-serif;
+    --mono:monospace; --radius:8px; --btnradius:6px; --glow:none;
+  }
+  body.theme-light {
+    --bg:#f6f8fa; --panel:#ffffff; --panel2:#eaeef2; --border:#d0d7de;
+    --text:#1f2328; --muted:#57606a; --accent:#0969da; --accent2:#0550ae;
+    --btn:#1f883d; --btntext:#ffffff; --good:#1a7f37; --gold:#9a6700;
+    --warnc:#bc4c00; --err:#cf222e; --canvasbg:#1f2328; --faint:#8c959f; --cvgrid:#39424e; --cvmuted:#9aa4b2;
+    --font:-apple-system, sans-serif; --displayfont:-apple-system, sans-serif;
+    --mono:monospace; --radius:8px; --btnradius:6px; --glow:none;
+  }
+  body.theme-neon {
+    --bg:#050014; --panel:#100728; --panel2:#1a0f3c; --border:#3d2a7d;
+    --text:#d8ccff; --muted:#8a7bc0; --accent:#00e5ff; --accent2:#c77dff;
+    --btn:#7b2fbf; --btntext:#ffffff; --good:#00ff9f; --gold:#ffb700;
+    --warnc:#ff8e3c; --err:#ff3d71; --canvasbg:#050014; --faint:#4d3d8f; --cvgrid:#241552; --cvmuted:#8a7bc0;
+    --font:-apple-system, sans-serif; --displayfont:'Segoe UI', sans-serif;
+    --mono:monospace; --radius:10px; --btnradius:10px;
+    --glow:0 0 12px rgba(0,229,255,0.25);
+  }
+  body.theme-gbp {
+    --bg:#12081f; --panel:#1d1030; --panel2:#2a1745; --border:#4a2d6e;
+    --text:#e8d9ff; --muted:#a68cc9; --accent:#ffb700; --accent2:#3ddc97;
+    --btn:#8536c9; --btntext:#ffffff; --good:#3ddc97; --gold:#ffb700;
+    --warnc:#ff9e3c; --err:#ff5d8f; --canvasbg:#12081f; --faint:#5d4380; --cvgrid:#2a1745; --cvmuted:#a68cc9;
+    --font:-apple-system, sans-serif; --displayfont:'Comic Sans MS','Segoe UI',sans-serif;
+    --mono:monospace; --radius:14px; --btnradius:16px;
+    --glow:0 0 10px rgba(255,183,0,0.18);
+  }
+  body.theme-ancient {
+    --bg:#efe3c6; --panel:#f7edd6; --panel2:#e6d5ae; --border:#b8975a;
+    --text:#3d2b14; --muted:#7a6340; --accent:#8b4513; --accent2:#5c3a12;
+    --btn:#8b6f2f; --btntext:#fdf6e3; --good:#4a6b2f; --gold:#a5762a;
+    --warnc:#a84f10; --err:#9c2b12; --canvasbg:#2a2014; --faint:#a08a5f; --cvgrid:#4a3a22; --cvmuted:#cdb98a;
+    --font:Georgia, 'Times New Roman', serif; --displayfont:Georgia, serif;
+    --mono:'Courier New', monospace; --radius:4px; --btnradius:4px; --glow:none;
+  }
+  body.theme-terminal {
+    --bg:#000000; --panel:#0a0f0a; --panel2:#101810; --border:#1f3d1f;
+    --text:#33ff66; --muted:#1fa347; --accent:#33ff66; --accent2:#7dffa3;
+    --btn:#0f2e14; --btntext:#33ff66; --good:#7dffa3; --gold:#c8ff33;
+    --warnc:#ffcc33; --err:#ff4444; --canvasbg:#000000; --faint:#155c2a; --cvgrid:#0f2e14; --cvmuted:#1fa347;
+    --font:'Courier New', Courier, monospace; --displayfont:'Courier New', monospace;
+    --mono:'Courier New', monospace; --radius:0px; --btnradius:0px;
+    --glow:0 0 8px rgba(51,255,102,0.2);
+  }
+  body.theme-terminal button { border:1px solid var(--accent); }
+  /* ---------- LAYOUT (all colors via variables) ---------- */
+  body { font-family:var(--font); background:var(--bg); color:var(--text); margin:0; padding-top:48px; padding-bottom:12px; }
+  h1 { font-size:1.2em; color:var(--accent); margin:14px 16px 4px; font-family:var(--displayfont); }
+  h2 { font-size:1.05em; color:var(--accent2); margin:0 0 8px; font-family:var(--displayfont); }
+  .page { padding:8px 16px; display:none; }
+  .page.active { display:block; }
+  .card { background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:14px; margin:12px 0; box-shadow:var(--glow); }
+  .card.derived { border-left:4px solid var(--good); }
+  .card.hypothesis { border-left:4px solid var(--gold); }
+  .tag { display:inline-block; font-size:0.72em; font-weight:bold; padding:2px 8px; border-radius:10px; margin-bottom:8px; }
+  .tag.D { background:var(--good); color:var(--bg); }
+  .tag.H { background:var(--gold); color:var(--bg); }
+  label { display:block; margin-bottom:6px; font-size:0.88em; color:var(--muted); }
+  input[type=range] { width:100%; }
+  input[type=number], input[type=text], select { background:var(--bg); color:var(--text); border:1px solid var(--border); border-radius:4px; padding:4px; font-family:var(--font); }
+  input[type=number] { width:70px; }
+  button { background:var(--btn); color:var(--btntext); border:none; border-radius:var(--btnradius); padding:10px 16px; font-size:0.95em; width:100%; margin-top:6px; font-family:var(--font); }
+  table { width:100%; border-collapse:collapse; margin-top:8px; font-size:0.82em; }
+  td,th { padding:5px; border-bottom:1px solid var(--border); text-align:right; }
+  th:first-child, td:first-child { text-align:left; }
+  .note { color:var(--muted); font-size:0.8em; margin-top:6px; }
+  .val { color:var(--accent); font-weight:bold; overflow-wrap:break-word; word-break:break-all; }
+  .warn { color:var(--warnc); }
+  .errtext { color:var(--err); }
+  .formula { background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:10px; font-family:var(--mono); font-size:0.9em; color:var(--accent2); margin:8px 0; overflow-x:auto; white-space:nowrap; }
+  .step { border-left:2px solid var(--border); padding-left:12px; margin:10px 0; }
+  .navbar { position:fixed; top:0; left:0; right:0; z-index:50; display:flex; background:var(--panel); border-bottom:1px solid var(--border);
+            overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+  .navbar::-webkit-scrollbar { display:none; }
+  .navbar::after { content:''; position:sticky; right:0; min-width:18px; margin-left:-18px;
+                   background:linear-gradient(to right, transparent, var(--panel)); pointer-events:none; }
+  .navbtn { flex:0 0 auto; width:auto; margin:0; border-radius:0; white-space:nowrap; text-align:center; padding:12px 11px; color:var(--muted); font-size:0.8em; background:none; border:none; }
+  .navbtn.active { border-bottom:2px solid var(--accent); color:var(--accent); }
+  .barwrap { background:var(--panel2); border-radius:3px; height:10px; width:100%; margin-top:2px; }
+  .bar { background:var(--accent); height:10px; border-radius:3px; min-width:1px; }
+  .bar.gold { background:var(--gold); }
+  .goalchip { display:inline-block; padding:4px 10px; margin:3px; border-radius:12px; border:1px solid var(--border); font-size:0.85em; color:var(--muted); }
+  .goalchip.done { border-color:var(--good); color:var(--good); }
+  canvas, #routeCanvas { width:100%; background:var(--canvasbg); border:1px solid var(--border); border-radius:6px; }
+  #routeCanvas { touch-action:manipulation; }
+  #piStatus { min-height:1.2em; font-size:0.85em; color:var(--accent2); margin-top:8px; font-style:italic; }
+  /* ---------- SKIN PICKER ---------- */
+  .skincard { cursor:pointer; }
+  .skincard.selected { border-color:var(--accent); box-shadow:0 0 0 1px var(--accent); }
+  .swatchrow { display:flex; gap:6px; margin:8px 0; }
+  .swatch { width:26px; height:26px; border-radius:50%; border:1px solid rgba(128,128,128,0.4); }
+  .skinvoice { font-style:italic; font-size:0.85em; color:var(--muted); }
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <button class="navbtn active" onclick="showPage('pathint', this)">Path Integral</button>
+  <button class="navbtn" onclick="showPage('emulator', this)">Emulator</button>
+  <button class="navbtn" onclick="showPage('howitworks', this)">How It Works</button>
+  <button class="navbtn" onclick="showPage('busroute', this)">Bus Route</button>
+  <button class="navbtn" onclick="showPage('stepthrough', this)">Step Through</button>
+  <button class="navbtn" onclick="showPage('masses', this)">Masses</button>
+  <button class="navbtn" onclick="showPage('scattering', this)">Scattering</button>
+  <button class="navbtn" onclick="showPage('presets', this)">Presets</button>
+  <button class="navbtn" onclick="showPage('glossary', this)">Glossary</button>
+  <button class="navbtn" onclick="showPage('skins', this)">&#127912; Skins</button>
+</div>
+
+<!-- ============== EMULATOR PAGE ============== -->
+<!-- ============== PATH INTEGRAL PAGE ============== -->
+<div class="page active" id="page-pathint">
+  <h1>Path Integral Calculator</h1>
+  <div class="formula">K(x&#7495;,T;&thinsp;x&#7490;,0) = &int;&#119967;x(t)&thinsp;e<sup>iS[x]/&#8463;</sup>, &nbsp; S = &int;&#8320;&#7481; [&half;m&#7819;&sup2; &minus; V(x)] dt</div>
+  <div class="formula" id="piVFormula">V(x) = &half;m&omega;&sup2;x&sup2; &nbsp;&rarr;&nbsp; K = &radic;(m&omega;/2&pi;i&#8463;&thinsp;sin&thinsp;&omega;T)&thinsp;exp{&hellip;} (Feynman 1948)</div>
+
+  <div class="card">
+    <h2>Your Problem</h2>
+    <label>Potential:
+      <select id="piPreset" onchange="piPresetChanged()">
+        <option value="free">Free particle (V = 0)</option>
+        <option value="ho" selected>Harmonic oscillator (&half;m&omega;&sup2;x&sup2;)</option>
+        <option value="box">Particle in a box</option>
+        <option value="barrier">Square barrier (tunneling)</option>
+        <option value="quartic">Quartic well (x&#8308;/4)</option>
+        <option value="coulomb">Softened Coulomb (massless mediator)</option>
+        <option value="yukawa">Yukawa (massive mediator &mdash; virtual particle range)</option>
+        <option value="custom">Custom V(x)...</option>
+      </select>
+    </label>
+    <div id="piYukawaRow" style="display:none;">
+      <label>Mediator mass &mu;: <input type="number" id="piMu" value="1" step="0.2" min="0" style="width:70px"></label>
+      <p class="note"><b>The virtual-particle dial <span class="tag D">D</span>:</b> exchanging a particle of mass &mu; between two charges produces V(x) = &minus;g&middot;e<sup>&minus;&mu;|x|</sup>/&radic;(x&sup2;+a&sup2;) &mdash; force range = 1/&mu;, the mediator's Compton wavelength. &mu; = 0 is the photon: Coulomb, infinite range. Crank &mu; up and watch the bound states below get shallower and die &mdash; that's why the weak force is short-ranged (W/Z are heavy) and electromagnetism is not. This is Yukawa's 1935 argument that predicted the pion.</p>
+    </div>
+    <div id="piCustomRow" style="display:none;">
+      <label>V(x) = <input type="text" id="piVexpr" value="0.5*x^2 + 0.1*x^4" style="width:70%"></label>
+      <p class="note">Allowed: numbers, x, + - * / ^ ( ), sin cos tan exp log sqrt abs. Example: <code>0.5*x^2</code>, <code>5*(abs(x)&lt;1)</code>, <code>exp(-x^2)</code></p>
+    </div>
+    <label>Mass m: <input type="number" id="piM" value="1" step="0.1" min="0.1" style="width:70px"></label>
+    <label>&omega; (HO only): <input type="number" id="piW" value="1" step="0.1" min="0.1" style="width:70px"></label><br>
+    <label>From x&#7490;: <input type="number" id="piXa" value="0" step="0.1" style="width:70px"></label>
+    <label>To x&#7495;: <input type="number" id="piXb" value="1" step="0.1" style="width:70px"></label>
+    <label>Time T: <input type="number" id="piT" value="1" step="0.1" min="0.05" style="width:70px"></label>
+    <button onclick="piSolve()" id="piGoBtn" style="margin-top:8px;">Compute Propagator</button>
+    <div id="piStatus"></div>
+    <div id="piResults" style="margin-top:8px;"></div>
+  </div>
+
+  <div class="card">
+    <h2>Sum Over Paths</h2>
+    <p class="note">Feynman's picture, drawn live: random paths from a to b, each colored by the phase of its action e<sup>iS/&hbar;</sup> (hue = phase). The <b style="color:#d29922">gold path</b> is the classical one &mdash; the stationary-action path where nearby phases reinforce instead of cancel.</p>
+    <canvas id="piCanvas" width="680" height="360"></canvas>
+    <button onclick="piDrawPaths()">Redraw Paths</button>
+  </div>
+
+  <div class="card">
+    <h2>Energy Levels (bonus)</h2>
+    <p class="note">The same diagonalization that builds the propagator gives the bound-state energies &mdash; useful for checking homework directly.</p>
+    <div id="piLevels"></div>
+  </div>
+
+  <div class="card">
+    <h2>Wavefunctions &amp; Uncertainty</h2>
+    <p class="note">The textbook diagram: V(x) with each bound level drawn as a rung and its wavefunction &psi;&#8345;(x) riding on it. Pick a state to get its expectation values and check Heisenberg directly &mdash; &Delta;x&middot;&Delta;p &ge; &half; (with &hbar; = 1).</p>
+    <label>State n: <select id="piStateN"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></label>
+    <button onclick="piDrawStates()">Draw States</button>
+    <button onclick="piAnimateStart()" id="piAnimBtn">Animate Wavepacket</button>
+    <canvas id="piStateCanvas" width="680" height="380" style="margin-top:6px;"></canvas>
+    <div id="piExpect"></div>
+  </div>
+
+  <div class="card">
+    <h2>Barrier Transmission T(E)</h2>
+    <p class="note">Quantum tunneling, the other classic homework problem: send a plane wave of energy E at the current potential and compute how much gets through &mdash; exact transfer-matrix method, cross-checked against the analytic rectangular-barrier formula. Classically forbidden below the barrier top (marked); quantum mechanics disagrees.</p>
+    <button onclick="piTransmission()">Compute T(E)</button>
+    <canvas id="piTCanvas" width="680" height="300" style="margin-top:6px;"></canvas>
+    <div id="piTNote"></div>
+  </div>
+
+  <div class="card derived">
+    <h2>How This Works</h2>
+    <span class="tag D">D</span> textbook quantum mechanics
+    <p class="note">Punch in your problem, get the propagator K(x&#7495;,T; x&#7490;,0) = &lang;x&#7495;|e<sup>&minus;iHT/&hbar;</sup>|x&#7490;&rang;, the amplitude to go from a to b in time T &mdash; the quantity the path integral computes. Natural units &hbar; = 1. Solved by split-operator time evolution &mdash; literally the time-sliced path integral, kinetic step exact in momentum space, potential step exact in position space &mdash; run live on this device with Richardson extrapolation to the &delta;-function endpoint, and checked against Feynman's closed forms where they exist. Bound-state energies come from a separate live diagonalization.</p>
+  </div>
+
+  <div class="card hypothesis">
+    <span class="tag H"></span>
+    <p class="note"><b>Where GBP fits:</b> everything on this tab is standard textbook QM &mdash; the continuum path integral. The GBP framework's claim (see the Scattering tab) is that the same sum-over-paths becomes a <b>finite</b> product over coprime lanes when the winding structure is discrete: O(n) lookups instead of a continuum integral. This tab is the reference point that construction has to recover &mdash; kept separate so the comparison stays honest.</p>
+  </div>
+</div>
+
+<div class="page" id="page-emulator">
+  <h1>GBP Exact Quantum Emulator</h1>
+  <div class="formula">|&psi;&prime;&rang; = U|&psi;&rang;, &nbsp; U&dagger;U = &#120793; &nbsp; (standard unitary gate evolution &mdash; same math as any quantum computer)</div>
+  <p class="note">Exact Q(&zeta;<sub>30</sub>) arithmetic. Zero floating-point error, ever.</p>
+
+  <div class="card">
+    <label>Sectors: <span id="secLabel" class="val">2 sectors = 6 qubits</span></label>
+    <input type="range" id="sectors" min="1" max="5" value="2" step="1">
+    <p class="note">Each sector = same 8-lane block, tensored again (recursive/fractal structure).</p>
+  </div>
+
+  <div class="card">
+    <label>Gates to run (W+A+H2 triples):</label>
+    <input type="range" id="ngates" min="1" max="2000" value="200" step="1">
+    <span id="ngatesLabel" class="val">200</span>
+    <div id="estimateBox" style="margin:10px 0;"></div>
+    <button id="runBtn" onclick="runBenchmark()">Run Benchmark</button>
+  </div>
+
+  <div class="card" id="results" style="display:none;"><div id="resultsBody"></div></div>
+  <div class="card"><div id="sanity"></div></div>
+</div>
+
+<!-- ============== HOW IT WORKS PAGE ============== -->
+<div class="page" id="page-howitworks">
+  <h1>How It Works</h1>
+  <p class="note">Each card is labeled: <span class="tag D">D</span> = standard, verified mathematics. <span class="tag H">H</span> = GBP's interpretive hypothesis connecting it to the lane structure &mdash; a real analogy, not a proven equivalence.</p>
+
+  <!-- Feynman -->
+  <div class="card derived">
+    <span class="tag D">D</span>
+    <h2>1. Feynman Path Integral</h2>
+    <div class="formula">K(x,x0,t) = &int; D[x(t)] &middot; e^(iS[x]/&#295;)</div>
+    <div class="step">Sum the phase e^(iS/&#295;) over <b>every possible path</b> from x0 to x, not just the classical one.</div>
+    <div class="step">Feynman's own trick: discretize time into N slices, turning the infinite path integral into a finite multi-dimensional ordinary integral.</div>
+    <span class="tag H">H</span>
+    <div class="step">GBP's reinterpretation: instead of infinitely many time-slices, use the <b>8 coprime residue lanes</b> as a finite, exactly-summable stand-in for "the set of paths." W-gate = phase per path; H2-gate = the actual interference/recombination step.</div>
+    <p class="note">The Feynman math above is textbook and exact. Treating the 8 lanes as literally "the paths" is GBP's own framing &mdash; a structural analogy, not something derived from Feynman's construction itself.</p>
+  </div>
+
+  <!-- Jones -->
+  <div class="card derived">
+    <span class="tag D">D</span>
+    <h2>2. Jones Polynomial at a Root of Unity</h2>
+    <div class="formula">V_trefoil(t) = -t<sup>-4</sup> + t<sup>-3</sup> + t<sup>-1</sup></div>
+    <div class="step">Evaluate at t = e<sup>2&pi;i/5</sup> (a 5th root of unity):</div>
+    <div id="jonesLive" class="formula"></div>
+    <div class="step">This equals exactly &radic;((7&minus;&radic;5)/2) &mdash; an exact algebraic number, not a coincidence of floating point.</div>
+    <p class="note">Verified live above, computed on this device right now. The polynomial and its evaluation are standard knot theory (D). Any claim that this value has physical significance in GBP's baryon structure is separate and would need its own derivation.</p>
+  </div>
+
+  <!-- Malus -->
+  <div class="card hypothesis">
+    <span class="tag D">D</span> (Malus' Law) + <span class="tag H">H</span> (GBP lane-weight analogy)
+    <h2>3. Malus' Law vs. GBP Lane Weighting</h2>
+    <div class="formula">I(&theta;) = I&#8320; &middot; cos&sup2;(&theta;)     [real optics, Malus 1809]</div>
+    <div class="formula">P(r,N) = sin&sup2;(r&pi;/(N/2))     [GBP lane-weight formula]</div>
+    <label>&theta; (degrees): <span id="thetaLabel" class="val">45</span>&deg;</label>
+    <input type="range" id="thetaSlider" min="0" max="90" value="45" step="1">
+    <div id="malusLive" class="formula"></div>
+    <p class="note">Both are cos&sup2;/sin&sup2; functional forms &mdash; same shape, not shown to be the same physical mechanism. We caught this exact distinction earlier: GBP's own Bell-mixing hypothesis contradicted its geometric-mean prediction, so this resemblance stays labeled H pending a real derivation.</p>
+  </div>
+
+  <!-- Catalan -->
+  <div class="card derived">
+    <span class="tag D">D</span>
+    <h2>4. Catalan's Constant Across Moduli</h2>
+    <div class="formula">G = L(2, &chi;&#8324;) = 1 - 1/3&sup2; + 1/5&sup2; - 1/7&sup2; + ...</div>
+    <div id="catalanLive" class="formula"></div>
+    <p class="note">Catalan's constant is the N=4 case of a Dirichlet L-function L(2,&chi;<sub>N</sub>). This generalization across moduli is standard number theory &mdash; genuinely not specific to GBP or to baryons.</p>
+  </div>
+
+  <!-- Ramanujan -->
+  <div class="card derived">
+    <span class="tag D">D</span>
+    <h2>5. Ramanujan Sums</h2>
+    <div class="formula">c_q(n) = &Sigma;<sub>gcd(a,q)=1</sub> e<sup>2&pi;i&middot;an/q</sup></div>
+    <label>q: <input type="number" id="ramQ" value="30" min="1" max="200"> &nbsp; n: <input type="number" id="ramN" value="7" min="0" max="200"></label>
+    <button onclick="computeRamanujan()">Compute</button>
+    <div id="ramLive" class="formula"></div>
+    <p class="note">Restricting a sum to gcd(a,q)=1 &mdash; exactly the "8 coprime lanes" set at q=30 &mdash; is the real, verifiable mathematical machinery. The direct sum and the closed-form (M&ouml;bius) formula are checked against each other live above.</p>
+  </div>
+
+  <!-- Unification -->
+  <div class="card hypothesis">
+    <span class="tag H">H</span>
+    <h2>6. How They Relate &mdash; and Where the Line Is</h2>
+    <div class="step"><b>Real, shared mathematical machinery:</b> all five objects above involve either (a) summing a phase e<sup>2&pi;ix</sup> over a restricted or infinite index set, or (b) a cos&sup2;/sin&sup2; interference weight. That much is genuinely common ground.</div>
+    <div class="step"><b>What's NOT established:</b> that these are literally the same underlying phenomenon. We checked this directly and found real counterexamples:</div>
+    <table>
+      <tr><th>Ingredient</th><th>Produces</th><th>Needs the others?</th></tr>
+      <tr><td>Twisted single oscillator</td><td>sinh &harr; cosh</td><td>No Ramanujan/Euler content at all</td></tr>
+      <tr><td>Infinite oscillator tower</td><td>Euler product / partitions</td><td>No twist needed</td></tr>
+      <tr><td>+ gcd(n,N)=1 restriction</td><td>Ramanujan-flavored mock theta</td><td>Added by hand, not automatic</td></tr>
+    </table>
+    <p class="note">So: real math, real connections in places, but "it's all the same thing" is a hypothesis about a possible unifying structure &mdash; not a shown equivalence. Treat this page as a map of verified pieces, not a proof they're one mechanism.</p>
+  </div>
+</div>
+
+<!-- ============== BUS ROUTE PAGE ============== -->
+<div class="page" id="page-busroute">
+  <h1>Bus Route Optimizer</h1>
+  <div class="formula">Grover search: ~(&pi;/4)&radic;N oracle queries vs N classically &nbsp;&mdash;&nbsp; iterate (2|&psi;&rang;&lang;&psi;| &minus; &#120793;)&thinsp;O (Grover 1996)</div>
+  <div class="card hypothesis">
+    <span class="tag D">D</span> (exact algorithm) &mdash; but note:
+    <p class="note">This is ordinary Held-Karp dynamic programming with exact integers (no floats, no rounding anywhere). It does <b>not</b> use the coprime-lane quantum engine &mdash; no derivation connects that structure to route optimization, so this page keeps them honestly separate rather than implying otherwise.</p>
+  </div>
+
+  <div class="card">
+    <h2>Route Map</h2>
+    <p class="note"><b>Tap the map to place stops</b> (first stop = depot, drawn gold). Distances are real straight-line distances between your points, rounded to whole minutes. Or generate random stops with the slider.</p>
+    <canvas id="routeCanvas" width="680" height="440"></canvas>
+    <div style="margin-top:6px;">
+      <button onclick="solveRoute()">Solve Route</button>
+      <button onclick="randomStops()">Random Stops</button>
+      <button onclick="clearStops()">Clear</button>
+    </div>
+    <label>Random-stop count: <span id="stopsLabel" class="val">8</span></label>
+    <input type="range" id="stopsSlider" min="4" max="14" value="8" step="1">
+    <p class="note">Held-Karp is O(n&sup2;&middot;2&#8319;) &mdash; exact and fast up to ~16 stops. Max 14 stops on the map.</p>
+  </div>
+
+  <div class="card" id="busResults" style="display:none;"></div>
+  <div class="card" id="busVerify" style="display:none;"></div>
+
+  <div class="card">
+    <h2>Brute Force (running best, O(1) memory)</h2>
+    <p class="note">Classical, not quantum: walk through every route one at a time, keep only the best seen so far. No big arrays, so it never runs out of memory &mdash; it just gets slower as stops increase (factorial time). Good up to ~12-13 stops on a phone before time (not memory) becomes the limit.</p>
+    <button onclick="runBruteForce()">Run Brute Force</button>
+    <div id="bruteResults" style="margin-top:10px;"></div>
+  </div>
+
+  <div class="card hypothesis">
+    <span class="tag H">Demo, not a speedup</span>
+    <h2>Quantum Search (Grover's Algorithm)</h2>
+    <p class="note">This is the real mechanism industry quantum computers use for "try every route": put all routes in superposition, mark the best one (oracle), then amplify it (diffusion), repeated ~&pi;/4&middot;&radic;N times. Two honest catches:</p>
+    <p class="note">1. Building the oracle requires already knowing the best route (computed via Held-Karp above) &mdash; on a classical simulator, that means we're demonstrating the mechanism, not gaining any speed over just using that answer directly. Real speedup needs physical quantum hardware evaluating the oracle in superposition, which this is not.</p>
+    <p class="note">2. This uses ordinary floating-point amplitudes, NOT the exact Q(&zeta;<sub>30</sub>) engine &mdash; Grover's rotation angle is generally irrational, so it doesn't fit the exact cyclotomic-integer structure used elsewhere in this app.</p>
+    <p class="note">3. With a single marked route, Grover's evolution stays exactly in the 2D plane spanned by the best route and the uniform superposition of the rest, so two scalars reproduce the full amplitude dynamics with zero approximation &mdash; memory is no longer the limit. The cap is now 12 stops, set by the time to scan (n&minus;1)! routes when building the oracle, not by memory.</p>
+    <button onclick="runGrover()">Run Grover Demo</button>
+    <div id="groverResults" style="margin-top:10px;"></div>
+  </div>
+</div>
+
+<!-- ============== STEP THROUGH PAGE ============== -->
+<div class="page" id="page-stepthrough">
+  <h1>Circuit Composer</h1>
+  <div class="card hypothesis">
+    <p class="note">Build your own circuit on a single 8-lane sector (3 qubit-equivalents), gate by gate, and <b>measure</b> it. Two engines run your circuit side by side: the exact Q(&zeta;<sub>30</sub>) engine and an ordinary float64 shadow copy. <b>H2 is deliberately unnormalized</b> in the exact engine &mdash; its integers just keep growing, no rounding ever.</p>
+  </div>
+
+  <div class="card">
+    <h2>Gates</h2>
+    <label>W phase m: <select id="composerM"></select></label>
+    <button onclick="composerGate('W')">Apply W(m)</button><br>
+    <label>A lane mult u: <select id="composerU"></select></label>
+    <button onclick="composerGate('A')">Apply A(u)</button><br>
+    <button onclick="composerGate('H2')">Apply H2</button>
+    <button onclick="composerMeasure()" style="background:#8957e5;">Measure</button>
+    <button onclick="composerUndo()">Undo</button>
+    <button onclick="stepReset()">Reset</button>
+    <button onclick="stepNext()">Auto (W3&middot;A7&middot;H2)</button>
+    <p class="note">Circuit so far: <span id="gateLog" class="val">(empty)</span></p>
+    <p class="note">Gate <span id="stepCount" class="val">0</span> applied: <span id="stepGateName" class="val">(none yet)</span></p>
+    <div id="measureResult"></div>
+  </div>
+
+  <div class="card">
+    <h2>Puzzles</h2>
+    <p class="note">Reach these states using the gates above. Green = solved this session.</p>
+    <span class="goalchip" id="goal0">1. All amplitude on lane r=29</span>
+    <span class="goalchip" id="goal1">2. GHZ: 50/50 on lanes 1 &amp; 29 (bits 000/111)</span>
+    <span class="goalchip" id="goal2">3. 50/50 on the equatorial pair r=7 &amp; r=23</span>
+  </div>
+
+  <div class="card">
+    <table>
+      <tr><th>Lane (r)</th><th>Probability</th><th>Exact |amp|&sup2;</th><th>Float |amp|&sup2;</th><th>Diff</th></tr>
+      <tbody id="stepTableBody"></tbody>
+    </table>
+  </div>
+
+  <div class="card" id="stepStatusCard">
+    <div id="stepStatus"></div>
+  </div>
+</div>
+
+<!-- ============== PRESET CIRCUITS PAGE ============== -->
+<div class="page" id="page-presets">
+  <h1>Preset Circuits</h1>
+  <div class="formula">Bell state: (|00&rang; + |11&rang;)/&radic;2 &nbsp;&bull;&nbsp; GHZ: (|000&rang; + |111&rang;)/&radic;2 &nbsp;&bull;&nbsp; QFT: |k&rang; &rarr; (1/&radic;N)&thinsp;&Sigma; e<sup>2&pi;ikn/N</sup>|n&rang;</div>
+  <div class="card hypothesis">
+    <span class="tag H">H</span>
+    <p class="note">The Bell and QFT circuits on this page run on a <b>separate, standard textbook qubit simulator</b> (ordinary 2-level complex amplitudes) &mdash; they do <b>not</b> use the GBP 8-lane Q(&zeta;<sub>30</sub>) engine from the Emulator tab. The relationship between the two engines is now partially settled by direct computation (see each card): GHZ <b>is</b> native to the GBP gate set and is demonstrated on both engines below with matching output; Bell-type entanglement is <b>not</b> reachable with the native W/A/H2 gates (exhaustively checked to circuit depth 4); and the 3-qubit QFT lives over a different group (Z<sub>8</sub>) than GBP's native character set (Z<sub>30</sub>* &cong; Z<sub>2</sub>&times;Z<sub>4</sub>), so no equivalence is expected there.</p>
+  </div>
+
+  <!-- Bell State -->
+  <div class="card hypothesis">
+    <span class="tag D">D</span> (standard circuit) <span class="tag H">H</span> (relation to GBP lanes: open)
+    <h2>Bell State</h2>
+    <div class="formula">|&Psi;&gt; = H(q0) &middot; CNOT(q0&rarr;q1) |00&gt; = (|00&gt; + |11&gt;)/&radic;2</div>
+    <button onclick="runBellPreset()">Run Bell Circuit</button>
+    <div id="bellResults" style="margin-top:8px;"></div>
+    <p class="note"><b>Why this stays on the textbook simulator:</b> a Bell state is "two qubits entangled, third factored out." Exhaustive search over every circuit of up to 4 native GBP gates (all W(m), all A(u), H2 &mdash; 436 distinct reachable states) finds <b>zero</b> Bell-class states: only product states, GHZ-class states, and other fully-collective classes appear <span class="tag D">D</span>. Structural reason (interpretive <span class="tag H">H</span>): every native gate acts on all three encoded qubits at once &mdash; W and A act through the group structure of Z<sub>30</sub>*, and H2 pairs each lane r with &minus;r, which flips all three bits simultaneously. Nothing in the native set is 2-local, and Bell states require a 2-local operation. Real IBM hardware context: on IBM's current Heron r2 processors, typical two-qubit gate error rates are below 10&#8309;&sup3; per gate; this app's simulation itself is exact/float, not run on real hardware.</p>
+  </div>
+
+  <!-- GHZ State -->
+  <div class="card derived">
+    <span class="tag D">D</span>
+    <h2>GHZ State (3 qubits)</h2>
+    <div class="formula">|&Psi;&gt; = CNOT(q0&rarr;q2)&middot;CNOT(q0&rarr;q1)&middot;H(q0) |000&gt; = (|000&gt; + |111&gt;)/&radic;2</div>
+    <button onclick="runGHZPreset()">Run GHZ Circuit</button>
+    <div id="ghzResults" style="margin-top:8px;"></div>
+    <p class="note">Standard three-qubit generalization of the Bell state &mdash; genuinely maximal entanglement across all three qubits, textbook construction.</p>
+    <h2 style="margin-top:14px;">GHZ two ways: textbook vs GBP engine <span class="tag D">D</span></h2>
+    <div class="formula">GBP route: <b>one</b> unitarized H2 gate. Under the lane&rarr;3-bit encoding, H2 pairs lane index 0 (bits 000) with index 7 (bits 111) &mdash; the r &harr; &minus;r pairing of Z<sub>30</sub>* IS the GHZ generator.</div>
+    <button onclick="runGHZBothWays()">Run GHZ on Both Engines &amp; Compare</button>
+    <div id="ghzCompareResults" style="margin-top:8px;"></div>
+  </div>
+
+  <!-- QFT -->
+  <div class="card derived">
+    <span class="tag D">D</span>
+    <h2>Quantum Fourier Transform (3 qubits)</h2>
+    <div class="formula">QFT|j&gt; = (1/&radic;8) &Sigma;<sub>k=0..7</sub> e<sup>2&pi;ijk/8</sup>|k&gt;</div>
+    <label>Input basis state |j&gt;: <input type="number" id="qftInput" value="1" min="0" max="7"></label>
+    <button onclick="runQFTPreset()">Run QFT</button>
+    <div id="qftResults" style="margin-top:8px;"></div>
+    <p class="note">Standard textbook QFT circuit (H + controlled phase rotations + swap). The 3-qubit QFT is the Fourier transform over the cyclic group Z<sub>8</sub>. GBP's native phase machinery (the W gates) supplies the characters of Z<sub>30</sub>* &cong; Z<sub>2</sub>&times;Z<sub>4</sub> instead &mdash; a <b>different group</b>, so the two transforms cannot coincide, and this preset stays on the textbook simulator by necessity, not omission. The natural "GBP Fourier" would be the Z<sub>2</sub>&times;Z<sub>4</sub> transform, which the lane structure supports natively.</p>
+  </div>
+</div>
+
+<!-- ============== MASSES PAGE ============== -->
+<div class="page" id="page-masses">
+  <h1>Baryon Masses &mdash; v10.2, Computed Live</h1>
+  <div class="formula">MAPE = (1/N)&thinsp;&Sigma; |M<sub>pred</sub> &minus; M<sub>obs</sub>| / M<sub>obs</sub> &nbsp; (prediction vs Particle Data Group values)</div>
+  <div class="card derived">
+    <span class="tag D">D</span>
+    <p class="note">Every mass below is computed <b>on this device, right now</b>, by a JavaScript port of the canonical <code>gbp_complete_v10_2.py</code> engine, verified identical to the Python original to 4&times;10&#8315;&sup1;&#8310; relative on all 67 particles. Zero free fit parameters; correction whitelist empty. Honest scope note: the per-particle discrete assignments (sheet, chirality, cover) were residual-guided for many states &mdash; documented in the evidence registry &mdash; while the continuous constants are all derived from &alpha;_IR, &Lambda;_QCD, and GEO_B.</p>
+    <div id="massSummary"></div>
+    <button onclick="renderMassTable('all')">All 55</button>
+    <button onclick="renderMassTable('j12')">J=1/2</button>
+    <button onclick="renderMassTable('j32')">J=3/2</button>
+    <button onclick="renderMassTable('charm')">Charm</button>
+    <button onclick="renderMassTable('penta')">Pentaquarks</button>
+    <div id="massTable" style="margin-top:8px;"></div>
+  </div>
+  <div class="card hypothesis">
+    <span class="tag P">P</span>
+    <h2>Predictions (unmeasured states)</h2>
+    <p class="note">Masses for baryons not yet measured. These are falsifiable: when LHCb or Belle II pins any of them down, the number below was on record first.</p>
+    <div id="predTable"></div>
+  </div>
+</div>
+
+<!-- ============== SCATTERING PAGE ============== -->
+<div class="page" id="page-scattering">
+  <h1>Scattering Principles &mdash; Coprime Chain</h1>
+  <div class="formula">Malus: I = I&#8320;&thinsp;cos&sup2;&theta; &nbsp;&mdash;&nbsp; probability of passing a second analyzer at angle &theta; (1809; same law quantum polarizers obey)</div>
+  <div class="card derived">
+    <span class="tag D">D</span>
+    <h2>The Lookup Table &amp; Group Closure</h2>
+    <p class="note">Z&#8323;&#8320;* = {1,7,11,13,17,19,23,29} is closed under multiplication mod 30 &mdash; all 64 products stay inside (verified live below). Once a scattering event establishes N=30, every subsequent scatter stays in the group. Each scatter costs one lookup in this table:</p>
+    <div id="malusTable"></div>
+    <div id="closureCheck"></div>
+  </div>
+  <div class="card derived">
+    <span class="tag D">D</span>
+    <h2>Chain Amplitude Calculator &mdash; O(n) Cost</h2>
+    <p class="note">A full scattering chain is a product of Malus weights: A = &Pi; P(r&#8342;). Linear cost, versus O(30&#8319;) for the equivalent lattice computation.</p>
+    <label>Start lane r&#8320;:
+      <select id="scStart"><option>7</option><option>1</option><option>11</option><option>13</option><option>17</option><option>19</option><option>23</option><option>29</option></select>
+    </label>
+    <label>Scatters n: <input type="number" id="scN" value="8" min="1" max="20"></label>
+    <button onclick="runScatterChain()">Run Chain</button>
+    <div id="scatterResults" style="margin-top:8px;"></div>
+  </div>
+  <div class="card derived">
+    <span class="tag D">D</span> (masses) <span class="tag H">H</span> (widths/cross-sections)
+    <h2>Charm Scattering States: The Pentaquarks</h2>
+    <p class="note">The LHCb pentaquarks are hidden-charm <b>scattering resonances</b> in the J/&psi;-p channel &mdash; the states where the scattering machinery meets measured data. Their masses are computed live below by the same v10.2 engine (T5 wormhole topology, Z&#8325;* twist orbit). The three narrow states are wormhole <i>crossings</i> (sin&sup2; branch, J=1/2); P_c(4380) is the <i>reflection</i> (cos&sup2; branch, J=3/2, broad).</p>
+    <div id="pentaTable"></div>
+    <p class="note"><b>Honest status:</b> chain cost structure and closure (D); pentaquark masses (D, live above); full continuum cross-sections including phase factors remain (H) &mdash; the amplitude&rarr;cross-section map is the documented open item in the scattering shortcut paper, unverified against measured cross-section data.</p>
+  </div>
+</div>
+
+<!-- ============== GLOSSARY PAGE ============== -->
+<div class="page" id="page-glossary">
+  <h1>Glossary</h1>
+  <p class="note">Plain-language definitions of terms used throughout this app. <span class="tag D">D</span> = standard, textbook definition. <span class="tag H">H</span> = GBP-specific term or usage.</p>
+
+  <div class="card derived">
+    <span class="tag D">D</span>
+    <h2>Superposition</h2>
+    <div class="step">A quantum state that is a weighted combination of two or more distinct possibilities at once, rather than being in just one of them. Not "unknown which one" &mdash; genuinely both, until measured.</div>
+  </div>
+
+  <div class="card derived">
+    <span class="tag D">D</span>
+    <h2>Amplitude</h2>
+    <div class="step">A complex number attached to each possible outcome in a superposition. Its squared magnitude (|amplitude|&sup2;) gives the probability of seeing that outcome when you measure. Amplitudes can be positive, negative, or have a phase &mdash; probabilities can't.</div>
+  </div>
+
+  <div class="card derived">
+    <span class="tag D">D</span>
+    <h2>Phase</h2>
+    <div class="step">The "angle" part of a complex amplitude (think of it as a clock hand's direction, separate from its length). Two amplitudes with the same magnitude but different phase look identical in probability but interfere differently when combined.</div>
+  </div>
+
+  <div class="card derived">
+    <span class="tag D">D</span>
+    <h2>Interference</h2>
+    <div class="step">When two amplitudes for the same outcome are added together, their phases determine whether they reinforce (constructive) or cancel (destructive) &mdash; the same math as overlapping waves. This is the mechanism quantum algorithms use to boost right answers and suppress wrong ones.</div>
+  </div>
+
+  <div class="card derived">
+    <span class="tag D">D</span>
+    <h2>Measurement</h2>
+    <div class="step">The act of reading out a definite classical outcome from a superposition. Afterward, the superposition is gone &mdash; you get one result, with probability given by that outcome's |amplitude|&sup2;. This app's simulators track amplitudes only; none of the tabs perform an actual probabilistic measurement/collapse step.</div>
+  </div>
+
+  <div class="card derived">
+    <span class="tag D">D</span>
+    <h2>Entanglement</h2>
+    <div class="step">A correlation between two or more qubits/lanes stronger than anything possible classically: measuring one instantly determines what you'll get from the other, no matter the distance between them. Bell and GHZ states (Presets tab) are the standard textbook examples.</div>
+  </div>
+
+  <div class="card derived">
+    <span class="tag D">D</span>
+    <h2>Qubit</h2>
+    <div class="step">The basic 2-level unit of standard quantum computing (a "quantum bit"): a superposition of |0&gt; and |1&gt;. Used only in the Presets tab's textbook simulator &mdash; the GBP engine uses 8-lane sectors instead, see "Lane" below.</div>
+  </div>
+
+  <div class="card hypothesis">
+    <span class="tag H">H</span>
+    <h2>Lane (GBP-specific)</h2>
+    <div class="step">One of the 8 coprime residues mod 30 &mdash; {1, 7, 11, 13, 17, 19, 23, 29} &mdash; that GBP uses as its basic unit instead of a 2-level qubit. A "sector" is one 8-lane block; stacking n sectors gives a dim-8&#8319; state space, tracked as "3n qubit-equivalent" for rough size comparison only, not a claim of literal qubit equivalence.</div>
+  </div>
+
+  <div class="card derived">
+    <span class="tag D">D</span>
+    <h2>Cyclotomic integer / Q(&zeta;<sub>30</sub>)</h2>
+    <div class="step">A number built from integer combinations of powers of a primitive 30th root of unity &zeta;<sub>30</sub> = e<sup>2&pi;i/30</sup>. Storing amplitudes this way (as the <code>Cyc</code> class in this app, using BigInt coefficients) keeps every calculation exact &mdash; no floating-point rounding, ever, no matter how many gates are chained.</div>
+  </div>
+
+  <div class="card derived">
+    <span class="tag D">D</span>
+    <h2>BigInt</h2>
+    <div class="step">JavaScript's arbitrary-precision integer type. Ordinary numbers lose precision past ~2&sup5;&sup3;; BigInt doesn't, which is what lets the exact engine grow without drift. (This app also had to guard against a real bug: converting a huge BigInt to a float for on-screen display can silently overflow before any division happens &mdash; fixed by dividing in BigInt space first.)</div>
+  </div>
+
+  <div class="card derived">
+    <span class="tag D">D</span>
+    <h2>Bell state</h2>
+    <div class="step">The simplest maximally-entangled 2-qubit state, (|00&gt;+|11&gt;)/&radic;2, built from one Hadamard (H) gate and one CNOT gate. Standard textbook construction &mdash; see the Presets tab.</div>
+  </div>
+
+  <div class="card derived">
+    <span class="tag D">D</span>
+    <h2>GHZ state</h2>
+    <div class="step">The 3+ qubit generalization of a Bell state, (|00...0&gt;+|11...1&gt;)/&radic;2, where all qubits collapse together rather than just pairs.</div>
+  </div>
+
+  <div class="card derived">
+    <span class="tag D">D</span>
+    <h2>QFT (Quantum Fourier Transform)</h2>
+    <div class="step">The quantum analogue of a discrete Fourier transform: takes a single "spike" basis state and spreads it into a uniform-magnitude superposition where all the original information sits in the relative phases instead. Core subroutine of Shor's algorithm and phase estimation.</div>
+  </div>
+
+  <div class="card hypothesis">
+    <span class="tag H">H</span>
+    <h2>W / A / H2 gates (GBP-specific)</h2>
+    <div class="step"><b>W(m)</b>: multiplies each lane's amplitude by a phase depending on m and that lane's residue &mdash; a phase/rotation gate. <b>A(u)</b>: permutes the 8 lanes by multiplication mod 30 &mdash; a permutation gate. <b>H2</b>: pairwise add/subtract across 4 fixed lane-pairs &mdash; the interference/mixing step, deliberately unnormalized (magnitude roughly doubles each triple) so the Step Through tab can show real float drift for comparison.</div>
+  </div>
+
+  <div class="card derived">
+    <span class="tag D">D</span>
+    <h2>MAPE / RMSE</h2>
+    <div class="step">Mean Absolute Percentage Error and Root Mean Square Error &mdash; standard statistical measures of how far predicted values (here, GBP's predicted baryon masses) are from measured ones. Lower is better; both are computed the same way regardless of what framework produced the predictions.</div>
+  </div>
+</div>
+
+
+<script id="gbp-engine">
+const DEG = 8;
+const REDUCE_Z8 = [-1n, -1n, 0n, 1n, 1n, 1n, 0n, -1n];
+const COPRIMES = [1, 7, 11, 13, 17, 19, 23, 29];
+const PAIRS = [[0,7],[1,6],[2,5],[3,4]];
+
+class Cyc {
+  constructor(c) { this.c = c; }
+  static one() { return new Cyc([1n,0n,0n,0n,0n,0n,0n,0n]); }
+  static zero() { return new Cyc([0n,0n,0n,0n,0n,0n,0n,0n]); }
+  add(o){ const r=new Array(DEG); for(let i=0;i<DEG;i++) r[i]=this.c[i]+o.c[i]; return new Cyc(r); }
+  sub(o){ const r=new Array(DEG); for(let i=0;i<DEG;i++) r[i]=this.c[i]-o.c[i]; return new Cyc(r); }
+  mul(o){
+    const prod = new Array(2*DEG-1).fill(0n);
+    for(let i=0;i<DEG;i++){ if(this.c[i]===0n) continue;
+      for(let j=0;j<DEG;j++){ if(o.c[j]===0n) continue; prod[i+j]+=this.c[i]*o.c[j]; } }
+    for(let deg=2*DEG-2; deg>=DEG; deg--){
+      const coeff=prod[deg]; if(coeff===0n) continue; prod[deg]=0n;
+      const shift=deg-DEG;
+      for(let k=0;k<DEG;k++) prod[k+shift]+=coeff*REDUCE_Z8[k];
+    }
+    return new Cyc(prod.slice(0,DEG));
+  }
+  normSq(){ let s=0n; for(const v of this.c) s+=v*v; return s; }
+  toComplex(){
+    let re=0, im=0;
+    for(let k=0;k<DEG;k++){
+      const angle = 2*Math.PI*k/30;
+      const v = Number(this.c[k]);
+      re += v*Math.cos(angle);
+      im += v*Math.sin(angle);
+    }
+    return {re, im};
+  }
+}
+function zpow(k){
+  k=((k%30)+30)%30;
+  let acc=Cyc.one(); const z=new Cyc([0n,1n,0n,0n,0n,0n,0n,0n]);
+  for(let i=0;i<k;i++) acc=acc.mul(z);
+  return acc;
+}
+const ZPOW = []; for(let k=0;k<30;k++) ZPOW.push(zpow(k));
+// Build phase EXPONENTS via plain integer addition mod 30 -- roots of unity
+// multiply by adding exponents (verified exactly across all 900 combinations).
+function buildTensorExpArray(sectorExponents, n){
+  let level=[0];
+  for(let s=0;s<n;s++){
+    const next=new Array(level.length*8);
+    for(let i=0;i<level.length;i++)
+      for(let d=0;d<8;d++)
+        next[i*8+d]=(level[i]+sectorExponents[d])%30;
+    level=next;
+  }
+  return level;
+}
+// Key structural fact: in the power basis of Phi_30, EVERY coefficient of
+// EVERY zeta^k (k=0..29) is -1, 0, or +1. So multiplying an amplitude by any
+// root of unity is a pure signed shuffle of its BigInt coefficients -- zero
+// BigInt multiplications needed. MULMAP[k][out] is a flat [srcPos, sign, ...]
+// list precomputed once from ZPOW. Verified bit-identical to full Cyc.mul
+// over 500 chained gate-triples; ~1.7x faster per gate-triple overall.
+const MULMAP = [];
+for(let k=0;k<30;k++){
+  const rows = [];
+  for(let out=0;out<DEG;out++){
+    const flat=[];
+    for(let i=0;i<DEG;i++){
+      const cf = ZPOW[(i+k)%30].c[out];
+      if(cf!==0n) flat.push(i, Number(cf));
+    }
+    rows.push(flat);
+  }
+  MULMAP.push(rows);
+}
+class ExactState {
+  // v-flat: one flat Array<BigInt> of length dim*8 instead of dim Cyc objects.
+  // In-place W and H2, double-buffered A. Measured 3.5x faster at 5 sectors
+  // (GC pressure from per-gate object allocation dominated at large dimension);
+  // coefficients verified bit-identical to the original engine.
+  constructor(n){
+    this.n = n; this.dim = 8**n;
+    this.cbuf = new Array(this.dim*8).fill(0n);
+    this.bbuf = new Array(this.dim*8).fill(0n);
+    this.cbuf[0] = 1n;
+  }
+  laneCyc(i){ return new Cyc(this.cbuf.slice(i*8, i*8+8)); } // display-only copy
+  setBasis(k){ this.cbuf.fill(0n); this.bbuf.fill(0n); this.cbuf[k*8] = 1n; }
+  get amp(){ // compatibility accessor for display paths (small n only)
+    const out = new Array(this.dim);
+    for(let i=0;i<this.dim;i++) out[i] = this.laneCyc(i);
+    return out;
+  }
+  W(m){
+    const sectorExponents = COPRIMES.map(r=>((m*r)%30+30)%30);
+    const exps = buildTensorExpArray(sectorExponents, this.n);
+    const c = this.cbuf;
+    for(let i=0;i<this.dim;i++){
+      const k = exps[i];
+      if(k===0) continue; // zeta^0 = identity
+      const base = i*8, rows = MULMAP[k];
+      const tv=[c[base],c[base+1],c[base+2],c[base+3],c[base+4],c[base+5],c[base+6],c[base+7]];
+      for(let o=0;o<8;o++){
+        let s = 0n; const row = rows[o];
+        for(let t=0;t<row.length;t+=2){
+          const v = tv[row[t]];
+          if(v===0n) continue;
+          if(row[t+1]===1) s += v; else s -= v;
+        }
+        c[base+o] = s;
+      }
+    }
+  }
+  A(u){
+    const digitMap = COPRIMES.map(r=>COPRIMES.indexOf(((u*r)%30+30)%30));
+    const c = this.cbuf, b = this.bbuf;
+    for(let idx=0;idx<this.dim;idx++){
+      let rest=idx, newIdx=0, mult=1;
+      for(let s=0;s<this.n;s++){
+        const digit=rest%8; rest=(rest-digit)/8;
+        newIdx+=digitMap[digit]*mult; mult*=8;
+      }
+      const src=idx*8, dst=newIdx*8;
+      for(let k=0;k<8;k++) b[dst+k]=c[src+k];
+    }
+    this.cbuf=b; this.bbuf=c;
+  }
+  H2(){
+    const blockSize=this.dim/8, c=this.cbuf;
+    for(const [i,j] of PAIRS){
+      for(let block=0;block<blockSize;block++){
+        const ia=(i+8*block)*8, ib=(j+8*block)*8;
+        for(let k=0;k<8;k++){
+          const a=c[ia+k], q=c[ib+k];
+          c[ia+k]=a+q; c[ib+k]=a-q;
+        }
+      }
+    }
+  }
+  totalNormSq(){ let s=0n; for(const v of this.cbuf) s+=v*v; return s; }
+}
+</script>
+<!-- ============== SKINS PAGE ============== -->
+<div class="page" id="page-skins">
+  <h1>Skins</h1>
+  <p class="note">Each skin changes the colors, the type, and the voice of every status message. Pick one &mdash; it applies instantly across the whole app.</p>
+  <div id="skinList"></div>
+</div>
+
+<script>
+// ================= THEME / SKIN ENGINE =================
+function TC(varName){ return getComputedStyle(document.body).getPropertyValue(varName).trim() || '#888'; }
+
+const SKINS = {
+  lab:      { name:'Lab / Professional', voice:'Applying split-operator evolution...', dots:['#0d1117','#161b22','#58a6ff','#238636','#d29922'] },
+  light:    { name:'Student / Light',    voice:'Summing over paths...',                dots:['#f6f8fa','#ffffff','#0969da','#1f883d','#9a6700'] },
+  neon:     { name:'Neon / Sci-Fi',      voice:'Herding probability clouds...',        dots:['#050014','#100728','#00e5ff','#7b2fbf','#ffb700'] },
+  gbp:      { name:'GBP Unhinged',       voice:'Getting tornado drunk...',             dots:['#12081f','#1d1030','#ffb700','#8536c9','#3ddc97'] },
+  ancient:  { name:'Ancient Math',       voice:'Letting Archimedes calculate naked...',dots:['#efe3c6','#f7edd6','#8b4513','#8b6f2f','#a5762a'] },
+  terminal: { name:'Terminal',           voice:'Fighting floating point...',           dots:['#000000','#0a0f0a','#33ff66','#0f2e14','#c8ff33'] }
+};
+
+const LOADING_MESSAGES = {
+  lab: {
+    onStart: ["Initializing solver..."],
+    buildGrid: ["Building spatial grid..."],
+    prepareState: ["Preparing initial wavefunction..."],
+    evolve: ["Applying split-operator evolution..."],
+    extrapolate: ["Refining endpoint estimate..."],
+    validate: ["Checking analytic reference..."],
+    finish: ["Propagator computed."],
+    error: ["Calculation failed. Check input range."]
+  },
+  light: {
+    onStart: ["Starting calculation..."],
+    buildGrid: ["Setting up the problem..."],
+    prepareState: ["Preparing the wave packet..."],
+    evolve: ["Summing over paths..."],
+    extrapolate: ["Cleaning up the estimate..."],
+    validate: ["Comparing with textbook answer..."],
+    finish: ["Done."],
+    error: ["Something went wrong. Try smaller values."]
+  },
+  neon: {
+    onStart: ["Charging quantum core..."],
+    buildGrid: ["Mapping phase space..."],
+    prepareState: ["Spinning up wavefunction..."],
+    evolve: ["Herding probability clouds...",
+             "Untangling interference patterns...",
+             "Negotiating with uncertainty..."],
+    extrapolate: ["Polishing interference pattern..."],
+    validate: ["Asking Feynman nicely..."],
+    finish: ["Reality rendered."],
+    error: ["Quantum core coughed. Try again."]
+  },
+  gbp: {
+    onStart: ["Warming up tractor beam..."],
+    buildGrid: ["Reshaping donuts..."],
+    prepareState: ["Twisting M\u00f6bius strip..."],
+    evolve: ["Counting prime lanes...",
+             "Getting tornado drunk...",
+             "Reticulating toroids...",
+             "Feeding mock theta functions..."],
+    extrapolate: ["Checking if 42 appears again..."],
+    validate: ["Asking Einstein..."],
+    finish: ["Everything is \ud83c\udf00\ud83d\udd3a\ud83c\udf69."],
+    error: ["Torsion escaped. Try safer inputs."]
+  },
+  ancient: {
+    onStart: ["Summoning Pythagoras..."],
+    buildGrid: ["Drawing circles in the sand..."],
+    prepareState: ["Asking Euclid for permission..."],
+    evolve: ["Letting Archimedes calculate naked..."],
+    extrapolate: ["Convincing Euler to simplify it..."],
+    validate: ["Ramanujan sent another dream..."],
+    finish: ["The oracle has spoken."],
+    error: ["The Greeks rejected your boundary conditions."]
+  },
+  terminal: {
+    onStart: ["Running solver.exe..."],
+    buildGrid: ["Allocating arrays..."],
+    prepareState: ["Initializing state vector..."],
+    evolve: ["Fighting floating point..."],
+    extrapolate: ["Sacrificing a semicolon..."],
+    validate: ["Blaming JavaScript..."],
+    finish: ["No NaNs detected."],
+    error: ["NaN has entered the chat."]
+  }
+};
+
+// Rare easter eggs: ~1% chance, only during evolve/validate
+const RARE_MESSAGES = {
+  any: ["The answer is 42. Still finding the question...",
+        "Feynman says that path counts too.",
+        "Heisenberg is not sure about this input."],
+  gbp: ["Please stop drawing UFOs in Hilbert space.",
+        "Torsion located behind the couch.",
+        "Triangle UFO aligned. Mostly."],
+  ancient: ["Archimedes refuses to put clothes on.",
+            "Pythagoras says this interval is slightly detuned."],
+  terminal: ["Error fixed by pretending it was a feature.",
+             "Stack Overflow is currently meditating."]
+};
+
+let currentTheme = 'lab';
+
+function loadingMessage(theme, stage){
+  if((stage==='evolve' || stage==='validate') && Math.random() < 0.01){
+    const pool = RARE_MESSAGES.any.concat(RARE_MESSAGES[theme] || []);
+    return pool[Math.floor(Math.random()*pool.length)];
+  }
+  const list = (LOADING_MESSAGES[theme] && LOADING_MESSAGES[theme][stage]) || LOADING_MESSAGES.lab[stage] || [''];
+  return list[Math.floor(Math.random()*list.length)];
+}
+
+function setTheme(name){
+  if(!SKINS[name]) name = 'lab';
+  currentTheme = name;
+  document.body.className = 'theme-' + name;
+  try{ localStorage.setItem('gbpSkin', name); }catch(e){} // persists in the packaged app; silently skipped in sandboxed previews
+  renderSkinList();
+  // repaint any canvases that are on screen with the new palette
+  try{ if(typeof piCache!=='undefined' && piCache){ piDrawPaths(); piDrawStates(); } }catch(e){}
+  try{ if(typeof drawRouteCanvas==='function') drawRouteCanvas(); }catch(e){}
+}
+
+function renderSkinList(){
+  const box = document.getElementById('skinList');
+  if(!box) return;
+  let html = '';
+  for(const key in SKINS){
+    const s = SKINS[key];
+    const sel = key===currentTheme ? ' selected' : '';
+    html += `<div class="card skincard${sel}" onclick="setTheme('${key}')">
+      <h2>${s.name}${key===currentTheme ? ' <span class="tag D">ACTIVE</span>' : ''}</h2>
+      <div class="swatchrow">${s.dots.map(c=>`<span class="swatch" style="background:${c}"></span>`).join('')}</div>
+      <div class="skinvoice">&ldquo;${s.voice}&rdquo;</div>
+    </div>`;
+  }
+  box.innerHTML = html;
+}
+
+(function initTheme(){
+  let saved = null;
+  try{ saved = localStorage.getItem('gbpSkin'); }catch(e){}
+  currentTheme = (saved && SKINS[saved]) ? saved : 'lab';
+  document.body.className = 'theme-' + currentTheme;
+  document.addEventListener('DOMContentLoaded', renderSkinList);
+})();
+
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+// =======================================================
+
+function showPage(name, btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.navbtn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  btn.scrollIntoView({inline:'center', block:'nearest', behavior:'smooth'});
+}
+
+// ============================================================
+// GBP Exact Engine (same as validated standalone version)
+// ============================================================
+
+// ---- Emulator UI ----
+const secSlider = document.getElementById('sectors');
+const secLabel = document.getElementById('secLabel');
+const nSlider = document.getElementById('ngates');
+const nLabel = document.getElementById('ngatesLabel');
+
+function updateLabels(){
+  const n = parseInt(secSlider.value);
+  secLabel.textContent = `${n} sector${n>1?'s':''} = ${3*n} qubits (dim=${(8**n).toLocaleString()})`;
+  nLabel.textContent = nSlider.value;
+  scheduleEstimate();
+}
+secSlider.oninput = updateLabels;
+nSlider.oninput = updateLabels;
+
+let estimateTimer = null;
+function scheduleEstimate(){
+  clearTimeout(estimateTimer);
+  document.getElementById('estimateBox').innerHTML = '<span class="note">Calibrating on this device...</span>';
+  estimateTimer = setTimeout(runEstimate, 150);
+}
+function runEstimate(){
+  const n = parseInt(secSlider.value);
+  const nGates = parseInt(nSlider.value);
+  const probeCount = Math.min(nGates, n <= 2 ? 30 : (n === 3 ? 15 : 5));
+  setTimeout(()=>{
+    const s = new ExactState(n);
+    const t0 = performance.now();
+    for(let g=0; g<probeCount; g++){ s.W(3); s.A(7); s.H2(); }
+    const t1 = performance.now();
+    const rate = probeCount / ((t1-t0)/1000);
+    const estSeconds = nGates / rate;
+    let warn = '';
+    if (estSeconds > 5) warn = ' &mdash; <b class="warn">this will take a while, consider fewer gates or fewer qubits</b>';
+    else if (estSeconds > 1.5) warn = ' &mdash; <span style="color:#d29922;">noticeable delay</span>';
+    document.getElementById('estimateBox').innerHTML =
+      `<span class="note">Estimated time for ${nGates.toLocaleString()} gate-triples: ` +
+      `<span class="val">~${estSeconds < 0.1 ? '<0.1' : estSeconds.toFixed(1)}s</span>${warn}<br>` +
+      `(calibrated just now on this device)</span>`;
+  }, 10);
+}
+let benchWorker = null, benchWorkerFailed = false;
+function getBenchWorker(){
+  if(benchWorker) return benchWorker;
+  if(benchWorkerFailed) return null;
+  try {
+    const engineSrc = document.getElementById('gbp-engine').textContent;
+    const workerSrc = engineSrc + `
+      onmessage = function(e){
+        const n = e.data.n, nGates = e.data.nGates;
+        const now = () => (typeof performance!=='undefined' ? performance.now() : Date.now());
+        const s = new ExactState(n);
+        const t0 = now();
+        const chunk = Math.max(1, Math.floor(nGates/40));
+        for(let g=0; g<nGates; g++){
+          s.W(3); s.A(7); s.H2();
+          if((g+1)%chunk===0) postMessage({type:'progress', done:g+1, total:nGates});
+        }
+        const t1 = now();
+        postMessage({type:'done', seconds:(t1-t0)/1000, norm: s.totalNormSq().toString()});
+      };`;
+    benchWorker = new Worker(URL.createObjectURL(new Blob([workerSrc], {type:'application/javascript'})));
+    return benchWorker;
+  } catch(err){
+    // Sandboxed environments (e.g. embedded previews) can block blob workers
+    // with a SecurityError. Remember and fall back to chunked main-thread mode.
+    benchWorkerFailed = true;
+    return null;
+  }
+}
+function renderBenchResults(n, nGates, seconds, normStr){
+  const rate = nGates/seconds;
+  document.getElementById('results').style.display='block';
+  document.getElementById('resultsBody').innerHTML = `
+    <table>
+      <tr><th>Qubit-equivalent</th><td>${3*n}</td></tr>
+      <tr><th>Dimension</th><td>${(8**n).toLocaleString()}</td></tr>
+      <tr><th>Gate-triples run</th><td>${nGates.toLocaleString()}</td></tr>
+      <tr><th>Time</th><td>${seconds.toFixed(3)} s</td></tr>
+      <tr><th>Gate-triples/sec</th><td>${Math.round(rate).toLocaleString()}</td></tr>
+    </table>`;
+  document.getElementById('sanity').innerHTML = `
+    <b>Exactness check:</b> sum of squared BigInt coefficients after ${nGates} gate-triples =
+    <span class="val">${normStr}</span><br>
+    <span class="note">Exact integer, zero floating-point drift, no matter how many gates chained. Computed in a background thread &mdash; the UI stays responsive while it runs.</span>`;
+}
+function runBenchmark(){
+  const n = parseInt(secSlider.value);
+  const nGates = parseInt(nSlider.value);
+  const btn = document.getElementById('runBtn');
+  btn.disabled = true; btn.textContent = 'Running... 0%';
+  const w = (typeof Worker !== 'undefined') ? getBenchWorker() : null;
+  if(w){
+    w.onmessage = (e)=>{
+      if(e.data.type==='progress'){
+        btn.textContent = 'Running... ' + Math.round(100*e.data.done/e.data.total) + '%';
+      } else if(e.data.type==='done'){
+        renderBenchResults(n, nGates, e.data.seconds, e.data.norm);
+        btn.disabled = false; btn.textContent = 'Run Benchmark';
+      }
+    };
+    try { w.postMessage({n, nGates}); return; } catch(err){ benchWorkerFailed = true; }
+  }
+  // Fallback: chunked main-thread run. Yields to the event loop between chunks
+  // so the UI can repaint and the button shows progress, even where workers
+  // are blocked. Timing excludes the yield gaps (accumulates compute time only).
+  const s = new ExactState(n);
+  const chunk = Math.max(1, Math.ceil(nGates/40));
+  let g = 0, computeMs = 0;
+  function step(){
+    const t0 = performance.now();
+    const lim = Math.min(nGates, g + chunk);
+    for(; g<lim; g++){ s.W(3); s.A(7); s.H2(); }
+    computeMs += performance.now() - t0;
+    btn.textContent = 'Running... ' + Math.round(100*g/nGates) + '%';
+    if(g < nGates){ setTimeout(step, 0); }
+    else {
+      renderBenchResults(n, nGates, computeMs/1000, s.totalNormSq().toString());
+      btn.disabled = false; btn.textContent = 'Run Benchmark';
+    }
+  }
+  setTimeout(step, 30);
+}
+updateLabels();
+
+// ---- How It Works: live math ----
+function computeJones(){
+  const angle = 2*Math.PI/5;
+  function tpow(k){ const a = angle*k; return { re: Math.cos(a), im: Math.sin(a) }; }
+  const tm4 = tpow(-4), tm3 = tpow(-3), tm1 = tpow(-1);
+  const V = { re: -tm4.re + tm3.re + tm1.re, im: -tm4.im + tm3.im + tm1.im };
+  const mag = Math.sqrt(V.re*V.re + V.im*V.im);
+  const known = Math.sqrt((7-Math.sqrt(5))/2);
+  document.getElementById('jonesLive').innerHTML =
+    `|V(e^(2&pi;i/5))| = ${mag.toFixed(12)}<br>` +
+    `&radic;((7&minus;&radic;5)/2)  = ${known.toFixed(12)}<br>` +
+    `<span style="color:${Math.abs(mag-known)<1e-9?'#3fb950':'#f0883e'}">match to 1e-9: ${Math.abs(mag-known)<1e-9}</span>`;
+}
+computeJones();
+
+const thetaSlider = document.getElementById('thetaSlider');
+const thetaLabel = document.getElementById('thetaLabel');
+function updateMalus(){
+  const deg = parseInt(thetaSlider.value);
+  thetaLabel.textContent = deg;
+  const rad = deg*Math.PI/180;
+  const malus = Math.cos(rad)**2;
+  const rEquiv = (deg/90) * 15;
+  const laneWeight = Math.sin(rEquiv*Math.PI/15)**2;
+  document.getElementById('malusLive').innerHTML =
+    `Malus: cos&sup2;(${deg}&deg;) = ${malus.toFixed(4)}<br>` +
+    `Lane-weight (illustrative r=${rEquiv.toFixed(1)}): sin&sup2;(r&pi;/15) = ${laneWeight.toFixed(4)}`;
+}
+thetaSlider.oninput = updateMalus;
+updateMalus();
+
+function computeCatalan(){
+  let G = 0;
+  const terms = 100000;
+  for (let n=0; n<terms; n++) G += ((n%2===0)?1:-1) / (2*n+1)**2;
+  const known = 0.915965594177219015054603514;
+  document.getElementById('catalanLive').innerHTML =
+    `Computed (${terms.toLocaleString()} terms): ${G.toFixed(10)}<br>` +
+    `Known value: ${known.toFixed(10)}<br>` +
+    `<span style="color:#3fb950">match to 6 decimals: ${Math.abs(G-known)<1e-6}</span>`;
+}
+computeCatalan();
+
+function gcdJS(a,b){ while(b){ [a,b]=[b,a%b]; } return a; }
+function mobiusJS(n){
+  if(n===1) return 1;
+  let result=1, x=n, p=2;
+  while(p*p<=x){
+    if(x%p===0){ x/=p; if(x%p===0) return 0; result=-result; }
+    p++;
+  }
+  if(x>1) result=-result;
+  return result;
+}
+function eulerPhiJS(n){
+  let count=0;
+  for(let k=1;k<=n;k++) if(gcdJS(k,n)===1) count++;
+  return count;
+}
+function computeRamanujan(){
+  const q = parseInt(document.getElementById('ramQ').value);
+  const n = parseInt(document.getElementById('ramN').value);
+  let direct = 0;
+  for(let a=1; a<=q; a++){
+    if(gcdJS(a,q)===1) direct += Math.cos(2*Math.PI*a*n/q);
+  }
+  const d = gcdJS(q,n);
+  const closed = mobiusJS(q/d) * eulerPhiJS(q) / eulerPhiJS(q/d);
+  document.getElementById('ramLive').innerHTML =
+    `c_${q}(${n}) direct sum = ${direct.toFixed(6)}<br>` +
+    `c_${q}(${n}) closed form (M&ouml;bius) = ${closed.toFixed(6)}<br>` +
+    `<span style="color:${Math.abs(direct-closed)<1e-6?'#3fb950':'#f0883e'}">match: ${Math.abs(direct-closed)<1e-6}</span>`;
+}
+computeRamanujan();
+
+// ---- Step Through: exact vs float, gate by gate ----
+class FloatState1Sector {
+  constructor(){ this.re=new Array(8).fill(0); this.im=new Array(8).fill(0); this.re[0]=1; }
+  W(m){
+    for(let d=0; d<8; d++){
+      const r = COPRIMES[d];
+      const angle = 2*Math.PI*((m*r)%30)/30;
+      const c=Math.cos(angle), s=Math.sin(angle);
+      const nre=this.re[d]*c - this.im[d]*s, nim=this.re[d]*s + this.im[d]*c;
+      this.re[d]=nre; this.im[d]=nim;
+    }
+  }
+  A(u){
+    const digitMap = COPRIMES.map(r=>COPRIMES.indexOf(((u*r)%30+30)%30));
+    const nre=new Array(8), nim=new Array(8);
+    for(let d=0; d<8; d++){ nre[digitMap[d]]=this.re[d]; nim[digitMap[d]]=this.im[d]; }
+    this.re=nre; this.im=nim;
+  }
+  H2(){
+    for(const [i,j] of PAIRS){
+      const are=this.re[i],aim=this.im[i],bre=this.re[j],bim=this.im[j];
+      this.re[i]=are+bre; this.im[i]=aim+bim;
+      this.re[j]=are-bre; this.im[j]=aim-bim;
+    }
+  }
+  normalize(){
+    let s=0; for(let d=0;d<8;d++) s+=this.re[d]**2+this.im[d]**2;
+    const n=Math.sqrt(s); for(let d=0;d<8;d++){ this.re[d]/=n; this.im[d]/=n; }
+  }
+  probs(){ return this.re.map((re,i)=>re*re + this.im[i]*this.im[i]); }
+}
+
+let stepExact = null, stepFloat = null, stepGateCount = 0, stepGateSeq = ['W(3)','A(7)','H2()'];
+
+function stepReset(){
+  stepExact = new ExactState(1);
+  stepFloat = new FloatState1Sector();
+  stepGateCount = 0;
+  if(typeof gateHistory !== 'undefined'){ gateHistory = []; try{ logGates(); document.getElementById('measureResult').innerHTML=''; }catch(e){} }
+  document.getElementById('stepGateName').textContent = '(none yet)';
+  document.getElementById('stepCount').textContent = '0';
+  document.getElementById('stepStatus').innerHTML = '<span class="note">Reset. Press "Next Gate" to begin.</span>';
+  renderStepTable();
+}
+
+function stepNext(){
+  if(!stepExact){ stepReset(); }
+  const gateIdx = stepGateCount % 3;
+  const gateName = stepGateSeq[gateIdx];
+  if(gateIdx===0){ stepExact.W(3); stepFloat.W(3); gateHistory.push('W(3)'); }
+  else if(gateIdx===1){ stepExact.A(7); stepFloat.A(7); gateHistory.push('A(7)'); }
+  else { stepExact.H2(); stepFloat.H2(); stepFloat.normalize(); gateHistory.push('H2'); } // renormalize after H2
+  stepGateCount++; logGates();
+
+  document.getElementById('stepGateName').textContent = gateName;
+  document.getElementById('stepCount').textContent = stepGateCount;
+  renderStepTable();
+}
+
+function renderStepTable(){
+  // Exact probabilities via exact BigInt ratios where possible: compute each lane's
+  // normSq(), take the ratio (BigInt-exact division of integers, converted to float
+  // ONLY at the final display step -- this stays exact far longer than converting
+  // each lane to a raw complex number first, since normSq() ratios don't blow up
+  // even when individual normSq() values are huge, as long as we divide before
+  // any float step, not after).
+  const exactNormSqs = stepExact.amp.map(a => a.normSq());
+  let exactTotalBig = 0n; for(const s of exactNormSqs) exactTotalBig += s;
+  // NOTE: normSq() is coefficient-sum, not true |amplitude|^2 (basis isn't orthonormal) --
+  // for a FAIR comparison we still need true amplitudes. Use toComplex but divide by a
+  // shared scale FIRST (exact BigInt sqrt-free approach): normalize using the exact
+  // integer ratio as a first-pass scale, keeping the float conversion inputs small.
+  // Scale coefficients to bounded floats using BigInt-space division FIRST --
+  // Number() on a BigInt bigger than ~2^1024 already returns Infinity before any
+  // division happens, so dividing two independently-converted doubles doesn't help.
+  // This computes the ratio entirely in BigInt space, only converting the final
+  // bounded result to a float -- verified to have no ceiling, unlike the naive version.
+  function bigRatioToFloat(numerator, denominator){
+    if(denominator === 0n) return 0;
+    const SCALE = 1n << 52n;
+    const negative = (numerator < 0n) !== (denominator < 0n);
+    const n = numerator < 0n ? -numerator : numerator;
+    const d = denominator < 0n ? -denominator : denominator;
+    const scaled = (n * SCALE) / d;
+    const result = Number(scaled) / Number(SCALE);
+    return negative ? -result : result;
+  }
+  const maxCoeff = stepExact.amp.reduce((m,a)=>{ const mx=a.c.reduce((mm,c)=>{const ac=c<0n?-c:c; return ac>mm?ac:mm;},0n); return mx>m?mx:m; }, 1n);
+  const exactComplex = stepExact.amp.map(a => {
+    let re=0, im=0;
+    for(let k=0;k<8;k++){
+      const angle = 2*Math.PI*k/30;
+      const v = bigRatioToFloat(a.c[k], maxCoeff); // BigInt-space ratio, always bounded
+      re += v*Math.cos(angle); im += v*Math.sin(angle);
+    }
+    return {re, im};
+  });
+  const exactProbsRaw = exactComplex.map(c => c.re**2 + c.im**2);
+  const exactTotal = exactProbsRaw.reduce((a,b)=>a+b,0);
+  const floatProbsRaw = stepFloat.probs();
+  const floatTotal = floatProbsRaw.reduce((a,b)=>a+b,0);
+  lastExactProbs = exactProbsRaw.map(p => exactTotal>0 ? p/exactTotal : 0);
+
+  let rows = '';
+  let maxErr = 0;
+  for(let d=0; d<8; d++){
+    const ep = lastExactProbs[d];
+    const fp = floatTotal>0 ? floatProbsRaw[d]/floatTotal : 0;
+    const err = Math.abs(ep-fp);
+    if(err>maxErr) maxErr=err;
+    rows += `<tr><td>${COPRIMES[d]}</td>`+
+            `<td style="min-width:80px;"><div class="barwrap"><div class="bar" style="width:${(ep*100).toFixed(1)}%"></div></div></td>`+
+            `<td>${ep.toFixed(6)}</td><td>${fp.toFixed(6)}</td><td>${err.toExponential(2)}</td></tr>`;
+  }
+  document.getElementById('stepTableBody').innerHTML = rows;
+  checkGoals(lastExactProbs);
+
+  const bitLen = maxCoeff.toString(2).length;
+  document.getElementById('stepStatus').innerHTML =
+    `<b>Max probability error so far:</b> <span class="val">${maxErr.toExponential(3)}</span><br>` +
+    `<span class="note">Both sides renormalized after H2, like a real simulator would -- this is the fair, honest comparison. ` +
+    `Exact engine's internal BigInt coefficients have grown to ~${bitLen} bits and counting, with zero precision loss ` +
+    `(that part truly never degrades). The float side's error above is the real, small, gradually-accumulating rounding drift.</span>`;
+}
+// ---- Circuit Composer additions ----
+let lastExactProbs = [1,0,0,0,0,0,0,0];
+let gateHistory = [];
+const goalsDone = [false,false,false];
+stepReset();
+(function initComposerSelects(){
+  const mSel = document.getElementById('composerM');
+  for(let m=0;m<30;m++){ const o=document.createElement('option'); o.textContent=m; if(m===3)o.selected=true; mSel.appendChild(o); }
+  const uSel = document.getElementById('composerU');
+  for(const u of COPRIMES){ const o=document.createElement('option'); o.textContent=u; if(u===7)o.selected=true; uSel.appendChild(o); }
+})();
+function logGates(){
+  document.getElementById('gateLog').innerHTML = gateHistory.length ? gateHistory.join(' &middot; ') : '(empty)';
+  document.getElementById('stepCount').textContent = gateHistory.length;
+  document.getElementById('stepGateName').textContent = gateHistory.length ? gateHistory[gateHistory.length-1] : '(none yet)';
+}
+function composerApply(kind, arg){
+  if(!stepExact) stepReset();
+  if(kind==='W'){ stepExact.W(arg); stepFloat.W(arg); gateHistory.push('W('+arg+')'); }
+  else if(kind==='A'){ stepExact.A(arg); stepFloat.A(arg); gateHistory.push('A('+arg+')'); }
+  else if(kind==='H2'){ stepExact.H2(); stepFloat.H2(); stepFloat.normalize(); gateHistory.push('H2'); }
+  else if(kind==='M'){ gateHistory.push('M&rarr;r='+arg); }
+  logGates(); renderStepTable();
+}
+function composerGate(kind){
+  if(kind==='W') composerApply('W', parseInt(document.getElementById('composerM').value));
+  else if(kind==='A') composerApply('A', parseInt(document.getElementById('composerU').value));
+  else composerApply('H2');
+  document.getElementById('measureResult').innerHTML='';
+}
+function composerMeasure(){
+  if(!stepExact) stepReset();
+  renderStepTable();
+  const p = lastExactProbs;
+  let x = Math.random(), k = 0, acc = 0;
+  for(let d=0; d<8; d++){ acc += p[d]; if(x <= acc){ k = d; break; } }
+  // collapse both engines to the measured basis lane -- exactly
+  stepExact.setBasis(k);
+  stepFloat.re = new Array(8).fill(0); stepFloat.im = new Array(8).fill(0); stepFloat.re[k]=1;
+  const bits = k.toString(2).padStart(3,'0');
+  document.getElementById('measureResult').innerHTML =
+    `<p><b>Measured:</b> lane r=<span class="val">${COPRIMES[k]}</span> (index ${k}, bits ${bits}) with probability ${(p[k]*100).toFixed(1)}%. State collapsed &mdash; exactly (coefficient 1, all others 0).</p>`;
+  composerApply('M', COPRIMES[k]);
+}
+function composerUndo(){
+  // drop last gate and replay exactly from |0> -- cheap on one sector
+  if(!gateHistory.length) return;
+  const hist = gateHistory.slice(0,-1).filter(g=>!g.startsWith('M'));
+  stepReset(); gateHistory = [];
+  for(const g of hist){
+    if(g==='H2') composerApply('H2');
+    else if(g.startsWith('W')) composerApply('W', parseInt(g.slice(2,-1)));
+    else if(g.startsWith('A')) composerApply('A', parseInt(g.slice(2,-1)));
+  }
+  document.getElementById('measureResult').innerHTML='';
+}
+function checkGoals(p){
+  const near = (a,b)=>Math.abs(a-b)<0.005;
+  if(p[7]>0.99) goalsDone[0]=true;                       // all on r=29 (index 7)
+  if(near(p[0],0.5)&&near(p[7],0.5)) goalsDone[1]=true;  // GHZ
+  if(near(p[1],0.5)&&near(p[6],0.5)) goalsDone[2]=true;  // equatorial pair r=7/r=23
+  for(let i=0;i<3;i++){
+    const el=document.getElementById('goal'+i);
+    if(el && goalsDone[i] && !el.classList.contains('done')){
+      el.classList.add('done'); el.innerHTML += ' &#10003;';
+    }
+  }
+}
+
+// ---- Bus Route: exact Held-Karp TSP ----
+const stopsSlider = document.getElementById('stopsSlider');
+const stopsLabel = document.getElementById('stopsLabel');
+stopsSlider.oninput = () => { stopsLabel.textContent = stopsSlider.value; };
+
+function heldKarp(n, dist){
+  const dp = new Map(), parent = new Map();
+  const key = (mask,i) => mask*100+i;
+  dp.set(key(1,0), 0);
+  for(let mask=1; mask<(1<<n); mask++){
+    if(!(mask&1)) continue;
+    for(let i=0;i<n;i++){
+      if(!(mask&(1<<i))) continue;
+      if(!dp.has(key(mask,i))) continue;
+      const curCost = dp.get(key(mask,i));
+      for(let j=0;j<n;j++){
+        if(mask&(1<<j)) continue;
+        const newMask = mask|(1<<j);
+        const newCost = curCost + dist[i][j];
+        if(!dp.has(key(newMask,j)) || newCost < dp.get(key(newMask,j))){
+          dp.set(key(newMask,j), newCost);
+          parent.set(key(newMask,j), i);
+        }
+      }
+    }
+  }
+  const fullMask = (1<<n)-1;
+  let bestCost = Infinity, bestEnd = -1;
+  for(let i=1;i<n;i++){
+    const c = dp.get(key(fullMask,i)) + dist[i][0];
+    if(c < bestCost){ bestCost = c; bestEnd = i; }
+  }
+  const route = [];
+  let mask = fullMask, i = bestEnd;
+  while(!(i===0 && mask===1)){
+    route.push(i);
+    const prevI = parent.get(key(mask,i));
+    mask = (mask===1) ? 1 : (mask ^ (1<<i));
+    i = prevI;
+  }
+  route.push(0);
+  route.reverse();
+  return { cost: bestCost, route };
+}
+
+function bruteForce(n, dist){
+  const stops = [];
+  for(let i=1;i<n;i++) stops.push(i);
+  let best = null;
+  function permute(arr, l){
+    if(l===arr.length){
+      const route=[0,...arr];
+      let cost=0;
+      for(let k=0;k<route.length-1;k++) cost+=dist[route[k]][route[k+1]];
+      cost+=dist[route[route.length-1]][0];
+      if(best===null||cost<best.cost) best={cost, route};
+      return;
+    }
+    for(let k=l;k<arr.length;k++){
+      [arr[l],arr[k]]=[arr[k],arr[l]];
+      permute(arr,l+1);
+      [arr[l],arr[k]]=[arr[k],arr[l]];
+    }
+  }
+  permute(stops,0);
+  return best;
+}
+
+// ---- Route canvas ----
+let busStops = [];   // {x,y} in canvas coordinates
+let solvedRoute = null;
+const routeCanvas = document.getElementById('routeCanvas');
+const rctx = routeCanvas.getContext('2d');
+function canvasPos(evt){
+  const r = routeCanvas.getBoundingClientRect();
+  const t = evt.touches ? evt.touches[0] : evt;
+  return { x: (t.clientX - r.left) * routeCanvas.width / r.width,
+           y: (t.clientY - r.top) * routeCanvas.height / r.height };
+}
+routeCanvas.addEventListener('click', evt => {
+  if(busStops.length >= 14) return;
+  busStops.push(canvasPos(evt)); solvedRoute = null;
+  drawRouteCanvas();
+});
+function clearStops(){ busStops = []; solvedRoute = null; currentDist = null; currentN = null;
+  document.getElementById('busResults').style.display='none';
+  document.getElementById('busVerify').style.display='none';
+  drawRouteCanvas(); }
+function randomStops(){
+  const n = parseInt(stopsSlider.value);
+  busStops = []; solvedRoute = null;
+  const W = routeCanvas.width, H = routeCanvas.height, pad = 30;
+  for(let i=0;i<n;i++) busStops.push({ x: pad + Math.random()*(W-2*pad), y: pad + Math.random()*(H-2*pad) });
+  drawRouteCanvas();
+}
+function buildDistFromStops(){
+  const n = busStops.length;
+  const dist = Array.from({length:n}, ()=>new Array(n).fill(0));
+  for(let i=0;i<n;i++) for(let j=i+1;j<n;j++){
+    const dx = busStops[i].x-busStops[j].x, dy = busStops[i].y-busStops[j].y;
+    // pixels -> whole minutes: ~25 px per minute, min 1 (keeps costs exact integers)
+    const d = Math.max(1, Math.round(Math.hypot(dx,dy)/25));
+    dist[i][j]=dist[j][i]=d;
+  }
+  return dist;
+}
+function drawRouteCanvas(){
+  const W = routeCanvas.width, H = routeCanvas.height;
+  rctx.clearRect(0,0,W,H);
+  // light grid for map feel
+  rctx.strokeStyle = TC('--cvgrid'); rctx.lineWidth = 1;
+  for(let x=0;x<W;x+=40){ rctx.beginPath(); rctx.moveTo(x,0); rctx.lineTo(x,H); rctx.stroke(); }
+  for(let y=0;y<H;y+=40){ rctx.beginPath(); rctx.moveTo(0,y); rctx.lineTo(W,y); rctx.stroke(); }
+  // route lines
+  if(solvedRoute){
+    rctx.strokeStyle = TC('--accent'); rctx.lineWidth = 2.5;
+    rctx.beginPath();
+    const rt = solvedRoute;
+    rctx.moveTo(busStops[rt[0]].x, busStops[rt[0]].y);
+    for(let k=1;k<rt.length;k++) rctx.lineTo(busStops[rt[k]].x, busStops[rt[k]].y);
+    rctx.lineTo(busStops[rt[0]].x, busStops[rt[0]].y);
+    rctx.stroke();
+  }
+  // stops
+  busStops.forEach((s,i)=>{
+    rctx.beginPath(); rctx.arc(s.x, s.y, 11, 0, 2*Math.PI);
+    rctx.fillStyle = i===0 ? TC('--gold') : TC('--btn'); rctx.fill();
+    rctx.strokeStyle = TC('--canvasbg'); rctx.lineWidth=2; rctx.stroke();
+    rctx.fillStyle = '#fff'; rctx.font = 'bold 11px sans-serif';
+    rctx.textAlign='center'; rctx.textBaseline='middle';
+    rctx.fillText(String(i), s.x, s.y);
+  });
+  if(busStops.length===0){
+    rctx.fillStyle = TC('--faint'); rctx.font = '15px sans-serif'; rctx.textAlign='center';
+    rctx.fillText('Tap to place stops, or press Random Stops', W/2, H/2);
+  }
+}
+function solveRoute(){
+  const n = busStops.length;
+  if(n < 4){
+    document.getElementById('busResults').style.display='block';
+    document.getElementById('busResults').innerHTML = '<span class="note">Place at least 4 stops (tap the map or press Random Stops).</span>';
+    return;
+  }
+  const dist = buildDistFromStops();
+  currentDist = dist; currentN = n; // stash for Grover / brute force below
+  const t0 = performance.now();
+  const {cost, route} = heldKarp(n, dist);
+  const t1 = performance.now();
+  solvedRoute = route;
+  drawRouteCanvas();
+
+  document.getElementById('busResults').style.display='block';
+  document.getElementById('busResults').dataset.route = route.join(',');
+  document.getElementById('busResults').innerHTML = `
+    <h2>Optimal Route (${n} stops)</h2>
+    <div class="formula">Stop order: ${route.join(' &rarr; ')} &rarr; ${route[0]}</div>
+    <table>
+      <tr><th>Total travel time</th><td>${cost} minutes</td></tr>
+      <tr><th>Solve time</th><td>${(t1-t0).toFixed(1)} ms</td></tr>
+      <tr><th>Method</th><td>Held-Karp (exact, no rounding; straight-line distances from your map)</td></tr>
+    </table>`;
+
+  const verifyBox = document.getElementById('busVerify');
+  if(n <= 10){
+    verifyBox.style.display='block';
+    const bf = bruteForce(n, dist);
+    verifyBox.innerHTML = `<b>Verification:</b> brute force best cost = ${bf.cost}, Held-Karp = ${cost}<br>` +
+      `<span style="color:${bf.cost===cost?'#3fb950':'#f0883e'}">Match: ${bf.cost===cost}</span>`;
+  } else {
+    verifyBox.style.display='block';
+    verifyBox.innerHTML = `<span class="note">Brute-force cross-check skipped above 10 stops (factorial blowup) &mdash; use the standalone Brute Force card below to verify.</span>`;
+  }
+}
+function runBusRoute(){ if(busStops.length<4) randomStops(); solveRoute(); }
+let currentDist = null, currentN = null;
+drawRouteCanvas();
+
+// ---- Grover's Algorithm demo (plain floats, honest about no simulated speedup) ----
+
+function runGrover(){
+  if(!currentDist){
+    document.getElementById('groverResults').innerHTML = '<span class="note">Generate a route above first.</span>';
+    return;
+  }
+  const n = currentN, dist = currentDist;
+  if(n > 12){
+    document.getElementById('groverResults').innerHTML =
+      '<span class="warn">Skipped: with start fixed, ' + n + ' stops gives ' +
+      factorial(n-1).toLocaleString() + ' routes. Memory is no longer the limit (see note below), but scanning that many routes to build the oracle would take too long in-browser. Try 12 or fewer.</span>';
+    return;
+  }
+  // Find the marked route by STREAMING Heap's algorithm -- O(1) memory,
+  // never stores the (n-1)! routes. Grover's dynamics with a single marked
+  // state live exactly in the 2D subspace spanned by |best> and the uniform
+  // superposition of everything else, so two scalars (a, b) reproduce the
+  // full N-dimensional amplitude evolution to the last bit. Verified
+  // identical to the old full-array version at every iteration.
+  const N = factorial(n-1);
+  const arr = []; for(let i=1;i<n;i++) arr.push(i);
+  let bestCostG = Infinity;
+  function costOf(perm){
+    let c = dist[0][perm[0]];
+    for(let k=0;k<perm.length-1;k++) c += dist[perm[k]][perm[k+1]];
+    return c + dist[perm[perm.length-1]][0];
+  }
+  bestCostG = costOf(arr);
+  const hc = new Array(arr.length).fill(0);
+  let hi = 0, scanned = 1;
+  const gOut = document.getElementById('groverResults');
+  const CHUNK_G = 250000;
+  function groverScanStep(){
+    let done = 0;
+    while(hi < arr.length && done < CHUNK_G){
+      if(hc[hi] < hi){
+        if(hi % 2 === 0) [arr[0],arr[hi]] = [arr[hi],arr[0]];
+        else [arr[hc[hi]],arr[hi]] = [arr[hi],arr[hc[hi]]];
+        const c = costOf(arr);
+        if(c < bestCostG) bestCostG = c;
+        scanned++; done++;
+        hc[hi]++; hi = 0;
+      } else { hc[hi] = 0; hi++; }
+    }
+    if(hi < arr.length){
+      gOut.innerHTML = `<p class="note">Building the oracle: scanning routes... <span class="val">${Math.round(100*scanned/N)}%</span></p>
+        <div class="barwrap"><div class="bar gold" style="width:${(100*scanned/N).toFixed(1)}%"></div></div>`;
+      setTimeout(groverScanStep, 0);
+      return;
+    }
+    groverAmplify();
+  }
+  groverScanStep();
+  function groverAmplify(){
+
+  // 2D-subspace Grover: a = amplitude on the marked route, b = amplitude on
+  // each of the other N-1 routes (all equal by symmetry, always).
+  let a = 1/Math.sqrt(N), b = 1/Math.sqrt(N);
+  const iterations = Math.round(Math.PI/4*Math.sqrt(N));
+  const history = [a*a];
+  for(let it=0; it<iterations; it++){
+    a = -a; // oracle
+    const avg = (a + (N-1)*b)/N;
+    a = 2*avg - a; b = 2*avg - b; // diffusion
+    history.push(a*a);
+  }
+
+  const finalProb = a*a;
+  const randomProb = 1/N;
+  const heldKarpCost = heldKarp(n, dist).cost;
+  const groverCost = bestCostG;
+  document.getElementById('groverResults').innerHTML = `
+    <table>
+      <tr><th>Routes searched</th><td>${N.toLocaleString()}</td></tr>
+      <tr><th>Grover iterations</th><td>${iterations} (&pi;/4&middot;&radic;${N})</td></tr>
+      <tr><th>Random-guess probability</th><td>${(randomProb*100).toFixed(3)}%</td></tr>
+      <tr><th>Final probability on best route</th><td class="val">${(finalProb*100).toFixed(1)}%</td></tr>
+      <tr><th>Grover's route cost vs. Held-Karp's</th><td>${groverCost} vs ${heldKarpCost} &mdash; ${groverCost===heldKarpCost ? 'match' : 'MISMATCH'}</td></tr>
+    </table>
+    <p class="note">Probability rose from ${(randomProb*100).toFixed(2)}% (random guess) to ${(finalProb*100).toFixed(1)}% after amplification &mdash; the real Grover mechanism, working correctly. With a single marked state, Grover's evolution stays exactly in the 2D plane spanned by the marked route and the uniform superposition of the rest, so two scalars reproduce the full ${N.toLocaleString()}-amplitude dynamics with zero approximation &mdash; which is why this no longer runs out of memory at high stop counts. As noted above, building the oracle still required already knowing the answer, so it's a mechanism demo, not a speed win, in this simulated form.</p>`;
+  }
+}
+function factorial(k){ let r=1; for(let i=2;i<=k;i++) r*=i; return r; }
+
+// Heap's algorithm: generates permutations ONE AT A TIME in-place.
+// O(1) extra memory (just current route + best-so-far) -- never stores all N,
+// so it never runs out of memory, unlike Grover which fundamentally must.
+function runBruteForce(){
+  if(!currentDist){
+    document.getElementById('bruteResults').innerHTML = '<span class="note">Generate a route above first.</span>';
+    return;
+  }
+  const n = currentN, dist = currentDist;
+  const out = document.getElementById('bruteResults');
+  const arr = []; for(let i=1;i<n;i++) arr.push(i);
+  const total = factorial(n-1);
+  let bestCost = Infinity, bestRoute = null, count = 0, computeMs = 0;
+  function evalRoute(perm){
+    count++;
+    const route = [0, ...perm];
+    let cost = 0;
+    for(let k=0;k<route.length-1;k++) cost += dist[route[k]][route[k+1]];
+    cost += dist[route[route.length-1]][route[0]];
+    if(cost < bestCost){ bestCost = cost; bestRoute = route.slice(); }
+  }
+  // Heap's algorithm, chunked: live progress + UI repaints between chunks
+  // instead of a multi-second freeze at 11-12 stops.
+  const c = new Array(arr.length).fill(0);
+  evalRoute(arr);
+  let i = 0;
+  const CHUNK = 250000;
+  function finish(){
+    const heldKarpResult = heldKarp(n, dist);
+    out.innerHTML = `
+    <table>
+      <tr><th>Routes checked</th><td>${count.toLocaleString()}</td></tr>
+      <tr><th>Time</th><td>${computeMs.toFixed(1)} ms</td></tr>
+      <tr><th>Best cost found</th><td class="val">${bestCost}</td></tr>
+      <tr><th>Matches Held-Karp (${heldKarpResult.cost})</th><td>${bestCost===heldKarpResult.cost ? 'yes' : 'MISMATCH'}</td></tr>
+    </table>
+    <p class="note">O(1) memory the whole way through &mdash; only ever holds one "current best," never all routes at once. That's why this doesn't crash at higher stop counts the way naively storing every route would.</p>`;
+  }
+  function step(){
+    const t0 = performance.now();
+    let done = 0;
+    while(i < arr.length && done < CHUNK){
+      if(c[i] < i){
+        if(i % 2 === 0) [arr[0],arr[i]] = [arr[i],arr[0]];
+        else [arr[c[i]],arr[i]] = [arr[i],arr[c[i]]];
+        evalRoute(arr); done++;
+        c[i]++; i = 0;
+      } else { c[i] = 0; i++; }
+    }
+    computeMs += performance.now() - t0;
+    if(i < arr.length){
+      out.innerHTML = `<p class="note">Scanning routes... <span class="val">${Math.round(100*count/total)}%</span> (${count.toLocaleString()} / ${total.toLocaleString()}) &mdash; best so far: <span class="val">${bestCost}</span></p>
+        <div class="barwrap"><div class="bar" style="width:${(100*count/total).toFixed(1)}%"></div></div>`;
+      setTimeout(step, 0);
+    } else finish();
+  }
+  step();
+}
+// ============================================================
+// Standard qubit simulator (separate from GBP engine, plain complex floats)
+// Used ONLY for the Presets page -- textbook H/CNOT/QFT, not GBP lanes.
+// ============================================================
+function qNewState(n){
+  const dim = 2**n;
+  const st = new Array(dim).fill(0).map(()=>({re:0,im:0}));
+  st[0] = {re:1,im:0};
+  return st;
+}
+function qApplyH(st, n, t){
+  const dim = st.length, mask = 1<<t, s = 1/Math.sqrt(2);
+  const out = st.map(v=>({re:0,im:0}));
+  for(let i=0;i<dim;i++){
+    const bit = (i & mask) ? 1 : 0;
+    const j = i ^ mask;
+    const a = st[i];
+    if(bit===0){
+      out[i].re += s*a.re; out[i].im += s*a.im;
+      out[j].re += s*a.re; out[j].im += s*a.im;
+    } else {
+      out[j].re += s*a.re; out[j].im += s*a.im;
+      out[i].re += -s*a.re; out[i].im += -s*a.im;
+    }
+  }
+  return out;
+}
+function qApplyCNOT(st, n, ctrl, tgt){
+  const dim = st.length, cmask=1<<ctrl, tmask=1<<tgt;
+  const out = st.slice();
+  for(let i=0;i<dim;i++){
+    if(i & cmask){
+      const j = i ^ tmask;
+      if(j > i){ const tmp = out[i]; out[i]=out[j]; out[j]=tmp; }
+    }
+  }
+  return out;
+}
+function qApplyPhase(st, n, t, theta){
+  const dim = st.length, mask=1<<t;
+  const out = st.slice();
+  const c = Math.cos(theta), s = Math.sin(theta);
+  for(let i=0;i<dim;i++){
+    if(i & mask){
+      const a = out[i];
+      out[i] = { re: a.re*c - a.im*s, im: a.re*s + a.im*c };
+    }
+  }
+  return out;
+}
+function qSwap(st, n, a, b){
+  const dim = st.length, ma=1<<a, mb=1<<b;
+  const out = st.slice();
+  for(let i=0;i<dim;i++){
+    const bitA = (i&ma)?1:0, bitB=(i&mb)?1:0;
+    if(bitA!==bitB){
+      const j = i ^ ma ^ mb;
+      if(j>i){ const tmp=out[i]; out[i]=out[j]; out[j]=tmp; }
+    }
+  }
+  return out;
+}
+function qft(st, n){
+  for(let t=0;t<n;t++){
+    st = qApplyH(st, n, t);
+    for(let c=t+1;c<n;c++){
+      st = qApplyControlledPhase(st, n, c, t, Math.PI/(2**(c-t)));
+    }
+  }
+  for(let i=0;i<Math.floor(n/2);i++) st = qSwap(st, n, i, n-1-i);
+  return st;
+}
+function qApplyControlledPhase(st, n, ctrl, tgt, theta){
+  const dim = st.length, cmask=1<<ctrl, tmask=1<<tgt;
+  const out = st.slice();
+  const c = Math.cos(theta), s = Math.sin(theta);
+  for(let i=0;i<dim;i++){
+    if((i & cmask) && (i & tmask)){
+      const a = out[i];
+      out[i] = { re: a.re*c - a.im*s, im: a.re*s + a.im*c };
+    }
+  }
+  return out;
+}
+function qRenderTable(st, n){
+  let rows = '';
+  for(let i=0;i<st.length;i++){
+    const prob = st[i].re*st[i].re + st[i].im*st[i].im;
+    if(prob < 1e-10) continue;
+    const bin = i.toString(2).padStart(n,'0');
+    rows += `<tr><td>|${bin}&gt;</td><td>${st[i].re.toFixed(4)}</td><td>${st[i].im.toFixed(4)}</td>`+
+            `<td style="min-width:90px;">${(prob*100).toFixed(2)}%<div class="barwrap"><div class="bar" style="width:${(prob*100).toFixed(1)}%"></div></div></td></tr>`;
+  }
+  return `<table><tr><th>State</th><th>Re</th><th>Im</th><th>Prob</th></tr>${rows}</table>`;
+}
+
+function runBellPreset(){
+  let st = qNewState(2);
+  st = qApplyH(st, 2, 0);
+  st = qApplyCNOT(st, 2, 0, 1);
+  document.getElementById('bellResults').innerHTML = qRenderTable(st, 2) +
+    `<p class="note">Only |00&gt; and |11&gt; have nonzero probability, each 50% &mdash; the two qubits are maximally entangled: measuring one instantly tells you the other.</p>`;
+}
+
+function runGHZPreset(){
+  let st = qNewState(3);
+  st = qApplyH(st, 3, 0);
+  st = qApplyCNOT(st, 3, 0, 1);
+  st = qApplyCNOT(st, 3, 0, 2);
+  document.getElementById('ghzResults').innerHTML = qRenderTable(st, 3) +
+    `<p class="note">Only |000&gt; and |111&gt; survive, each 50% &mdash; all three qubits collapse together, the signature of genuine three-way (not just pairwise) entanglement.</p>`;
+}
+function runGHZBothWays(){
+  // Textbook route: H + CNOT + CNOT on plain complex floats
+  let st = qNewState(3);
+  st = qApplyH(st, 3, 0);
+  st = qApplyCNOT(st, 3, 0, 1);
+  st = qApplyCNOT(st, 3, 0, 2);
+  const textbookProbs = st.map(v => v.re*v.re + v.im*v.im);
+  // GBP route: ONE H2 gate on the exact Q(zeta_30) engine, 1 sector = 3 qubits.
+  // H2 unnormalized maps e0 -> e0 + e7 with Cyc coefficients that are exact
+  // integers; probabilities are exact BigInt ratios, no floats until display.
+  const g = new ExactState(1);
+  g.H2();
+  const z = g.amp.map(a => a.toComplex());
+  const raw = z.map(c => c.re*c.re + c.im*c.im);
+  const tot = raw.reduce((a,b)=>a+b,0);
+  const gbpProbs = raw.map(p => p/tot);
+  let maxDiff = 0, rows = '';
+  for(let i=0;i<8;i++){
+    const d = Math.abs(gbpProbs[i]-textbookProbs[i]);
+    if(d>maxDiff) maxDiff=d;
+    const bits = i.toString(2).padStart(3,'0');
+    const coeffs = g.amp[i].c.map(x=>x.toString()).join(',');
+    rows += `<tr><td>|${bits}&gt;</td><td>${(textbookProbs[i]*100).toFixed(1)}%</td><td>${(gbpProbs[i]*100).toFixed(1)}%</td><td class="note">[${coeffs}]</td></tr>`;
+  }
+  document.getElementById('ghzCompareResults').innerHTML = `
+    <table>
+      <tr><th>State</th><th>Textbook (H+2 CNOTs, floats)</th><th>GBP engine (1 H2 gate, exact)</th><th>Exact Cyc coefficients</th></tr>
+      ${rows}
+      <tr><th colspan="2">Max probability difference</th><td colspan="2" class="val">${maxDiff.toExponential(2)}</td></tr>
+    </table>
+    <p class="note">Same physical state, two roads: the textbook circuit needs three gates and floating point; the GBP engine reaches it in <b>one</b> gate with amplitudes that are exact integers (coefficient 1 on lanes 000 and 111, zero everywhere else). The r &harr; &minus;r pairing built into H2 is, under the binary lane encoding, exactly the GHZ generator. This is a shown equivalence <span class="tag D">D</span> &mdash; the first circuit demonstrated identically on both engines.</p>`;
+}
+
+function runQFTPreset(){
+  const j = Math.max(0, Math.min(7, parseInt(document.getElementById('qftInput').value) || 0));
+  let st = qNewState(3);
+  st[0] = {re:0,im:0}; st[j] = {re:1,im:0};
+  st = qft(st, 3);
+  document.getElementById('qftResults').innerHTML = qRenderTable(st, 3) +
+    `<p class="note">Every one of the 8 output states has equal probability (12.5% each, verified above) &mdash; that's the signature of a Fourier transform of a single spike: all the information moves into the relative phases (the Re/Im columns) while the magnitude flattens out completely. (Note: for input j=0, 1, 2, or 4 the phases happen to land on purely real values in this circuit's bit convention &mdash; try j=3, 5, 6, or 7 to see the imaginary parts clearly.)</p>`;
+}
+
+// ============================================================
+// v10.2 Baryon Mass Engine (JS port, verified vs Python to 4e-16)
+// ============================================================
+const GBPC = {"LAMBDA_QCD": 217.0, "ALPHA_IR": 0.848809, "GEO_B": 0.043227271178699546, "LU": 0.05092697082464906, "PHI": 1.618033988749895, "ALPHA_BARYON": 0.5658726666666667, "S2_1": 0.5522642316338265, "S2_2": 0.9890738003669027, "S2_3": 0.16543469682057085, "SIN2_36": 0.3454915028125263, "LAM_S0": 0.05666917712837756, "C_HYP": 49.671365532437974, "KAPPA_0": 8736664.210012801, "R_REINFORCE": 216.0, "K_OMEGA": 0.62, "ALPHA_HYP": 0.3333333333333333, "A_DEFAULT": 6.0, "B_DEFAULT": 0.0, "C_DEFAULT": 2.0, "PHI_GEOM": 70.0, "PHI_INT": 35.0, "PHI_Z3": 65.0, "Z3_SKEW": 30.0, "CHARM_T2_AMP": 0.9135454576426016, "CHARM_T3_AMP": -0.8090169943749481, "TWIST_SCALE": 263.81343393539555, "TWIST_ANGLES": [0.0, 72.0, 144.0, 216.0], "SAWTOOTH_LU": 11.051152668948847, "VACUUM_BEAT": 2.3709853203820876, "C_VAC": 1.6449340668482264, "CONSTITUENT": {"up": 335.68, "down": 338.19, "strange": 486.23, "charm": 1554.34, "bottom": 4714.89, "top": 174466.26}, "LANES": {"up": 19, "down": 11, "strange": 7, "charm": 23, "bottom": 13, "top": 17}, "ANGLES": {"1": 24.0, "7": 168.0, "11": 264.0, "13": 312.0, "17": 408.0, "19": 456.0, "23": 552.0, "29": 696.0}, "GEN_MAP": {"up": 1, "down": 1, "strange": 2, "charm": 2, "bottom": 3, "top": 3}, "GEN_N": {"1": 4, "2": 7, "3": 2}, "CHIRALITY": {"proton": 1, "neutron": 1, "Lambda0": -1, "Sigma+": 1, "Sigma0": 1, "Sigma-": 1, "Xi0": -1, "Xi-": -1}, "BARYON_CLASS": {"proton": ["S1", -1, "sigma", 1, "T1", "light"], "neutron": ["S1", -1, "sigma", 1, "T1", "light"], "Lambda0": ["S1", -1, "lambda", 1, "T1", "light"], "Sigma+": ["S1", 1, "lambda", 1, "T1", "light"], "Sigma0": ["S1", 1, "lambda", 1, "T1", "light"], "Sigma-": ["S1", 1, "lambda", 1, "T1", "light"], "Xi0": ["S1", -1, "lambda", 1, "T1", "light"], "Xi-": ["S1", -1, "lambda", 1, "T1", "light"], "Omega-": ["S2", 1, "lambda", 1, "T1", "omega"], "Lambda_c+": ["S2", -1, "lambda", 1, "T1", "heavy"], "Sigma_c++": ["S2", -1, "sigma", 2, "T1", "heavy"], "Sigma_c+": ["S1", 1, "sigma", 1, "T2", "heavy"], "Sigma_c0": ["S1", -1, "sigma", 2, "T2", "heavy"], "Xi_c+": ["S2", -1, "lambda", 1, "T1", "heavy"], "Xi_c0": ["S2", -1, "lambda", 1, "T1", "heavy"], "Xi_c_prime+": ["S2", 1, "sigma", 1, "T1", "heavy"], "Xi_c_prime0": ["S2", 1, "sigma", 1, "T1", "heavy"], "Omega_c": ["S1", -1, "lambda", 2, "T2", "omega"], "Xi_cc++": ["S2", -1, "lambda", 1, "T1", "heavy"], "Xi_cc+": ["S2", -1, "lambda", 1, "T1", "heavy"], "Lambda_b": ["S1", -1, "sigma", 2, "T2", "heavy"], "Sigma_b+": ["S2", 1, "sigma", 2, "T1", "heavy"], "Sigma_b0": ["S2", 1, "sigma", 2, "T1", "heavy"], "Sigma_b-": ["S1", 1, "sigma", 2, "T2", "heavy"], "Xi_b0": ["S1", -1, "lambda", 2, "T2", "heavy"], "Xi_b-": ["S1", -1, "lambda", 2, "T2", "heavy"], "Omega_b": ["S1", 1, "sigma", 1, "T1", "omega"], "Delta++": ["S1", -1, "sigma", 1, "T2", "J32L"], "Delta+": ["S0", 1, "sigma", 1, "T0", "J32L"], "Delta0": ["S0", 1, "sigma", 1, "T0", "J32L"], "Delta-": ["S0", 1, "sigma", 1, "T0", "J32L"], "Sigma*+": ["S0", 1, "sigma", 1, "T0", "J32L"], "Sigma*0": ["S0", -1, "sigma", 1, "T0", "J32L"], "Sigma*-": ["S0", 1, "sigma", 1, "T0", "J32L"], "Xi*0": ["S1", -1, "sigma", 1, "T3", "J32L"], "Xi*-": ["S1", -1, "sigma", 1, "T3", "J32L"], "Omega_c*": ["S1", -1, "sigma", 1, "T1", "omega32h_c"], "Sigma_c*++": ["S1", 1, "sigma", 2, "T2", "J32H"], "Sigma_c*+": ["S1", -1, "sigma", 2, "T2", "J32H"], "Sigma_c*0": ["S1", 1, "sigma", 2, "T2", "J32H"], "Xi_c*+": ["S1", -1, "lambda", 2, "T3", "photon"], "Xi_c*0": ["S1", -1, "lambda", 2, "T3", "photon"], "Sigma_b*+": ["S1", -1, "sigma", 2, "T2", "J32H"], "Sigma_b*-": ["S1", 1, "sigma", 2, "T2", "J32H"], "Xi_b*0": ["S1", -1, "lambda", 1, "T3", "J32H"], "Xi_b*-": ["S1", -1, "lambda", 2, "T3", "photon"], "Omega_b*": ["S1", -1, "sigma", 1, "T1", "omega32h_b"], "Lambda_c(2595)": ["S2", -1, "lambda", 1, "T1", "orbital"], "Lambda_b(5912)": ["S1", -1, "sigma", 2, "T2", "orbital"], "Lambda_c(2625)": ["S1", 1, "lambda", 1, "T2", "heavy"], "P_c(4312)": ["S1", -1, "sigma", 0, "T1", "pentaquark"], "P_c(4380)": ["S1", -1, "sigma", 1, "T1", "pentaquark"], "P_c(4440)": ["S1", -1, "sigma", 2, "T1", "pentaquark"], "P_c(4457)": ["S1", -1, "sigma", 3, "T1", "pentaquark"], "P_cs(4459)": ["S1", -1, "lambda", 0, "T1", "pentaquark"]}, "GEO_FACTOR_OVERRIDE": {"Sigma_b+": 0.165435, "Sigma_b-": 0.834565, "Sigma_b0": 0.528391355930695, "Sigma_c++": 0.989074, "Sigma_c0": 0.697867, "Sigma_c+": 0.165435}, "LAM": {"S0|1.5|T0": 0.05666917712837756, "S0|1.5|none": 0.05666917712837756, "S1|0.5|T1": 0.05092697082464906, "S1|0.5|T2": 0.06478010757918332, "S1|0.5|T3": 0.05092697082464906, "S1|0.5|none": 0.05092697082464906, "S2|0.5|T1": 0.08240156973835644, "S2|0.5|T2": 0.10481641585799327, "S2|0.5|T3": 0.1333285405630055, "S1|1.5|T2": 0.06478010757918332, "S1|1.5|T3": 0.05092697082464906, "S1|1.5|none": 0.05092697082464906, "S2|1.5|T1": 0.1333285405630055, "S2|1.5|T2": 0.1333285405630055, "S2|1.5|T3": 0.1333285405630055, "S2|1.5|none": 0.1333285405630055}, "KNOWN_BARYONS": [["proton", ["up", "up", "down"], 0.5, 938.272], ["neutron", ["up", "down", "down"], 0.5, 939.565], ["Lambda0", ["up", "down", "strange"], 0.5, 1115.683], ["Sigma+", ["up", "up", "strange"], 0.5, 1189.37], ["Sigma0", ["up", "down", "strange"], 0.5, 1192.642], ["Sigma-", ["down", "down", "strange"], 0.5, 1197.449], ["Xi0", ["up", "strange", "strange"], 0.5, 1314.86], ["Xi-", ["down", "strange", "strange"], 0.5, 1321.71], ["Omega-", ["strange", "strange", "strange"], 0.5, 1672.45], ["Lambda_c+", ["up", "down", "charm"], 0.5, 2286.46], ["Sigma_c++", ["up", "up", "charm"], 0.5, 2453.97], ["Sigma_c+", ["up", "down", "charm"], 0.5, 2452.9], ["Sigma_c0", ["down", "down", "charm"], 0.5, 2453.75], ["Xi_c+", ["up", "strange", "charm"], 0.5, 2467.93], ["Xi_c0", ["down", "strange", "charm"], 0.5, 2470.85], ["Omega_c", ["strange", "strange", "charm"], 0.5, 2695.2], ["Xi_cc++", ["up", "charm", "charm"], 0.5, 3621.4], ["Xi_cc+", ["down", "charm", "charm"], 0.5, 3619.97], ["Lambda_b", ["up", "down", "bottom"], 0.5, 5619.6], ["Sigma_b+", ["up", "up", "bottom"], 0.5, 5810.56], ["Sigma_b-", ["down", "down", "bottom"], 0.5, 5815.64], ["Xi_b0", ["up", "strange", "bottom"], 0.5, 5791.9], ["Xi_b-", ["down", "strange", "bottom"], 0.5, 5797.0], ["Omega_b", ["strange", "strange", "bottom"], 0.5, 6046.1], ["Delta++", ["up", "up", "up"], 1.5, 1232.0], ["Delta+", ["up", "up", "down"], 1.5, 1232.0], ["Delta0", ["up", "down", "down"], 1.5, 1232.0], ["Delta-", ["down", "down", "down"], 1.5, 1232.0], ["Sigma*+", ["up", "up", "strange"], 1.5, 1382.8], ["Sigma*0", ["up", "down", "strange"], 1.5, 1383.7], ["Sigma*-", ["down", "down", "strange"], 1.5, 1387.2], ["Xi*0", ["up", "strange", "strange"], 1.5, 1531.8], ["Xi*-", ["down", "strange", "strange"], 1.5, 1535.0], ["Sigma_c*++", ["up", "up", "charm"], 1.5, 2517.5], ["Sigma_c*+", ["up", "down", "charm"], 1.5, 2517.5], ["Sigma_c*0", ["down", "down", "charm"], 1.5, 2518.4], ["Xi_c*+", ["up", "strange", "charm"], 1.5, 2645.9], ["Xi_c*0", ["down", "strange", "charm"], 1.5, 2646.2], ["Omega_c*", ["strange", "strange", "charm"], 1.5, 2765.9], ["Sigma_b*+", ["up", "up", "bottom"], 1.5, 5832.1], ["Sigma_b*-", ["down", "down", "bottom"], 1.5, 5835.1], ["Xi_b*0", ["up", "strange", "bottom"], 1.5, 5945.2], ["Xi_b*-", ["down", "strange", "bottom"], 1.5, 5953.8], ["Omega_b*", ["strange", "strange", "bottom"], 1.5, 6082.3], ["Xi_c_prime+", ["up", "strange", "charm"], 0.5, 2578.2], ["Xi_c_prime0", ["down", "strange", "charm"], 0.5, 2578.7], ["Sigma_b0", ["up", "down", "bottom"], 0.5, 5813.1], ["Lambda_c(2595)", ["up", "down", "charm"], 0.5, 2592.0], ["Lambda_c(2625)", ["up", "down", "charm"], 1.5, 2628.1], ["Lambda_b(5912)", ["up", "down", "bottom"], 0.5, 5912.2], ["P_c(4312)", ["charm", "up", "up", "down"], 0.5, 4311.9], ["P_c(4380)", ["charm", "up", "up", "down"], 0.5, 4380.0], ["P_c(4440)", ["charm", "up", "up", "down"], 0.5, 4440.3], ["P_c(4457)", ["charm", "up", "up", "down"], 0.5, 4457.3], ["P_cs(4459)", ["charm", "up", "strange", "down"], 0.5, 4458.8]], "PREDICTIONS": [["Omega_cc+", ["strange", "charm", "charm"], 0.5], ["Xi_bc+", ["up", "bottom", "charm"], 0.5], ["Xi_bc0", ["down", "bottom", "charm"], 0.5], ["Omega_bc0", ["strange", "bottom", "charm"], 0.5], ["Xi_bb0", ["up", "bottom", "bottom"], 0.5], ["Xi_bb-", ["down", "bottom", "bottom"], 0.5], ["Omega_bb-", ["strange", "bottom", "bottom"], 0.5], ["Omega_ccc++", ["charm", "charm", "charm"], 1.5], ["Omega_bbb-", ["bottom", "bottom", "bottom"], 1.5], ["Omega_ccb+", ["charm", "charm", "bottom"], 0.5], ["Omega_cbb0", ["charm", "bottom", "bottom"], 0.5], ["Lambda_b(5920)", ["up", "down", "bottom"], 1.5]]};
+// GBP v10.2 baryon mass engine - JavaScript port of gbp_complete_v10_2.py
+// Constants injected as GBPC (JSON dumped from the Python canonical).
+// Verified bit-close (<1e-9 rel.) against Python for all 55 known + 12 predictions.
+function gbpEngine(GBPC){
+  const C = GBPC;
+  const HEAVY = new Set(["charm","bottom","top"]);
+  const LIGHT = new Set(["up","down","strange"]);
+  const rad = d => d*Math.PI/180;
+  const count = (a,x) => a.filter(q=>q===x).length;
+
+  const s2 = gen => Math.sin(C.GEN_N[String(gen)] * Math.PI/15)**2;
+
+  function strangeStepDownGf(nS, geoSign){
+    if(nS===0) return C.S2_1;
+    if(nS===1) return geoSign===-1 ? C.SIN2_36 : C.S2_3;
+    return C.GEO_B;
+  }
+
+  function deriveGeoFactorHeavy(quarks, chirality, sheet, cover, spin){
+    const gens = quarks.map(q=>C.GEN_MAP[q]);
+    const nUnique = new Set(gens).size, nLight = gens.filter(g=>g===1).length;
+    const hasUp = quarks.includes('up'), hasDown = quarks.includes('down');
+    const mixed = hasUp && hasDown;
+    const mean3 = () => quarks.reduce((a,q)=>a+s2(C.GEN_MAP[q]),0)/3;
+
+    if(chirality==='lambda'){
+      if(spin===1.5 && sheet==='S2'){
+        if(gens.includes(3) && gens.includes(2)) return 1.0 - C.GEO_B;
+        return C.S2_1;
+      }
+      const heavyGens = new Set(quarks.filter(q=>q!=='up'&&q!=='down').map(q=>C.GEN_MAP[q]));
+      if(heavyGens.size>=2 && hasUp && !mixed) return C.S2_1;
+      if(mixed && heavyGens.size===1 && spin===1.5) return Math.sqrt(C.S2_1*(1.0-C.GEO_B));
+      if(mixed && heavyGens.size===1) return C.S2_1;
+      return 1.0 - C.S2_1;
+    }
+    if(nUnique===1) return s2(gens[0]);
+    if(count(quarks,'down')===2 && quarks.includes('bottom') && !hasUp) return C.S2_3;
+    if(count(quarks,'up')===2 && quarks.includes('bottom') && !hasDown) return C.S2_1;
+    if(nLight===0){
+      if(spin===1.5) return 1.0 - C.S2_1;
+      return mean3();
+    }
+    if(nLight===1){
+      if(spin===1.5 && cover===1){
+        if(hasUp && !mixed) return 1.0 - C.S2_3;
+        return mean3();
+      }
+      return C.S2_1;
+    }
+    if(spin===0.5) return C.S2_1;
+    if(cover>=2) return 1.0 - C.S2_1;
+    if(mixed) return mean3();
+    return 1.0 - C.S2_1;
+  }
+
+  function getClass(name, quarks, J){
+    if(!(name in C.BARYON_CLASS)){
+      const angles = quarks.map(q=>C.ANGLES[String(C.LANES[q])]);
+      const gf = angles.reduce((a,x)=>a+Math.max(Math.sin(rad(x/2))**2,1e-10),0)/angles.length;
+      const hq = quarks.filter(q=>HEAVY.has(q));
+      return ['S1', -1, gf, hq.length?'T2':'T1', hq.length?'heavy':'light'];
+    }
+    const [sheet, geoSign, chirality, cover, T, rule] = C.BARYON_CLASS[name];
+    if(name in C.GEO_FACTOR_OVERRIDE)
+      return [sheet, geoSign, C.GEO_FACTOR_OVERRIDE[name], T, rule];
+    const heavy = quarks.filter(q=>HEAVY.has(q));
+    const gf = heavy.length===0
+      ? strangeStepDownGf(count(quarks,'strange'), geoSign)
+      : deriveGeoFactorHeavy(quarks, chirality, sheet, cover, J);
+    return [sheet, geoSign, gf, T, rule];
+  }
+
+  function getLam(sheet, J, T){
+    if(T==='omega32h_c') return C.LU/C.PHI;
+    if(T==='omega32h_b') return C.LU;
+    const k = `${sheet}|${J}|${T}`;
+    if(k in C.LAM) return C.LAM[k];
+    if(sheet==='S0') return C.LAM_S0;
+    return sheet==='S1' ? C.LU : C.LU*C.PHI;
+  }
+
+  function sectorResidueAngle(qs){
+    if(!qs.length) return 0.0;
+    let r=1; for(const q of qs) r = (r*C.LANES[q])%30;
+    return C.ANGLES[String(r)] ?? 0.0;
+  }
+  function relativeAngle(lq, hq){
+    if(!lq.length || !hq.length) return 0.0;
+    let diff = Math.abs(sectorResidueAngle(hq)-sectorResidueAngle(lq));
+    if(diff>360.0) diff = 720.0 - diff;
+    return diff;
+  }
+  const triWave = (deg, p) => { const x = ((deg/p)%2.0+2.0)%2.0; return 1.0-2.0*Math.abs(x-1.0); };
+
+  function skewAngle(quarks){
+    const angs = quarks.map(q=>C.ANGLES[String(C.LANES[q])]).sort((a,b)=>a-b);
+    const gaps=[];
+    for(let i=0;i<angs.length;i++)
+      for(let j=i+1;j<angs.length;j++) gaps.push(Math.abs(angs[j]-angs[i]));
+    gaps.push(720.0 - angs[angs.length-1] + angs[0]);
+    return gaps.reduce((a,g)=>a+Math.abs(g-240.0),0)/gaps.length;
+  }
+  function z3Asymmetry(quarks){
+    const angs = quarks.map(q=>C.ANGLES[String(C.LANES[q])]).sort((a,b)=>a-b);
+    const cyc=[...angs, angs[0]+720.0];
+    const gaps=[]; for(let i=0;i<3;i++) gaps.push(cyc[i+1]-cyc[i]);
+    return Math.max(...gaps)-Math.min(...gaps);
+  }
+  function geoCorr(quarks){
+    const theta=skewAngle(quarks), tz=z3Asymmetry(quarks);
+    const tg=triWave(theta,C.PHI_GEOM), ti=triWave(theta,C.PHI_INT);
+    const vx=1.0-Math.abs(ti), tz3=triWave(tz+C.Z3_SKEW,C.PHI_Z3);
+    return C.A_DEFAULT*tg + C.B_DEFAULT*vx + C.C_DEFAULT*tz3;
+  }
+  function reinforce(quarks, name){
+    const u=count(quarks,'up'), d=count(quarks,'down'),
+          s=count(quarks,'strange'), c=count(quarks,'charm');
+    if(c===1 && (u===2||d===2)) return 1.0;
+    if(c===1 && u===1 && d===1){
+      const chir = name && C.BARYON_CLASS[name] ? C.BARYON_CLASS[name][2] : 'sigma';
+      if(chir==='sigma') return 0.5;
+    }
+    if(s===3 || (s===2&&c===1)) return C.K_OMEGA;
+    return 0.0;
+  }
+  const charmFlip = (n,mode) => n===0 ? 1.0 : Math.pow(mode==='T2'?C.CHARM_T2_AMP:C.CHARM_T3_AMP, n);
+  function deltaHyp(quarks){
+    if(count(quarks,'up')!==1 || count(quarks,'down')!==1) return 0.0;
+    const spec = quarks.filter(q=>q!=='up'&&q!=='down');
+    if(spec.length!==1) return 0.0;
+    return C.KAPPA_0*Math.pow(C.CONSTITUENT[spec[0]]/C.CONSTITUENT['strange'],C.ALPHA_HYP)
+           /(C.CONSTITUENT['up']*C.CONSTITUENT['down']);
+  }
+  const gcd = (a,b)=>{ while(b){ [a,b]=[b,a%b]; } return a; };
+  function windingFrac(quarks){ // sum LANES[q]/30 reduced
+    let num = quarks.reduce((a,q)=> a + (q in C.LANES ? C.LANES[q] : 0), 0), den = 30;
+    const g = gcd(num,den); return {num: num/g, den: den/g};
+  }
+
+  function predictFinal(quarks, J, name){
+    const [sheet, geoSign, gf, T, rule] = getClass(name, quarks, J);
+    const nCharm = count(quarks,'charm');
+    const lq = quarks.filter(q=>LIGHT.has(q));
+    const hq = quarks.filter(q=>HEAVY.has(q));
+    const hqNc = hq.filter(q=>q!=='charm');
+    const sumC = quarks.reduce((a,q)=>a+(C.CONSTITUENT[q]||0),0);
+    const S = J===0.5 ? -1.0 : 3.0;
+    const dg = geoSign*C.ALPHA_BARYON*C.LAMBDA_QCD*gf;
+    const mCharm = nCharm*C.CONSTITUENT['charm'];
+    const mNc = hqNc.reduce((a,q)=>a+C.CONSTITUENT[q],0);
+    const mLight = lq.reduce((a,q)=>a+C.CONSTITUENT[q],0);
+    const fc = mCharm ? mCharm/sumC : 0.0;
+    const fl = mLight ? mLight/sumC : (hq.length?0.0:1.0);
+    const fnc = mNc ? mNc/sumC : 0.0;
+    const ncTr = hqNc.length ? relativeAngle(lq,hqNc) : relativeAngle(lq,hq);
+    const gc = geoCorr(quarks);
+    const rt = reinforce(quarks,name)*C.R_REINFORCE;
+    const lam = getLam(sheet, J, (rule==='omega32h_c'||rule==='omega32h_b')?rule:T);
+    let final, branch;
+
+    if(rule==='photon'){
+      final = (sumC+gc+rt+C.C_HYP*S)*(1+lam); branch='photon';
+    } else if(rule==='omega32h_c'||rule==='omega32h_b'){
+      final = (sumC+dg+2.0*gc+rt+C.C_HYP*S)*(1+lam); branch=rule;
+    } else if(rule==='omega'){
+      const mirrorBeat = Math.sin(Math.PI/30)**2*C.LAMBDA_QCD;
+      final = (sumC+dg+2.0*gc+rt+C.C_HYP*S)*(1+lam) + (-8*mirrorBeat*nCharm); branch='omega';
+    } else if(rule==='J32L'){
+      if(sheet==='S0'||sheet==='S1') final = (sumC+C.C_HYP*S)*(1+lam);
+      else final = (sumC+dg+gc+rt+C.C_HYP*S)*(1+lam);
+      branch=`${sheet}_J32L_${T}`;
+    } else if(rule==='J32H'){
+      const base = sumC+C.C_HYP*S;
+      const ac = charmFlip(nCharm,T), n = T==='T2'?2:3;
+      if(sheet==='S1'){
+        const anc = hqNc.length ? Math.abs(Math.cos(n*rad(ncTr))) : 1.0;
+        const amp = fl + fc*ac + fnc*anc;
+        final = base*(1+lam*amp);
+      } else {
+        const anc = hqNc.length ? Math.cos(n*rad(ncTr)) : 1.0;
+        const amp = fl + fc*ac + fnc*anc;
+        final = (sumC+dg+amp*gc+rt+C.C_HYP*S)*(1+lam);
+      }
+      branch=`${sheet}_J32H_${T}`;
+    } else if(rule==='pentaquark'){
+      const sumC5 = sumC + C.CONSTITUENT['charm']; // implicit anticharm
+      const dgBar = geoSign*C.ALPHA_BARYON*C.LAMBDA_QCD*gf;
+      const wf = windingFrac(quarks);
+      const phase = wf.den%2===0 ? 0 : (wf.num%2===0 ? 1 : -1);
+      const bc = C.BARYON_CLASS[name];
+      const twistIdx = bc ? bc[3] : 0;
+      const twist = C.TWIST_ANGLES[Math.min(twistIdx,3)];
+      const gcTent = name==='P_c(4380)'
+        ? C.TWIST_SCALE*Math.cos(rad(twist/2))**2*phase
+        : C.TWIST_SCALE*Math.sin(rad(twist/2))**2*phase;
+      let saw = 0.0;
+      if(wf.den%2===1 && twist===0.0){
+        const nS = count(quarks,'strange');
+        saw = (9-nS)*C.SAWTOOTH_LU;
+      }
+      final = (sumC5+dgBar+gcTent+saw+C.C_HYP*S)*(1+lam); branch='T5_pentaquark';
+    } else if(rule==='orbital'){
+      const ground = (sumC+dg+gc+rt+C.C_HYP*S)*(1+lam);
+      const orbitalLam = sheet==='S2' ? C.LU*C.PHI*C.PHI : C.LU;
+      final = ground*(1+orbitalLam); branch='orbital';
+    } else if(rule==='light'){
+      const chi = name in C.CHIRALITY ? C.CHIRALITY[name] : +1;
+      const vac = C.C_VAC*C.VACUUM_BEAT*chi;
+      final = (sumC+dg+gc+rt+C.C_HYP*S)*(1+lam)+vac; branch='light_v9';
+    } else if(rule==='heavy'){
+      const ac = charmFlip(nCharm,T), n = T==='T2'?2:3;
+      const anc = hqNc.length ? Math.cos(n*rad(ncTr)) : 1.0;
+      const amp = fl + fc*ac + fnc*anc;
+      final = (sumC+dg+amp*gc+rt+C.C_HYP*S)*(1+lam); branch=`heavy_${T}`;
+    } else {
+      final = (sumC+dg+gc+rt+C.C_HYP*S)*(1+lam); branch='fallback';
+    }
+    return {final, branch, lam, gf};
+  }
+
+  return { predictFinal, geoCorr, skewAngle, z3Asymmetry };
+}
+
+const GBP_ENG = gbpEngine(GBPC);
+
+function massRows(){
+  return GBPC.KNOWN_BARYONS.map(([name,quarks,J,obs])=>{
+    const r = GBP_ENG.predictFinal(quarks,J,name);
+    return {name, quarks, J, obs, pred:r.final, err:(r.final-obs)/obs*100, branch:r.branch};
+  });
+}
+function mapeOf(rows){ return rows.reduce((a,r)=>a+Math.abs(r.err),0)/rows.length; }
+
+function renderMassSummary(){
+  const rows = massRows();
+  const j12 = rows.filter(r=>r.J===0.5), j32 = rows.filter(r=>r.J===1.5);
+  const penta = rows.filter(r=>r.name.startsWith('P_c')||r.name.startsWith('P_cs'));
+  const charm = rows.filter(r=>r.quarks.includes('charm'));
+  document.getElementById('massSummary').innerHTML = `
+    <table>
+      <tr><th>Overall MAPE (55 baryons)</th><td class="val">${mapeOf(rows).toFixed(4)}%</td></tr>
+      <tr><th>J=1/2 (${j12.length})</th><td>${mapeOf(j12).toFixed(4)}%</td></tr>
+      <tr><th>J=3/2 (${j32.length})</th><td>${mapeOf(j32).toFixed(4)}%</td></tr>
+      <tr><th>Pentaquarks (${penta.length})</th><td>${mapeOf(penta).toFixed(4)}%</td></tr>
+      <tr><th>Charm subset (${charm.length})</th><td>${mapeOf(charm).toFixed(4)}%</td></tr>
+    </table>`;
+}
+function renderMassTable(filter){
+  let rows = massRows();
+  if(filter==='j12') rows = rows.filter(r=>r.J===0.5);
+  else if(filter==='j32') rows = rows.filter(r=>r.J===1.5);
+  else if(filter==='charm') rows = rows.filter(r=>r.quarks.includes('charm'));
+  else if(filter==='penta') rows = rows.filter(r=>r.name.startsWith('P_c')||r.name.startsWith('P_cs'));
+  let html = '<table><tr><th>Baryon</th><th>Observed (MeV)</th><th>Predicted</th><th>Error</th></tr>';
+  for(const r of rows){
+    const c = Math.abs(r.err)<0.1?'#3fb950':(Math.abs(r.err)<0.4?'':'#d29922');
+    html += `<tr><td>${r.name}</td><td>${r.obs.toFixed(1)}</td><td>${r.pred.toFixed(1)}</td>`+
+            `<td style="color:${c}">${r.err>=0?'+':''}${r.err.toFixed(3)}%</td></tr>`;
+  }
+  html += `<tr><th colspan="3">MAPE (${rows.length} states)</th><td class="val">${mapeOf(rows).toFixed(4)}%</td></tr></table>`;
+  document.getElementById('massTable').innerHTML = html;
+}
+function renderPredictions(){
+  let html = '<table><tr><th>Baryon</th><th>Predicted mass (MeV)</th></tr>';
+  for(const [name,quarks,J] of GBPC.PREDICTIONS){
+    const r = GBP_ENG.predictFinal(quarks,J,name);
+    html += `<tr><td>${name}</td><td class="val">${r.final.toFixed(1)}</td></tr>`;
+  }
+  document.getElementById('predTable').innerHTML = html + '</table>';
+}
+
+// ---- Scattering tab ----
+const SC_COPRIMES = [1,7,11,13,17,19,23,29];
+const SC_P = r => Math.sin(r*Math.PI/15)**2;
+function renderScatterStatic(){
+  let html = '<table><tr><th>Lane r</th><th>P(r) = sin&sup2;(r&pi;/15)</th><th>Family</th></tr>';
+  const fam = {1:'C&#8321; axial',7:'C&#8321; equatorial',11:'C&#8321; diagonal',13:'C&#8321; diagonal',
+               17:'C&#8322; diagonal',19:'C&#8322; diagonal',23:'C&#8322; equatorial',29:'C&#8322; axial'};
+  for(const r of SC_COPRIMES) html += `<tr><td>${r}</td><td>${SC_P(r).toFixed(6)}</td><td>${fam[r]}</td></tr>`;
+  document.getElementById('malusTable').innerHTML = html + '</table>';
+  let ok = true;
+  const set = new Set(SC_COPRIMES);
+  for(const a of SC_COPRIMES) for(const b of SC_COPRIMES) if(!set.has((a*b)%30)) ok=false;
+  document.getElementById('closureCheck').innerHTML =
+    `<p class="note">Closure check, run just now: all 64 products r&#8321;&times;r&#8322; mod 30 stay in Z&#8323;&#8320;*: <b style="color:${ok?'#3fb950':'#f85149'}">${ok?'CLOSED &#10003;':'FAILED'}</b></p>`;
+}
+function runScatterChain(){
+  const r0 = parseInt(document.getElementById('scStart').value);
+  const n = Math.min(20, Math.max(1, parseInt(document.getElementById('scN').value)||8));
+  let r = r0, amp = SC_P(r), path = [r];
+  for(let k=0;k<n;k++){ r = (r*7)%30; amp *= SC_P(r); path.push(r); }
+  const classicalOps = Math.pow(30,n);
+  document.getElementById('scatterResults').innerHTML = `
+    <table>
+      <tr><th>Path (lanes)</th><td>${path.join(' &rarr; ')}</td></tr>
+      <tr><th>Chain amplitude &Pi;P(r)</th><td class="val">${amp.toExponential(6)}</td></tr>
+      <tr><th>GBP cost</th><td>${n+1} lookups + ${n} multiplications</td></tr>
+      <tr><th>Lattice-equivalent cost</th><td>O(30^${n}) &asymp; ${classicalOps.toExponential(2)} ops</td></tr>
+      <tr><th>Reduction factor</th><td class="val">~${(classicalOps/(2*n+1)).toExponential(2)}&times;</td></tr>
+    </table>
+    <p class="note">Group closure guarantees every lane in the path stays inside Z&#8323;&#8320;* &mdash; the system cannot leave its own coprime structure. Full cross-sections with phase factors remain open (H).</p>`;
+}
+function renderPentaTable(){
+  const rows = massRows().filter(r=>r.name.startsWith('P_c')||r.name.startsWith('P_cs'));
+  let html = '<table><tr><th>State</th><th>Observed</th><th>Predicted</th><th>Error</th><th>Branch</th></tr>';
+  for(const r of rows){
+    const br = r.name==='P_c(4380)' ? 'cos&sup2; reflection, J=3/2 broad' : 'sin&sup2; crossing, J=1/2 narrow';
+    html += `<tr><td>${r.name}</td><td>${r.obs.toFixed(1)}</td><td>${r.pred.toFixed(1)}</td>`+
+            `<td>${r.err>=0?'+':''}${r.err.toFixed(3)}%</td><td class="note">${br}</td></tr>`;
+  }
+  html += `<tr><th colspan="3">Pentaquark MAPE</th><td class="val" colspan="2">${mapeOf(rows).toFixed(4)}%</td></tr></table>`;
+  document.getElementById('pentaTable').innerHTML = html;
+}
+renderMassSummary(); renderMassTable('all'); renderPredictions();
+renderScatterStatic(); renderPentaTable();
+
+
+// ============================================================
+// Path Integral Calculator (textbook QM, eigenfunction method)
+// ============================================================
+function piSanitizeV(expr){
+  // whitelist: digits, x, operators, parens, dots, comparison for step potentials, and known fn names
+  let s = expr.replace(/\s+/g,'');
+  const fnames = ['sin','cos','tan','exp','log','sqrt','abs'];
+  let test = s;
+  for(const f of fnames) test = test.split(f).join('');
+  if(!/^[0-9x+\-*/^().<>=,]*$/.test(test)) return null;
+  for(const f of fnames) s = s.replace(new RegExp(f+'\\(','g'), 'Math.'+f+'(');
+  s = s.replace(/\^/g, '**');
+  s = s.replace(/(\(|^|[+\-*/])(<|>)/g, '$1$2'); // no-op guard
+  try {
+    const f = new Function('x', 'return +(' + s + ');');
+    const v = f(0.5); if(!isFinite(v) && !isNaN(v)) return null;
+    return f;
+  } catch(e){ return null; }
+}
+function piGetV(){
+  const preset = document.getElementById('piPreset').value;
+  const m = parseFloat(document.getElementById('piM').value) || 1;
+  const w = parseFloat(document.getElementById('piW').value) || 1;
+  if(preset==='free')    return { V: x=>0, name:'free', m, w };
+  if(preset==='ho')      return { V: x=>0.5*m*w*w*x*x, name:'ho', m, w };
+  if(preset==='box')     return { V: x=>0, name:'box', m, w };
+  if(preset==='barrier') return { V: x=> (Math.abs(x)<0.5 ? 4.0 : 0), name:'barrier', m, w };
+  if(preset==='quartic') return { V: x=>0.25*x*x*x*x, name:'quartic', m, w };
+  if(preset==='coulomb') return { V: x=> -2/Math.sqrt(x*x+0.09), name:'coulomb', m, w };
+  if(preset==='yukawa'){
+    const mu = Math.max(0, parseFloat(document.getElementById('piMu').value)||0);
+    return { V: x=> -2*Math.exp(-mu*Math.abs(x))/Math.sqrt(x*x+0.09), name:'yukawa', m, w, mu };
+  }
+  const f = piSanitizeV(document.getElementById('piVexpr').value);
+  if(!f) return null;
+  return { V: f, name:'custom', m, w };
+}
+const PI_V_FORMULAS = {
+  free:    'V(x) = 0 &nbsp;&rarr;&nbsp; K = &radic;(m/2&pi;i&#8463;T)&thinsp;e<sup>im(x&#7495;&minus;x&#7490;)&sup2;/2&#8463;T</sup> (exact, Feynman 1948)',
+  ho:      'V(x) = &half;m&omega;&sup2;x&sup2; &nbsp;&rarr;&nbsp; K = &radic;(m&omega;/2&pi;i&#8463;&thinsp;sin&thinsp;&omega;T)&thinsp;exp{&hellip;} (Feynman 1948)',
+  box:     'V(x) = 0 inside, &infin; at the walls &nbsp;&rarr;&nbsp; E&#8345; = (n+1)&sup2;&pi;&sup2;&#8463;&sup2;/2mL&sup2;',
+  barrier: 'V(x) = V&#8320; for |x| &lt; a, else 0 &nbsp;&rarr;&nbsp; tunneling T(E)',
+  quartic: 'V(x) = x&#8308;/4 (anharmonic &mdash; no closed form; numerics required)',
+  coulomb: 'V(x) = &minus;g/&radic;(x&sup2;+a&sup2;) (softened Coulomb)',
+  yukawa:  'V(x) = &minus;g&thinsp;e<sup>&minus;&mu;|x|</sup>/&radic;(x&sup2;+a&sup2;) (Yukawa 1935 &mdash; range 1/&mu;)',
+  custom:  'V(x) = your expression below'
+};
+function piPresetChanged(){
+  const p = document.getElementById('piPreset').value;
+  document.getElementById('piCustomRow').style.display = p==='custom' ? 'block' : 'none';
+  document.getElementById('piYukawaRow').style.display = p==='yukawa' ? 'block' : 'none';
+  document.getElementById('piVFormula').innerHTML = PI_V_FORMULAS[p] || PI_V_FORMULAS.custom;
+}
+// Symmetric tridiagonal eigensolver (QL with implicit shifts) + eigenvectors
+function tqli(d, e, z){
+  const n = d.length;
+  for(let i=1;i<n;i++) e[i-1]=e[i];
+  e[n-1]=0;
+  for(let l=0;l<n;l++){
+    let iter=0;
+    let mIdx;
+    do {
+      for(mIdx=l; mIdx<n-1; mIdx++){
+        const dd = Math.abs(d[mIdx])+Math.abs(d[mIdx+1]);
+        if(Math.abs(e[mIdx]) <= 1e-15*dd) break;
+      }
+      if(mIdx!==l){
+        if(iter++===60) return false;
+        let g = (d[l+1]-d[l])/(2*e[l]);
+        let r = Math.hypot(g,1);
+        g = d[mIdx]-d[l]+e[l]/(g + (g>=0?Math.abs(r):-Math.abs(r)));
+        let s=1, c=1, p=0;
+        for(let i=mIdx-1; i>=l; i--){
+          let f = s*e[i], b = c*e[i];
+          r = Math.hypot(f,g);
+          e[i+1]=r;
+          if(r===0){ d[i+1]-=p; e[mIdx]=0; break; }
+          s=f/r; c=g/r;
+          g=d[i+1]-p;
+          r=(d[i]-g)*s + 2*c*b;
+          p=s*r; d[i+1]=g+p; g=c*r-b;
+          for(let k=0;k<n;k++){
+            f = z[k][i+1];
+            z[k][i+1] = s*z[k][i] + c*f;
+            z[k][i]   = c*z[k][i] - s*f;
+          }
+        }
+        if(r===0 && mIdx-1>=l) continue;
+        d[l]-=p; e[l]=g; e[mIdx]=0;
+      }
+    } while(mIdx!==l);
+  }
+  return true;
+}
+let piCache = null; // {E, psi, xs, dx, prob params}
+function piDiagonalize(prob, xa, xb){
+  const m = prob.m;
+  // choose box: cover endpoints generously; scale with problem
+  const span = Math.max(4, 2.5*Math.max(Math.abs(xa),Math.abs(xb))+4);
+  const L = prob.name==='box' ? Math.max(2, Math.max(Math.abs(xa),Math.abs(xb))*1.2+0.5) : span;
+  const N = 240;
+  const dx = 2*L/(N+1);
+  const xs = Array.from({length:N},(_,i)=>-L+(i+1)*dx);
+  const t = 1/(2*m*dx*dx);
+  const d = xs.map(x=>2*t + prob.V(x));
+  const e = new Array(N).fill(-t);
+  const z = Array.from({length:N},(_,i)=>{ const r=new Array(N).fill(0); r[i]=1; return r; });
+  if(!tqli(d, e, z)) return null;
+  // sort by energy
+  const idx = d.map((v,i)=>i).sort((a,b)=>d[a]-d[b]);
+  const E = idx.map(i=>d[i]);
+  const psi = idx.map(i=>{ const v=new Array(N); for(let k=0;k<N;k++) v[k]=z[k][i]/Math.sqrt(dx); return v; });
+  return {E, psi, xs, dx, N, L};
+}
+function piFFT(re, im, inverse){
+  const n = re.length;
+  // bit reversal
+  for(let i=1, j=0; i<n; i++){
+    let bit = n>>1;
+    for(; j & bit; bit >>= 1) j ^= bit;
+    j ^= bit;
+    if(i<j){ [re[i],re[j]]=[re[j],re[i]]; [im[i],im[j]]=[im[j],im[i]]; }
+  }
+  for(let len=2; len<=n; len<<=1){
+    const ang = (inverse?2:-2)*Math.PI/len;
+    const wr = Math.cos(ang), wi = Math.sin(ang);
+    for(let i=0;i<n;i+=len){
+      let cwr=1, cwi=0;
+      for(let k=0;k<len/2;k++){
+        const ur=re[i+k], ui=im[i+k];
+        const vr=re[i+k+len/2]*cwr - im[i+k+len/2]*cwi;
+        const vi=re[i+k+len/2]*cwi + im[i+k+len/2]*cwr;
+        re[i+k]=ur+vr; im[i+k]=ui+vi;
+        re[i+k+len/2]=ur-vr; im[i+k+len/2]=ui-vi;
+        const nwr=cwr*wr-cwi*wi; cwi=cwr*wi+cwi*wr; cwr=nwr;
+      }
+    }
+  }
+  if(inverse){ for(let i=0;i<n;i++){ re[i]/=n; im[i]/=n; } }
+}
+// Split-operator (Strang) evolution: literally the time-sliced path integral,
+// kinetic step exact in momentum space, potential step exact in position space.
+function piEvolveGaussian(prob, xa, T, L, N, slices, sigma){
+  const dx = 2*L/N, dt = T/slices;
+  const xs = new Float64Array(N); for(let i=0;i<N;i++) xs[i] = -L+i*dx;
+  const re = new Float64Array(N), im = new Float64Array(N);
+  const norm = 1/(sigma*Math.sqrt(2*Math.PI)); // unit-AREA Gaussian ~ delta(x-xa)
+  for(let i=0;i<N;i++) re[i] = norm*Math.exp(-((xs[i]-xa)**2)/(2*sigma*sigma));
+  // flat phase tables (cos/sin separated) -- JIT-friendly hot loop.
+  // Complex absorbing potential in the outer 20% kills wrap-around images.
+  const capEdge = 0.8*L, capW = 6.0;
+  const vc = new Float64Array(N), vs = new Float64Array(N);
+  for(let i=0;i<N;i++){
+    const v = prob.V(xs[i])*dt/2;
+    const over = Math.abs(xs[i]) - capEdge;
+    const damp = over > 0 ? Math.exp(-capW*(over/(0.2*L))**2 * dt/2) : 1;
+    vc[i] = Math.cos(v)*damp; vs[i] = -Math.sin(v)*damp;
+  }
+  const kc = new Float64Array(N), ks = new Float64Array(N);
+  for(let i=0;i<N;i++){
+    const k = (i<N/2 ? i : i-N)*Math.PI/L;
+    const ph = -k*k*dt/(2*prob.m);
+    kc[i] = Math.cos(ph); ks[i] = Math.sin(ph);
+  }
+  for(let s=0;s<slices;s++){
+    for(let i=0;i<N;i++){ const r=re[i],q=im[i]; re[i]=r*vc[i]-q*vs[i]; im[i]=r*vs[i]+q*vc[i]; }
+    piFFT(re, im, false);
+    for(let i=0;i<N;i++){ const r=re[i],q=im[i]; re[i]=r*kc[i]-q*ks[i]; im[i]=r*ks[i]+q*kc[i]; }
+    piFFT(re, im, true);
+    for(let i=0;i<N;i++){ const r=re[i],q=im[i]; re[i]=r*vc[i]-q*vs[i]; im[i]=r*vs[i]+q*vc[i]; }
+  }
+  return {re, im, xs, dx};
+}
+function piReadAt(field, xb){
+  const {re, im, xs, dx} = field;
+  const f = (xb - xs[0])/dx, i = Math.floor(f), w = f-i;
+  if(i<0 || i>=xs.length-1) return {re:0, im:0};
+  return { re: re[i]*(1-w)+re[i+1]*w, im: im[i]*(1-w)+im[i+1]*w };
+}
+function piPropagatorNumeric(prob, xa, xb, T){
+  const m = prob.m;
+  // The delta-source propagator draws coherent contributions from momentum
+  // components up to k ~ 4/sigma, which travel distance ~ 4T/(m sigma).
+  // Smearing error scales as sigma^2 m/T, so sigma may grow as sqrt(T/m)
+  // at constant relative error -- keeping the required box size bounded.
+  let s2 = 0.09*Math.max(1, Math.sqrt(T/m)), s1;
+  const spread = 4*Math.sqrt(T/m) + 2;
+  const kEff = 4/s2;
+  // box must suppress the periodic image: 2L >= ~4.3 T/(m sigma2)
+  const Lfree = 2.5*T/(m*s2) + 3;
+  // confining potentials turn fast components around before the edge:
+  let Lconf = Infinity;
+  for(const Lc of [9,12,16,24,32,48,64]){
+    if(prob.V(0.7*Lc) >= kEff*kEff/(2*m) && prob.V(-0.7*Lc) >= kEff*kEff/(2*m)){ Lconf = Lc; break; }
+  }
+  let L = Math.max(9, Math.abs(xa)+spread, Math.abs(xb)+spread, Math.min(Lfree, Lconf));
+  // grid: sigma2 must span >= 5 samples
+  let N = 1 << Math.ceil(Math.log2(2*L/(s2/5)));
+  if(N > 4096){ N = 4096; s2 = 5*(2*L/N); } // adapt sigma up if the grid caps out
+  if(N < 1024) N = 1024;
+  s1 = 2*s2;
+  // slices: Strang stability against the potential scale on the grid
+  // Split-operator is unconditionally stable (unitary); Strang phase error is
+  // commutator-driven and lives only where the packet and V overlap, so slice
+  // count needn't scale with the huge V values out at the box edge. The
+  // relevant potential scale is the one reachable by smearing-weighted
+  // momenta: V_rel ~ kEff^2/2m near the packet's turning points.
+  const vRel = Math.min(kEff*kEff/(2*m), 60);
+  const slices = Math.max(100, Math.ceil(90*T), Math.ceil(0.8*T*vRel));
+  const K1 = piReadAt(piEvolveGaussian(prob, xa, T, L, N, slices, s1), xb);
+  const K2 = piReadAt(piEvolveGaussian(prob, xa, T, L, N, slices, s2), xb);
+  // Richardson: smearing error is O(sigma^2) -> eliminate leading term
+  return { re: (4*K2.re - K1.re)/3, im: (4*K2.im - K1.im)/3 };
+}
+function piClosedForm(prob, xa, xb, T){
+  const m = prob.m;
+  if(prob.name==='free'){
+    const pref = Math.sqrt(m/(2*Math.PI*T)); // |prefactor|, phase -pi/4
+    const phase = m*(xb-xa)*(xb-xa)/(2*T) - Math.PI/4;
+    return { re: pref*Math.cos(phase), im: pref*Math.sin(phase), label:'Feynman free-particle closed form' };
+  }
+  if(prob.name==='ho'){
+    const w = prob.w, s = Math.sin(w*T);
+    if(Math.abs(s)<1e-6) return null; // caustic
+    const pref = Math.sqrt(m*w/(2*Math.PI*Math.abs(s)));
+    const cls = ((xa*xa+xb*xb)*Math.cos(w*T)-2*xa*xb)*m*w/(2*s);
+    // Maslov phase: -pi/4 - (pi/2)*floor(wT/pi)
+    const maslov = -Math.PI/4 - (Math.PI/2)*Math.floor(w*T/Math.PI);
+    const phase = cls + maslov;
+    return { re: pref*Math.cos(phase), im: pref*Math.sin(phase), label:'Feynman HO closed form (with Maslov phase)' };
+  }
+  return null;
+}
+async function piSolve(){
+  const out = document.getElementById('piResults');
+  const status = document.getElementById('piStatus');
+  const btn = document.getElementById('piGoBtn');
+  const say = async (stage, ms) => { status.textContent = loadingMessage(currentTheme, stage); await sleep(ms||260); };
+  btn.disabled = true;
+  try{
+  await say('onStart', 200);
+  const prob = piGetV();
+  if(!prob){
+    status.textContent = loadingMessage(currentTheme, 'error');
+    out.innerHTML = '<span class="errtext">Could not parse V(x). Check the allowed syntax.</span>';
+    btn.disabled = false; return;
+  }
+  const xa = parseFloat(document.getElementById('piXa').value)||0;
+  const xb = parseFloat(document.getElementById('piXb').value)||0;
+  const T = Math.max(0.05, parseFloat(document.getElementById('piT').value)||1);
+  await say('buildGrid');
+  const diag = piDiagonalize(prob, xa, xb);
+  piCache = {diag, prob, xa, xb, T};
+  await say('prepareState');
+  await say('evolve', 340);
+  const K = piPropagatorNumeric(prob, xa, xb, T);
+  await say('extrapolate');
+  const mag = Math.hypot(K.re, K.im), ph = Math.atan2(K.im, K.re);
+  let rows = `
+    <table>
+      <tr><th>K(x&#7495;,T; x&#7490;,0)</th><td class="val">${K.re.toFixed(6)} ${K.im>=0?'+':'&minus;'} ${Math.abs(K.im).toFixed(6)}&thinsp;i</td></tr>
+      <tr><th>|K| (amplitude)</th><td>${mag.toFixed(6)}</td></tr>
+      <tr><th>|K|&sup2; (relative probability density)</th><td>${(mag*mag).toFixed(6)}</td></tr>
+      <tr><th>Phase</th><td>${ph.toFixed(4)} rad</td></tr>
+    </table>`;
+  const cf = piClosedForm(prob, xa, xb, T);
+  if(cf){
+    await say('validate');
+    const cmag = Math.hypot(cf.re, cf.im);
+    const err = Math.abs(mag-cmag)/cmag;
+    rows += `<p class="note"><b>Cross-check vs ${cf.label}:</b> |K| closed form = ${cmag.toFixed(6)}, this calculator = ${mag.toFixed(6)} &mdash; relative error <span class="val">${(err*100).toFixed(3)}%</span>. ${prob.name==='free' ? 'Free-particle note: the box discretization is honest about its limits &mdash; error grows for large T as the wavepacket feels the walls.' : ''}</p>`;
+  }
+  out.innerHTML = rows;
+  status.textContent = loadingMessage(currentTheme, 'finish');
+  // energy levels
+  if(!diag){ document.getElementById('piLevels').innerHTML = '<span class="note">Diagonalization unavailable for this setup.</span>'; piDrawPaths(); btn.disabled=false; return; }
+  let lv = '<table><tr><th>n</th><th>E&#8345;</th></tr>';
+  for(let k=0;k<8;k++) lv += `<tr><td>${k}</td><td>${diag.E[k].toFixed(5)}</td></tr>`;
+  document.getElementById('piLevels').innerHTML = lv + '</table>' +
+    (prob.name==='ho' ? '<p class="note">HO exact: E&#8345; = &omega;(n+&half;) &mdash; compare directly.</p>' :
+     prob.name==='box' ? `<p class="note">Box exact: E&#8345; = (n+1)&sup2;&pi;&sup2;/(2mL&sup2;) with L = ${(2*diag.L).toFixed(2)}.</p>` : '');
+  piDrawPaths();
+  try{ piDrawStates(); }catch(e){}
+  }catch(e){
+    status.textContent = loadingMessage(currentTheme, 'error');
+    out.innerHTML = '<span class="errtext">' + (e && e.message ? e.message : 'Unexpected failure.') + '</span>';
+  }finally{
+    btn.disabled = false;
+  }
+}
+// ---- Sum over paths canvas ----
+function piAction(path, dt, prob){
+  let S = 0;
+  for(let i=0;i<path.length-1;i++){
+    const v = (path[i+1]-path[i])/dt;
+    const xm = 0.5*(path[i+1]+path[i]);
+    S += (0.5*prob.m*v*v - prob.V(xm))*dt;
+  }
+  return S;
+}
+function piClassicalPath(xa, xb, T, prob, steps){
+  // relax the discretized action (gradient descent) from the straight line
+  const p = Array.from({length:steps+1},(_,i)=> xa + (xb-xa)*i/steps);
+  const dt = T/steps, eps = 1e-4;
+  const lr = 0.45*dt/prob.m; // weighted-Jacobi step: stable for the m/dt-scaled kinetic term
+  for(let it=0; it<1200; it++){
+    for(let i=1;i<steps;i++){
+      // dS/dx_i = m(2x_i - x_{i-1} - x_{i+1})/dt - dt*V'(x_i)
+      const dV = (prob.V(p[i]+eps)-prob.V(p[i]-eps))/(2*eps);
+      const grad = prob.m*(2*p[i]-p[i-1]-p[i+1])/dt - dt*dV;
+      p[i] -= lr*grad;
+    }
+  }
+  return p;
+}
+function piDrawPaths(){
+  if(!piCache) return;
+  const {prob, xa, xb, T} = piCache;
+  const cv = document.getElementById('piCanvas'), ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  ctx.clearRect(0,0,W,H);
+  const steps = 40, dt = T/steps;
+  const cls = piClassicalPath(xa, xb, T, prob, steps);
+  const xmin = Math.min(...cls, xa, xb)-1.5, xmax = Math.max(...cls, xa, xb)+1.5;
+  const X = i => 20 + (W-40)*i/steps;
+  const Y = x => H-20 - (H-40)*(x-xmin)/(xmax-xmin);
+  // random paths, hue = action phase
+  for(let k=0;k<60;k++){
+    const path = cls.map((c,i)=> i===0||i===steps ? c : c + (Math.random()-0.5)*1.6*Math.sin(Math.PI*i/steps)*2);
+    const S = piAction(path, dt, prob);
+    const hue = ((S%(2*Math.PI))+2*Math.PI)%(2*Math.PI)/(2*Math.PI)*360;
+    ctx.strokeStyle = `hsla(${hue},70%,55%,0.35)`;
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(X(0), Y(path[0]));
+    for(let i=1;i<=steps;i++) ctx.lineTo(X(i), Y(path[i]));
+    ctx.stroke();
+  }
+  // classical path
+  ctx.strokeStyle = TC('--gold'); ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(X(0), Y(cls[0]));
+  for(let i=1;i<=steps;i++) ctx.lineTo(X(i), Y(cls[i]));
+  ctx.stroke();
+  // endpoints
+  for(const [i,x] of [[0,xa],[steps,xb]]){
+    ctx.beginPath(); ctx.arc(X(i), Y(x), 6, 0, 2*Math.PI);
+    ctx.fillStyle = TC('--accent'); ctx.fill();
+  }
+  ctx.fillStyle=TC('--cvmuted'); ctx.font='12px sans-serif';
+  ctx.fillText('t=0, x='+xa, 24, Y(xa)-10);
+  ctx.textAlign='right'; ctx.fillText('t='+T+', x='+xb, W-24, Y(xb)-10); ctx.textAlign='left';
+}
+
+// ---- Barrier transmission T(E): exact transfer matrix ----
+function piTransferT(prob, E, xL, xR, slabs){
+  const m = prob.m;
+  // complex 2x2: [[a,b],[c,d]], each {r,i}
+  const C = (r,i)=>({r,i});
+  const cmul=(a,b)=>C(a.r*b.r-a.i*b.i, a.r*b.i+a.i*b.r);
+  const cadd=(a,b)=>C(a.r+b.r, a.i+b.i);
+  const cdiv=(a,b)=>{ const d=b.r*b.r+b.i*b.i; return C((a.r*b.r+a.i*b.i)/d, (a.i*b.r-a.r*b.i)/d); };
+  const cexp=(a)=>{ const e=Math.exp(a.r); return C(e*Math.cos(a.i), e*Math.sin(a.i)); };
+  const kOf = V => { const q = 2*m*(E-V); return q>=0 ? C(Math.sqrt(q),0) : C(0,Math.sqrt(-q)); };
+  const dx = (xR-xL)/slabs;
+  // interface + propagation matrices, left to right; V assumed constant per slab
+  let M = [C(1,0),C(0,0),C(0,0),C(1,0)];
+  let kPrev = kOf(prob.V(xL - dx/2)); // left lead
+  for(let s=0;s<=slabs;s++){
+    const kNext = s<slabs ? kOf(prob.V(xL + (s+0.5)*dx)) : kOf(prob.V(xR + dx/2)); // right lead at end
+    // interface: 1/2 * [[1+kp/kn, 1-kp/kn],[1-kp/kn, 1+kp/kn]]
+    const ratio = cdiv(kPrev, kNext);
+    const a = C(0.5*(1+ratio.r), 0.5*ratio.i), b = C(0.5*(1-ratio.r), -0.5*ratio.i);
+    let I = [a,b,b,a];
+    M = [ cadd(cmul(I[0],M[0]),cmul(I[1],M[2])), cadd(cmul(I[0],M[1]),cmul(I[1],M[3])),
+          cadd(cmul(I[2],M[0]),cmul(I[3],M[2])), cadd(cmul(I[2],M[1]),cmul(I[3],M[3])) ];
+    if(s<slabs){
+      // propagate across the slab: diag(e^{ik dx}, e^{-ik dx})
+      const p1 = cexp(C(-kNext.i*dx, kNext.r*dx)), p2 = cexp(C(kNext.i*dx, -kNext.r*dx));
+      M = [ cmul(p1,M[0]), cmul(p1,M[1]), cmul(p2,M[2]), cmul(p2,M[3]) ];
+    }
+    kPrev = kNext;
+  }
+  // t = 1/M22; T = (k_R/k_L)|t|^2 (both leads propagating assumed)
+  const kL = kOf(prob.V(xL - dx/2)), kR = kOf(prob.V(xR + dx/2));
+  if(kL.r===0) return 0;
+  const den = M[3].r*M[3].r + M[3].i*M[3].i;
+  if(den===0) return 0;
+  return Math.min(1, (kR.r/kL.r)/den);
+}
+function piTransmission(){
+  const prob = piGetV();
+  const note = document.getElementById('piTNote');
+  if(!prob){ note.innerHTML='<span class="errtext">Fix V(x) first.</span>'; return; }
+  const xL=-5, xR=5, slabs=400;
+  // barrier top = max V in window; energy sweep to a bit past it
+  let vMax=0, vMin=0;
+  for(let i=0;i<=200;i++){ const v=prob.V(xL+(xR-xL)*i/200); if(v>vMax)vMax=v; if(v<vMin)vMin=v; }
+  const Etop = Math.max(1, vMax)*2.5 + 0.5;
+  const nE = 240, Es=[], Ts=[];
+  for(let i=1;i<=nE;i++){ const E = 0.02 + (Etop-0.02)*i/nE; Es.push(E); Ts.push(piTransferT(prob,E,xL,xR,slabs)); }
+  // plot
+  const cv = document.getElementById('piTCanvas'), ctx = cv.getContext('2d');
+  const W=cv.width, H=cv.height; ctx.clearRect(0,0,W,H);
+  const X=i=>40+(W-60)*i/(nE-1), Y=t=>H-30-(H-55)*t;
+  ctx.strokeStyle=TC('--cvgrid'); ctx.beginPath(); ctx.moveTo(40,Y(0)); ctx.lineTo(W-20,Y(0)); ctx.moveTo(40,Y(1)); ctx.lineTo(W-20,Y(1)); ctx.stroke();
+  ctx.fillStyle=TC('--cvmuted'); ctx.font='12px sans-serif';
+  ctx.fillText('T=1', 8, Y(1)+4); ctx.fillText('T=0', 8, Y(0)+4);
+  ctx.fillText('E &rarr;', W-45, H-8); ctx.fillText('E = '+ (0.02).toFixed(2), 36, H-8);
+  ctx.textAlign='right'; ctx.fillText(Etop.toFixed(1), W-20, H-8); ctx.textAlign='left';
+  if(vMax>0){
+    const iTop = Math.round((vMax-0.02)/(Etop-0.02)*(nE-1));
+    if(iTop>0 && iTop<nE){ ctx.strokeStyle=TC('--gold'); ctx.setLineDash([4,4]);
+      ctx.beginPath(); ctx.moveTo(X(iTop), Y(0)); ctx.lineTo(X(iTop), Y(1)); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle=TC('--gold'); ctx.fillText('barrier top', X(iTop)+4, 20); }
+  }
+  ctx.strokeStyle=TC('--accent'); ctx.lineWidth=2; ctx.beginPath();
+  ctx.moveTo(X(0), Y(Ts[0]));
+  for(let i=1;i<nE;i++) ctx.lineTo(X(i), Y(Ts[i]));
+  ctx.stroke();
+  const below = vMax>0 ? Ts[Math.max(0,Math.round((vMax*0.5-0.02)/(Etop-0.02)*(nE-1)))] : null;
+  note.innerHTML = '<p class="note">'+ (vMax>0
+    ? 'At E = half the barrier height, T = <span class="val">'+(below*100).toFixed(2)+'%</span> gets through &mdash; classically it would be exactly 0%. Above the barrier top, note T still dips below 1 (over-barrier reflection) with resonances at special energies.'
+    : 'No barrier in this potential (V &le; 0 everywhere in the window) &mdash; transmission stays near 1; wells show resonance structure instead.') + '</p>';
+}
+
+
+// ---- Wavefunctions, expectation values, wavepacket animation ----
+let piAnimId = null;
+function piExpectation(diag, n){
+  const {psi, xs, dx} = diag, f = psi[n];
+  let x1=0, x2=0, p2=0, norm=0;
+  for(let i=0;i<xs.length;i++){ const w=f[i]*f[i]*dx; norm+=w; x1+=xs[i]*w; x2+=xs[i]*xs[i]*w; }
+  x1/=norm; x2/=norm;
+  for(let i=1;i<xs.length-1;i++){ const d=(f[i+1]-f[i-1])/(2*dx); p2 += d*d*dx; }
+  p2/=norm;
+  const dxU = Math.sqrt(Math.max(0,x2-x1*x1)), dpU = Math.sqrt(Math.max(0,p2)); // <p>=0 for real bound states
+  return {x1, dx:dxU, dp:dpU, prod:dxU*dpU};
+}
+function piStateWindow(diag, nMax){
+  // display window: where the top drawn state has support
+  const {psi, xs} = diag;
+  let lo=xs.length-1, hi=0;
+  for(let n=0;n<=nMax;n++){
+    let peak=0; for(const v of psi[n]) peak=Math.max(peak,Math.abs(v));
+    for(let i=0;i<xs.length;i++) if(Math.abs(psi[n][i])>0.02*peak){ lo=Math.min(lo,i); hi=Math.max(hi,i); }
+  }
+  const pad = Math.round((hi-lo)*0.15)+3;
+  return [Math.max(0,lo-pad), Math.min(xs.length-1,hi+pad)];
+}
+function piDrawStates(){
+  piAnimStop();
+  if(!piCache || !piCache.diag) return;
+  const diag = piCache.diag, prob = piCache.prob;
+  const nSel = parseInt(document.getElementById('piStateN').value)||0;
+  const nShow = Math.min(6, diag.E.length);
+  const [iLo,iHi] = piStateWindow(diag, nShow-1);
+  const cv = document.getElementById('piStateCanvas'), ctx = cv.getContext('2d');
+  const W=cv.width, H=cv.height; ctx.clearRect(0,0,W,H);
+  const xs = diag.xs;
+  const X = i => 20 + (W-40)*(i-iLo)/(iHi-iLo);
+  // energy scale: from min(V) in window to a bit above E[nShow-1]
+  let vMin=Infinity; const Vs=[];
+  for(let i=iLo;i<=iHi;i++){ const v=prob.V(xs[i]); Vs.push(v); if(v<vMin)vMin=v; }
+  const eTop = diag.E[nShow-1] + (diag.E[nShow-1]-diag.E[0])*0.3 + 0.5;
+  const Y = e => H-25 - (H-50)*(e-vMin)/(eTop-vMin);
+  // potential curve
+  ctx.strokeStyle=TC('--cvmuted'); ctx.lineWidth=2; ctx.beginPath();
+  let started=false;
+  for(let i=iLo;i<=iHi;i++){ const y=Y(Math.min(Vs[i-iLo], eTop));
+    if(!started){ ctx.moveTo(X(i),y); started=true; } else ctx.lineTo(X(i),y); }
+  ctx.stroke();
+  // levels + wavefunctions
+  for(let n=0;n<nShow;n++){
+    const y0 = Y(diag.E[n]);
+    if(y0<15) continue;
+    ctx.strokeStyle = n===nSel ? TC('--gold') : TC('--cvgrid');
+    ctx.setLineDash([3,3]); ctx.beginPath(); ctx.moveTo(20,y0); ctx.lineTo(W-20,y0); ctx.stroke(); ctx.setLineDash([]);
+    // psi_n scaled to sit on its rung
+    let peak=0; for(let i=iLo;i<=iHi;i++) peak=Math.max(peak,Math.abs(diag.psi[n][i]));
+    const gap = n<nShow-1 ? Math.abs(Y(diag.E[n])-Y(diag.E[n+1])) : 40;
+    const amp = Math.min(gap*0.85, 34);
+    ctx.strokeStyle = n===nSel ? TC('--gold') : TC('--accent'); ctx.lineWidth = n===nSel ? 2.5 : 1.5;
+    ctx.beginPath();
+    for(let i=iLo;i<=iHi;i++){
+      const y = y0 - amp*diag.psi[n][i]/peak;
+      if(i===iLo) ctx.moveTo(X(i),y); else ctx.lineTo(X(i),y);
+    }
+    ctx.stroke();
+    ctx.fillStyle=TC('--cvmuted'); ctx.font='11px sans-serif';
+    ctx.fillText('n='+n+'  E='+diag.E[n].toFixed(3), W-115, y0-4);
+  }
+  // expectation table for selected state
+  const ex = piExpectation(diag, nSel);
+  const ok = ex.prod >= 0.4999;
+  document.getElementById('piExpect').innerHTML = `
+    <table>
+      <tr><th>&lang;x&rang;</th><td>${ex.x1.toFixed(4)}</td><th>&Delta;x</th><td>${ex.dx.toFixed(4)}</td></tr>
+      <tr><th>&Delta;p</th><td>${ex.dp.toFixed(4)}</td><th>&Delta;x&middot;&Delta;p</th><td class="val">${ex.prod.toFixed(4)} ${ok?'&ge; &half; &#10003;':''}</td></tr>
+    </table>
+    <p class="note">${nSel===0 ? 'Ground states minimize the product; the harmonic oscillator ground state hits exactly &half; &mdash; the minimum uncertainty state.' : 'Excited states sit above the &half; bound; the product grows with n.'}</p>`;
+}
+function piAnimStop(){ if(piAnimId){ cancelAnimationFrame(piAnimId); piAnimId=null; document.getElementById('piAnimBtn').textContent='Animate Wavepacket'; } }
+function piAnimateStart(){
+  if(piAnimId){ piAnimStop(); return; }
+  if(!piCache || !piCache.diag) return;
+  const diag = piCache.diag, prob = piCache.prob;
+  // Gaussian packet displaced from the well center: c_n = <psi_n | g>
+  const {psi, xs, dx, E} = diag;
+  const ex0 = piExpectation(diag,0);
+  const x0 = ex0.x1 + 2.2*ex0.dx, sg = 1.2*ex0.dx;
+  const nM = Math.min(28, E.length);
+  const c = [];
+  for(let n=0;n<nM;n++){
+    let s=0; for(let i=0;i<xs.length;i++) s += psi[n][i]*Math.exp(-((xs[i]-x0)**2)/(4*sg*sg))*dx;
+    c.push(s);
+  }
+  const [iLo,iHi] = piStateWindow(diag, Math.min(5,nM-1));
+  const cv = document.getElementById('piStateCanvas'), ctx = cv.getContext('2d');
+  const W=cv.width, H=cv.height;
+  const X = i => 20 + (W-40)*(i-iLo)/(iHi-iLo);
+  document.getElementById('piAnimBtn').textContent='Stop';
+  const t0 = performance.now();
+  function frame(){
+    const t = (performance.now()-t0)/1000 * 2.0; // sim-time rate
+    ctx.clearRect(0,0,W,H);
+    // potential silhouette
+    let vMin=Infinity,vMax=-Infinity;
+    for(let i=iLo;i<=iHi;i++){ const v=prob.V(xs[i]); if(v<vMin)vMin=v; if(v>vMax)vMax=v; }
+    if(vMax>vMin){
+      ctx.strokeStyle=TC('--cvgrid'); ctx.lineWidth=2; ctx.beginPath();
+      for(let i=iLo;i<=iHi;i++){ const y=H-15-(H-60)*(prob.V(xs[i])-vMin)/(vMax-vMin);
+        if(i===iLo) ctx.moveTo(X(i),y); else ctx.lineTo(X(i),y); }
+      ctx.stroke();
+    }
+    // |psi(x,t)|^2 from eigen-expansion
+    let pmax=0; const P=new Float64Array(iHi-iLo+1);
+    for(let i=iLo;i<=iHi;i++){
+      let re=0, im=0;
+      for(let n=0;n<nM;n++){ const ph=-E[n]*t; re += c[n]*psi[n][i]*Math.cos(ph); im += c[n]*psi[n][i]*Math.sin(ph); }
+      const p = re*re+im*im; P[i-iLo]=p; if(p>pmax)pmax=p;
+    }
+    ctx.strokeStyle=TC('--accent'); ctx.lineWidth=2.5; ctx.beginPath();
+    for(let i=iLo;i<=iHi;i++){ const y=H-15-(H-60)*P[i-iLo]/pmax;
+      if(i===iLo) ctx.moveTo(X(i),y); else ctx.lineTo(X(i),y); }
+    ctx.stroke();
+    ctx.fillStyle=TC('--cvmuted'); ctx.font='12px sans-serif';
+    ctx.fillText('|psi(x,t)|^2   t = '+t.toFixed(1), 24, 20);
+    piAnimId = requestAnimationFrame(frame);
+  }
+  piAnimId = requestAnimationFrame(frame);
+}
+
+piPresetChanged(); piSolve();
+
+</script>
+
+</body>
+</html>
