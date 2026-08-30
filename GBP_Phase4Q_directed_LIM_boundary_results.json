@@ -1,0 +1,128 @@
+{
+  "status": "PROMISING_TEST_NOT_FROZEN",
+  "rule": "On the pre-existing name-free mixed-UD heavy Malus-boundary class only, replace the scalar boundary gf by |mean_{i<j} C_ij| from the directed LIM.",
+  "directed_LIM": "C_ij = sqrt(P_i P_j) exp[i(phi_i-phi_j)]",
+  "scalarization": "gf_LIM = |mean pair C_ij|",
+  "free_parameters_added": 0,
+  "observed_mass_used_inside_rule": false,
+  "affected_known_baryons": 2,
+  "baseline": {
+    "n": 55,
+    "mape_percent": 0.13106475738904394,
+    "rmse_mev": 7.354613952878593,
+    "mae_mev": 4.323830706737726,
+    "max_abs_error_mev": 34.18118942545698
+  },
+  "phase4q_lim": {
+    "n": 55,
+    "mape_percent": 0.11979028413075067,
+    "rmse_mev": 5.727586505573263,
+    "mae_mev": 3.704227571307882,
+    "max_abs_error_mev": 20.204315413042423
+  },
+  "relative_improvement_percent": {
+    "MAPE": 8.602215792325369,
+    "RMSE": 22.122540458680533,
+    "MAE": 14.32995825817905,
+    "max_abs_error": 40.8905431535541
+  },
+  "affected": [
+    {
+      "name": "Sigma_c+",
+      "quarks": [
+        "up",
+        "down",
+        "charm"
+      ],
+      "J": 0.5,
+      "obs_mev": 2452.9,
+      "old_gf": 0.16543469682057085,
+      "lim_pair_gf": 0.1544436161192483,
+      "old_pred_mev": 2455.2533258649314,
+      "lim_pred_mev": 2453.8162530424547,
+      "old_residual_mev": 2.353325864931321,
+      "lim_residual_mev": 0.9162530424546276,
+      "pairs": [
+        {
+          "pair": [
+            "up",
+            "down"
+          ],
+          "re": -0.05772733145037537,
+          "im": 0.5492388703885764,
+          "abs": 0.5522642316338267,
+          "phase_deg": 96.00000000000001
+        },
+        {
+          "pair": [
+            "up",
+            "charm"
+          ],
+          "re": 0.49453690018345137,
+          "im": -0.5492388703885763,
+          "abs": 0.7390738003669026,
+          "phase_deg": -48.0
+        },
+        {
+          "pair": [
+            "down",
+            "charm"
+          ],
+          "re": -0.5979232645941017,
+          "im": -0.4344166802114171,
+          "abs": 0.7390738003669031,
+          "phase_deg": -144.0
+        }
+      ]
+    },
+    {
+      "name": "Sigma_b0",
+      "quarks": [
+        "up",
+        "down",
+        "bottom"
+      ],
+      "J": 0.5,
+      "obs_mev": 5813.1,
+      "old_gf": 0.528391355930695,
+      "lim_pair_gf": 0.25963413654761397,
+      "old_pred_mev": 5847.281189425457,
+      "lim_pred_mev": 5811.559910200708,
+      "old_residual_mev": 34.18118942545698,
+      "lim_residual_mev": -1.5400897992922182,
+      "pairs": [
+        {
+          "pair": [
+            "up",
+            "down"
+          ],
+          "re": -0.05772733145037537,
+          "im": 0.5492388703885764,
+          "abs": 0.5522642316338267,
+          "phase_deg": 96.00000000000001
+        },
+        {
+          "pair": [
+            "up",
+            "bottom"
+          ],
+          "re": 0.09340478436653811,
+          "im": 0.2874703671382984,
+          "abs": 0.30226423163382654,
+          "phase_deg": 71.99999999999997
+        },
+        {
+          "pair": [
+            "down",
+            "bottom"
+          ],
+          "re": 0.27613211581691327,
+          "im": -0.12294193889662894,
+          "abs": 0.3022642316338267,
+          "phase_deg": -24.000000000000036
+        }
+      ]
+    }
+  ],
+  "caution": "This is a model-selection result on the same 55-state benchmark. Freeze only after an independent/held-out structural test."
+}
